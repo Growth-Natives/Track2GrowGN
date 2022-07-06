@@ -225,9 +225,13 @@
                       </option>
                 </template>
                 </select>
+              
+              <lightning-card title="Average Time Spent On Owner Leader Board Per Status" icon-name="utility:chart">
               <div class='slds-box slds-theme_default'>
-              <canvas class="pie-chart" onfocus={handleMousemove} lwc:dom="manual"></canvas>
-            </div>
+              <canvas class="pie-chart" lwc:dom="manual"></canvas>
+               </div>
+              </lightning-card>
+           
             </lightning-card> 
        </template>
       <template if:false={clickedButtonLabelCheck}>

@@ -45,6 +45,7 @@ export default class Filter_LWC extends LightningElement
     @track objectFieldValueVal;
     @track objectRecordTypeVal;
     @track jobid;
+     piechartsaved;
     requiredOptions;
     requiredOptions1;
     errorMsg = 'Error Message - ';
@@ -562,6 +563,8 @@ this.isCheckFilter = true;
         
       selectOptionChanveValue(event){       
            this.picklistVal = event.target.value;
+           var ctx = this.template.querySelector(".pie-chart").getContext('2d');
+           console.log("picklistchangefunction");
            this.getcallby();
            //refreshApex(this.dataSet);
        }  
@@ -576,44 +579,16 @@ this.isCheckFilter = true;
             console.log('resultdata',data);
             this.dataSet = data;
             //setInterval(refreshApex.bind(this, this.dataSet), 5e3);
-            this.Initializechartjs();
-        } else if (result.error) 
+                this.Initializechartjs();
+         
+         } else if (result.error) 
         {
             return result.error;
         }
         
 	 	}) 
    }
-   handleMousemove(evt){
-     this.Initializechartjs();  
-   }
-   /* @wire(getLeadByStatus, {status :'$picklistVal',objectVal:'$objectVal',Field:'$objectField',fieldValues:'$selectedVal',recordTypes:'$selectedVal1',businessHour:'$businessNameVal',dates:'$picklistVal',startDate:'$startdate',endDate:'$enddate',willRefresh:'$isFilterSave'}) 
-    wiredLeads(result) 
-    {
-        if (result.data) {
-
-            console.log('resultdata',result.data);
-            this.dataSet = result.data;
-             var labell = [];
-           var count = [];
-            for(var key in this.dataSet)
-       {
-              //this.updateChart(data[key].count,data[key].label);
-              labell.push(this.dataSet[key].label);
-            count.push(this.dataSet[key].count)
-       }
-      
-         // console.log('labell',this.labell);
-         //console.log('count',this.count);
-
-
-            //setInterval(refreshApex.bind(this, this.dataSet), 5e3);
-            this.Initializechartjs();
-        } else if (result.error) 
-        {
-            return result.error;
-        }
-    }*/
+    
     @api chartjsInitialized = false;
     renderedCallback() {
         if (this.chartjsInitialized) {
@@ -639,6 +614,11 @@ this.isCheckFilter = true;
             });
     }
     Initializechartjs() {
+        console.log('>>>>>>>',window.bar);
+        if(window.bar!=undefined){
+                    window.bar.destroy();
+                }
+        //ctxx.destroy();
         console.log("loaded");
          console.log("dataSet',result.data",this.dataSet);
          console.log('Object.keys(this.dataSet',Object.keys(this.dataSet));
@@ -653,15 +633,14 @@ this.isCheckFilter = true;
           console.log('labell',labell);
          console.log('count',count);
 
-        var piechart;
         var ctx = this.template.querySelector(".pie-chart").getContext('2d');
-        piechart = new Chart(ctx, {
+         window.bar = new Chart(ctx, {
             type: 'bar',
             data: {
                 
                 labels: labell,  
                 datasets: [{
-                    label: 'count',
+                    label: 'Average Time Spent On Owner Leader Board Per Status',
                     data:count, 
                     backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001F3F", "#39CCCC", "#01FF70", "#85144B", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
                 }],
@@ -670,5 +649,6 @@ this.isCheckFilter = true;
          
                    },
         });
+         
     }
 }
