@@ -1,0 +1,14 @@
+.spins::after {
+    position: absolute;
+    content: 'please select a filter';
+    width: 100%;
+    text-align: center;
+    top: calc(50% + 3em);
+    font-weight: bold;
+    color: #000;
+}
+table, tr, td {
+    padding-right: 5px;
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
