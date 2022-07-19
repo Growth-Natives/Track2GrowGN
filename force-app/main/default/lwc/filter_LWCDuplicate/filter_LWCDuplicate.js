@@ -1,25 +1,25 @@
 import {LightningElement, track,api, wire} from 'lwc';
 import picklistLabel from '@salesforce/label/c.picklistLabel';
-import getHourVal from '@salesforce/apex/ObjectPicklistController.getHourVal';
+import getHourVal from '@salesforce/apex/ObjectPicklistControllerDuplicate.getHourVal';
 import objectLabel from '@salesforce/label/c.objectLabel';
-import getPicklistFields from '@salesforce/apex/ObjectPicklistController.getPicklistFields';
+import getPicklistFields from '@salesforce/apex/ObjectPicklistControllerDuplicate.getPicklistFields';
 // import getObjectFieldValue from '@salesforce/apex/ObjectPicklistController.getObjectFieldValue';
-import getObject from '@salesforce/apex/ObjectPicklistController.getObject';
-import picklistValues from '@salesforce/apex/ObjectPicklistController.picklistValues';
-import getRecordType from '@salesforce/apex/ObjectPicklistController.getRecordType';
-import getAllcaserecord from '@salesforce/apex/averagetimechartcontroller.retriveAccs';
-import retriveFilter from '@salesforce/apex/averagetimechartcontroller.retriveFilter';
+import getObject from '@salesforce/apex/ObjectPicklistControllerDuplicate.getObject';
+import picklistValues from '@salesforce/apex/ObjectPicklistControllerDuplicate.picklistValues';
+import getRecordType from '@salesforce/apex/ObjectPicklistControllerDuplicate.getRecordType';
+import getAllcaserecord from '@salesforce/apex/averagetimechartcontrollerDuplicate.retriveAccs';
+import retriveFilter from '@salesforce/apex/averagetimechartcontrollerDuplicate.retriveFilter';
 import getAllcaserecord1 from '@salesforce/apex/averagetimechartcontroller.mapvalue';
-import getBatchJobStatus from '@salesforce/apex/averagetimechartcontroller.getBatchJobStatus';
+import getBatchJobStatus from '@salesforce/apex/averagetimechartcontrollerDuplicate.getBatchJobStatus';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getLeadByStatus1 from '@salesforce/apex/averagetimechartcontroller.mapvalue';
-import getcaseowner from '@salesforce/apex/averagetimechartcontroller.getcaseowner';
+import getLeadByStatus1 from '@salesforce/apex/averagetimechartcontrollerDuplicate.mapvalue';
+import getcaseowner from '@salesforce/apex/averagetimechartcontrollerDuplicate.getcaseowner';
 import ChartJS from '@salesforce/resourceUrl/ChartJs';
 import {loadScript} from 'lightning/platformResourceLoader';
- import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.getLeadByStatus';
-import pickListValueDynamically from '@salesforce/apex/averagetimechartcontroller.pickListValueDynamically';
+ import getLeadByStatus from '@salesforce/apex/averagetimechartcontrollerDuplicate.getLeadByStatus';
+import pickListValueDynamically from '@salesforce/apex/averagetimechartcontrollerDuplicate.pickListValueDynamically';
 //import getBusinessHours from '@salesforce/apex/ObjectPicklistController.getBusinessHours';
-export default class Filter_LWC extends LightningElement
+export default class Filter_LWCDuplicate extends LightningElement
 {
    label = {picklistLabel};
     label1 = {objectLabel};
@@ -36,7 +36,7 @@ export default class Filter_LWC extends LightningElement
     selectedVal;
     selectedVal1;
     startdate;
-    enddate ;
+    enddate;
     @track isCheckFilter = true;
     @track clickedButtonLabelCheck;
     @track runchart=false;
@@ -64,7 +64,6 @@ export default class Filter_LWC extends LightningElement
     requiredField3 = false;
     requiredField4 = false;
     requiredField5 = false;
-    requiredCustomDate = false;
     @track myInterval;
     @track progress;
     jobinfo;
@@ -94,9 +93,6 @@ export default class Filter_LWC extends LightningElement
     }
     get filterNameClass(){
         return this.requiredField5 ? 'slds-form-element slds-form-element slds-has-error slds-p-top_small' : 'slds-form-element slds-form-element slds-p-top_small';
-    }
-    get classCustomDate(){
-        return this.requiredCustomDate ? 'slds-form-element slds-form-element slds-has-error slds-p-top_small' : 'slds-form-element slds-form-element slds-p-top_small';
     }
     get objVal(){
         if(this.objectVal!=null){
@@ -129,13 +125,9 @@ export default class Filter_LWC extends LightningElement
     constructor()
     {
         super();
-        // console.log('label value --->',picklistLabel);
          console.log('label1 value --->',objectLabel);
         this.picklistStr = picklistLabel.split(',');
         this.objectStr = objectLabel.split(',');
-         //this.hourNameStr = hourNameLabel.split(',');
-        // console.log('picklistStr value --->',this.picklistStr);
-        // console.log('objectStr value --->',this.objectStr);
     }
 
     selectPicklistValueChange(event)
@@ -152,7 +144,7 @@ export default class Filter_LWC extends LightningElement
             this.picklistValueStr = false;
         }
     }
-    
+  
 onHandleObjectSearch(event){
     this.objectVal = event.target.value;
        getObject({searchObject:this.objectVal})
@@ -171,11 +163,10 @@ onHandleObjectSearch(event){
         this.recordsList = undefined;
         });
 }
-
     selectObjectValueChange()
     {  
         console.log('selectObjectValueChange');
-       // this.objectField = 'Field';
+        this.objectField = 'Field';
         this.options = [];
         this.options1 = [];
         this.objectFieldVal = [];
@@ -199,18 +190,14 @@ onHandleObjectSearch(event){
        {
             if(result)
             {
-                // console.log('result-->',result);
                 for(let key in result)
                 {
-                   
                     console.log('options value -->',result[key]);
                     this.options1 = Object.keys(result).map(key => ({ label: result[key], value: result[key] }));
                     this.defaultValues1.push(result[key]);
-                    // console.log('options1 value---',this.options1);
                     console.log('defaultValues1 value---',this.defaultValues1);
                 }
                 this.selectedVal1 = this.defaultValues1;
-                // this.defaultValues1 =['opt2', 'opt4', 'opt6'];
             }
         })
         .catch((error) => 
@@ -256,125 +243,106 @@ onHandleObjectSearch(event){
     {  
         this.clickedButtonLabelCheck = false; 
         this.selectedVal = event.detail.value;
-        // console.log('selectedVal value---',this.selectedVal);
     }
     
     onHandleCheckBox(event){
         this.isFilterSave = event.target.checked;       
-        // console.log("Todo: " + event.target.checked);
     }
 
     handleChange1(event) 
     {
         this.clickedButtonLabelCheck = false;  
         this.selectedVal1 = event.detail.value;
-        // console.log('selectedVal1 value---',this.selectedVal1);
     }
 
+   
     datehandle(event)
     {   
         this.clickedButtonLabelCheck = false; 
         this.startdate = event.detail.value;
-        
     }
 
+   
     datehandle1(event)
     {   
         this.clickedButtonLabelCheck = false;  
         this.enddate = event.detail.value;
-        
     }
    
     onFilterName(event){
         this.filterName = event.target.value;
-    }
-    
+    }    
     handleClick(event) 
     {
         if(event.target.label === 'Save')
         {
 
             if(this.objectVal == undefined || this.objectVal == '')
-        {
-            // console.log('this.objectVal value in if',this.objectVal);
-            this.requiredField1 = true;
-            this.errorMsg += ' Please select the Object Type,';
-        }
-        else
-        {
-            console.log('this.objectVal value in else',this.objectVal);
-            this.requiredField1 = false;
-        }
-
-        if(this.objectField == undefined || this.objectField == '')
-        {
-            // console.log('this.objectField value in if',this.objectField);
-            this.requiredField2 = true;
-            this.errorMsg += ' Please select the Object Field Type,';
-        }
-        else
-        {
-            console.log('this.objectFieldVal value in else',this.objectFieldVal);
-            this.requiredField2 = false;
-        }
-
-        if(this.selectedVal == undefined || this.objectVal == ' ')
-        {
-            // console.log('this.selectedVal value in if',this.selectedVal);
-            this.errorMsg += ' Please select the Object Field Value Type,';
-        }
-        
-        if(this.picklistVal == undefined || this.picklistVal == '')
-        {
-            this.requiredField3 = true;
-            this.errorMsg += ' Please select the Dates.';
-        }
-        else
-        {
-            this.requiredField3 = false;
-        }
-
-        if(this.businessNameVal == undefined || this.objectVal == '' || this.businessNameVal == '')
-        {
-            this.requiredField4 = true;
-            this.errorMsg += ' Please select the Business Hour.';
-        }
-        else
-        {
-            this.requiredField4 = false;
-        }
-        // custom date condition
-        if(this.picklistValueStr == true)
-        {
-            if(Boolean(this.startdate)  && Boolean(this.enddate))
             {
-                this.requiredCustomDate = false;
-                console.log('In if this.startdate',this.startdate);
-                console.log('In if this.enddate',this.enddate);
-                
+                // console.log('this.objectVal value in if',this.objectVal);
+                this.requiredField1 = true;
+                this.errorMsg += ' Please select the Object Type,';
             }
             else
             {
-                this.requiredCustomDate = true;
-                console.log('this.startdate',Boolean(this.startdate));
-                console.log('this.enddate',this.enddate);
+                console.log('this.objectVal value in else',this.objectVal);
+                this.requiredField1 = false;
             }
-        }
 
-        if(this.errorMsg != 'Error Message - ')
-        {
-            const evt = new ShowToastEvent({
-                title: 'Error Message',
-                message: this.errorMsg,
-                variant: 'error',
-                mode: 'dismissable'
-            });
-            this.dispatchEvent(evt);
-            this.errorMsg = 'Error Message - ';
-        }
-        
-        
-            if(this.requiredField1 == false && this.requiredField2 == false && this.requiredField3 == false && this.requiredField4 == false && this.selectedVal != undefined && this.requiredCustomDate == false)
+            if(this.objectField == undefined || this.objectField == '')
+            {
+                // console.log('this.objectField value in if',this.objectField);
+                this.requiredField2 = true;
+                this.errorMsg += ' Please select the Object Field Type,';
+            }
+            else
+            {
+                console.log('this.objectFieldVal value in else',this.objectFieldVal);
+                this.requiredField2 = false;
+            }
+
+            if(this.selectedVal == undefined || this.selectedVal == ' ')
+            {
+                // console.log('this.selectedVal value in if',this.selectedVal);
+                this.errorMsg += ' Please select the Object Field Value Type,';
+            }
+            
+            if(this.picklistVal == undefined || this.picklistVal == '')
+            {
+                console.log('this.picklistVal value in if',this.picklistVal);
+                this.requiredField3 = true;
+                this.errorMsg += ' Please select the Dates.';
+            }
+            else
+            {
+                console.log('this.picklistVal value in else',this.picklistVal);
+                this.requiredField3 = false;
+            }
+
+            if(this.businessNameVal == undefined || this.businessNameVal == '')
+            {
+                this.requiredField4 = true;
+                this.errorMsg += ' Please select the Business Hour.';
+            }
+            else
+            {
+                console.log('this.hourNameStr value in else',this.businessNameVal);
+                this.requiredField4 = false;
+            }
+
+            if(this.errorMsg != 'Error Message - ')
+            {
+                const evt = new ShowToastEvent({
+                    title: 'Error Message',
+                    message: this.errorMsg,
+                    variant: 'error',
+                    mode: 'dismissable'
+                });
+                this.dispatchEvent(evt);
+                this.errorMsg = 'Error Message - ';
+            }
+
+            if(this.requiredField1 == false && this.requiredField2 == false && this.requiredField3 == false && this.requiredField4 == false && this.selectedVal != undefined)
                 {
                     if(this.isFilterSave==true && this.isCheckFilter == true)
                     {
@@ -407,19 +375,29 @@ onHandleObjectSearch(event){
                     }
                     else if(this.isFilterSave == false){
                         console.log('this.isFilterSave==false');
-                        // this.checkFilter();
                         this.getAllcaserecords();
-                        this.getcaseowner();
+                        //this.getcaseowner();
                     }
                 }
-       
-        }
+          
+            // console.log('clickedButtonLabel value--->',this.clickedButtonLabel);
+            // console.log('this.objectVal',this.objectVal);
+            // console.log('this.objectFieldVal',this.objectFieldVal);
+            // console.log('this.selectedVal',this.selectedVal);
+            // console.log('this.selectedVal1',this.selectedVal1);
+            // console.log('this.picklistVal',this.picklistVal);
+            // console.log('this.businessNameVal',this.businessNameVal);
+            // console.log('this.startdate',this.startdate);
+            // console.log('this.enddate',this.enddate);
+            // console.log('filterName',this.filterName);
+        }      
     }
   
     checkFilter(){
-        console.log('\nthis.isFilterSave==true and check Filter');
+        console.log(' In checkFilter method\n Filter save =' ,this.isFilterSave + '\ncheck Filter = ', this.isCheckFilter);
         retriveFilter({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName})
         .then((data) => {
+            console.log('data is null or not --',data);
             if(data!=null){
                 this.isCheckFilter = true;
                 this.filterNameErr = data;
@@ -433,9 +411,9 @@ onHandleObjectSearch(event){
                 this.dispatchEvent(event);
             }
             else{
-                console.log('Error data else of data null',this.isCheckFilter);
+                // console.log('Error data else of data null',this.isCheckFilter);
                 this.isCheckFilter = false;
-                if(this.filterName!=null && this.filterName!='' && this.filterName!=' ' && this.isCheckFilter == false){
+                if(this.filterName!=null && this.filterName!='' && this.filterName!=' ' && this.isCheckFilter == false ){
                     this.getAllcaserecords();
                 }
                 else{
@@ -445,55 +423,54 @@ onHandleObjectSearch(event){
         })
     }
    
-    getAllcaserecords(){
+    getAllcaserecords(){ 
         this.isCheckFilter = false;
-        console.log('getAllcaserecords = isCheckFilter = ',this.isCheckFilter);
-   
-    getAllcaserecord({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName,historySwitch:this.toggleValue})
-    .then(result => {
-      this.jobid = result;
-    //   console.log('value of jobid',this.jobid);
-     if(this.jobid!=null)
-      {
-        //    console.log('if');  
-          var intervaldata =setInterval(function (jobid111,parentthis){   
-          console.log('time halt started>>>'+jobid111);
+        console.log(' In getAllcaserecords method\nFilter save =' ,this.isFilterSave + '\ncheck Filter = ', this.isCheckFilter + '\nhistorySwitch=',this.toggleValue);
+            getAllcaserecord({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName,historySwitch:this.toggleValue})
+            .then(result => {
+            this.jobid = result;
+        //     //   console.log('value of jobid',this.jobid);
+            if(this.jobid!=null)
+            {
+                //    console.log('if');  
+                var intervaldata =setInterval(function (jobid111,parentthis){   
+                console.log('time halt started>>>'+jobid111);
 
-          getBatchJobStatus({jobID: jobid111})
-          .then(result => {
-                  this.jobinfo = result;
-                //   console.log('value of jobinfo',result);
-          })
-              if(jobinfo.Status=='Completed' )
-          {
-              clearInterval(intervaldata);
-            //   console.log('passing');
-              alert('batch is Completed');
-              //this.myStopFunction();
-              parentthis.callOnRender();
-              //parentthis.runchart=true;      
-          }
-      }, 3000,this.jobid,this);
-      this.myInterval=intervaldata;
-    //    console.log('intervalid >>>>',this.myInterval);  
-      }
-      else{
-        //   console.log('else');  
-         alert('already saved');
-           this.callOnRender(); 
-      }
-  })
-  if(this.isCheckFilter == false){
-   const event = new ShowToastEvent({
-        title: 'Success Message',
-        message: 'Data is sucessfully received',
-        variant: 'success',
-        mode: 'dismissable'
-});
-this.dispatchEvent(event);
-this.isCheckFilter = true;
-  }
-   }
+                getBatchJobStatus({jobID: jobid111})
+                .then(result => {
+                        this.jobinfo = result;
+                          console.log('value of jobinfo',result);
+                })
+                    if(jobinfo.Status=='Completed' )
+                {
+                    clearInterval(intervaldata);
+                    //   console.log('passing');
+                    alert('batch is Completed');
+                    //this.myStopFunction();
+                    parentthis.callOnRender();
+                    //parentthis.runchart=true;      
+                }
+            }, 3000,this.jobid,this);
+            this.myInterval=intervaldata;
+            //    console.log('intervalid >>>>',this.myInterval);  
+            }
+            else{
+                //   console.log('else');  
+                alert('already saved');
+                this.callOnRender(); 
+            }
+        })
+        if(this.isCheckFilter == false){
+        const event = new ShowToastEvent({
+                title: 'Success Message',
+                message: 'Data is sucessfully received',
+                variant: 'success',
+                mode: 'dismissable'
+        });
+        this.dispatchEvent(event);
+        this.isCheckFilter = true;
+        }
+}
    onobjectselection(event)
    {
    console.log('inside onobjectselection');
@@ -512,8 +489,8 @@ this.isCheckFilter = true;
     {   
   getcaseowner({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName})
     .then(result => {
-    this.caseownerdel = result;
-     console.log('value of this.caseownerdel',this.caseownerdel);
+    // this.caseownerdel = result;
+    //  console.log('value of this.caseownerdel',this.caseownerdel);
 })
     }
    ///chart functionalitiy
@@ -524,7 +501,8 @@ this.isCheckFilter = true;
     @api checkRendredChild=false;
     @api checkRendred=false;
     @track clickedButtonLabel;
-  callOnRender(){
+  
+    callOnRender(){
     //   console.log('call on render');
       getLeadByStatus1({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh: this.isFilterSave})
 		.then(data=>{
@@ -543,7 +521,7 @@ this.isCheckFilter = true;
         data: {
             datasets: [{
                      label: 'Tracking Based On Average Time',
-                    backgroundColor: ["red", "blue", "green", "blue", "red", "blue"],
+                    backgroundColor:"green",//["red", "blue", "green", "orange", "black", "pink"],
                     data: this.chartAmtData,
                 },
                 ],
@@ -667,7 +645,7 @@ this.isCheckFilter = true;
                 datasets: [{
                     label: 'Average Time Spent On Owner Leader Board Per Status',
                     data:count, 
-                    backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001F3F", "#39CCCC", "#01FF70", "#85144B", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
+                    backgroundColor:"green"//  ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001F3F", "#39CCCC", "#01FF70", "#85144B", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
                 }],
                 },
                 options: {

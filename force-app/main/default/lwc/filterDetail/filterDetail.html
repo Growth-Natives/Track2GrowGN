@@ -12,24 +12,31 @@
               <div class="slds-gutters slds-grid slds-container_center">
                 <!-- <div class="slds-col slds-size_1-of-3"></div> -->
                 <div class="slds-m-horizontal_x-small slds-m-vertical_x-small" style="display: flex;">
-                  <table>
+                  <table class="filtertable">
+                    <tr>
+                      <th>Filter Name</th>
+                      <th>Object</th>
+                      <th>Field</th>
+                      <th>Actions</th>
+                      
+                  </tr>
                     <template for:each={datas} for:item=items>
                       <tr key={items.Id}>
-                        <td>
-                          <lightning-input type="text" placeholder="Name" value={items.value} variant="label-hidden"
-                            readonly="" class="slds-size_4-of-5" style="padding-left:5px ;">
-                          </lightning-input>
+                        <td width="100px" style="text-align:center">
+                          {items.value} 
                         </td>
-                        <td>
-
-                          <lightning-button data-id={items.value} onclick={selectFilterNameChange} variant="Base"
-                            alternative-text="View" class="slds-p-left_xx-small" title="View" label="View" >
-                          </lightning-button>
+                        <td width="100px" style="text-align:center">
+                          {items.object}
                         </td>
-                        <td>
+                        <td width="100px" style="text-align:center">
+                          {items.field}
+                        </td>
+                        <td width="100px" >
+                          <p data-id={items.value} onclick={selectFilterNameChange} style="color:blue; display:inline" class="default">View</p>
+                        
                           <lightning-button-icon data-id={items.value} onclick={handleDeleteFilter}
                             icon-name="utility:delete" alternative-text="Delete" class="slds-p-left_xx-small"
-                            title="Delete" variant="bare" >
+                            title="Delete" variant="bare" style="display:inline;float:right;margin-top: -2px;" >
                           </lightning-button-icon>
                         </td>
                       </tr>
@@ -43,7 +50,7 @@
 
             <template if:true={detailHide}>
             <template for:each={filterDetailVal} for:item="filterVal" if:true={isfilterNameSelected}>
-              <div class="slds-p-horizontal_medium slds-p-vertical_medium" key={filterVal.Id}>
+              <div class="slds-p-horizontal_medium slds-p-vertical_medium" key={filterVal.Id} style="font-size: 15px;">
                 <b>Object : </b>{filterVal.SobjectType__c}<br />
                 <b>Field : </b>{filterVal.SobjectFieldType__c}<br />
                 <b>Field Value : </b>{filterVal.SobjectFieldValue__c}<br />
@@ -63,19 +70,31 @@
         </template>
       </div>
       <div if:false={isCreateFilter} class="slds-col slds-size_2-of-3">
-        <template if:true={clickedButtonLabelCheck}>
-          <lightning-card title="Tracking Based On Average Time" icon-name="utility:chart">
-            <c-gen_barchart chart-config={chartConfiguration} checkif-record-is-rendered={checkRendredChild}>
-            </c-gen_barchart>
-          </lightning-card>
-        </template>
-        <template if:false={clickedButtonLabelCheck}>
-          <!-- <div class="slds-align_absolute-center">please select a filter</div> -->
-
-          <lightning-spinner class="spins" style="margin-left:33.33%" alternative-text="Loading"></lightning-spinner>
-
-        </template>
-      </div>
+         <template if:true={clickedButtonLabelCheck}>
+        <lightning-card title="Tracking Based On Average Time" icon-name="utility:chart">
+           <c-gen_barchart chart-config={chartConfiguration} checkif-record-is-rendered = {checkRendredChild}> </c-gen_barchart> 
+              
+              <lightning-card title="Average Time Spent On Owner Leader Board Per Status" icon-name="utility:chart">
+                <div class="pick" style="width: 20%;margin-left: 4%;padding-left: 1%;">
+              <select class="slds-select" onchange={selectOptionChanveValue}>
+                <option value="">---None---</option>                
+                  <template for:each={selectTargetValues.data} for:item="selectOptItem">
+                      <option key={selectOptItem.custFldvalue} value={selectOptItem.custFldvalue}>
+                        {selectOptItem.custFldlabel}
+                      </option>
+                </template>
+                </select>
+              </div>
+              <div class='slds-box slds-theme_default'>
+              <canvas class="pie-chart" lwc:dom="manual"></canvas>
+               </div>
+              </lightning-card>
+             </lightning-card> 
+       </template>
+       <template if:false={clickedButtonLabelCheck}>
+          <lightning-spinner  class="spins" style="margin-left:33.33% ;" alternative-text="Loading"></lightning-spinner>
+      </template>
+       </div>
     </div>
     <template if:true={isCreateFilter}>
       <div>

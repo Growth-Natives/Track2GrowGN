@@ -5,16 +5,21 @@ import getFilterDetailFromName from '@salesforce/apex/FilterDetailController.get
 import getDetail from '@salesforce/apex/FilterDetailController.getDetail';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
-export default class FilterDetail extends LightningElement {
-    datas;
+import ChartJS from '@salesforce/resourceUrl/ChartJs';
+import {loadScript} from 'lightning/platformResourceLoader';
+ import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.getLeadByStatus';
+import pickListValueDynamically from '@salesforce/apex/averagetimechartcontroller.pickListValueDynamically';
+export default class FilterDetail extends LightningElement 
+{
+    @track datas = [];
     isfilterNameSelected = false;
     @track isCreateFilter = false;
     @track selectedFilterName;
     @track getFilterDetails = [];
     @track clickedButtonLabelCheck=false;
     @track filterDetailVal=[];
-    @track filterListCheck = true;
+filterListCheck = false;
+isFilterVal = false;
     @track cardCheck = true;
     @track cardTitle = "Filter List";
     @track backHandle = false;
@@ -27,9 +32,18 @@ export default class FilterDetail extends LightningElement {
             this.datas = result.data.map( objPL => {
                 return {
                     label: `${objPL.Filter_Name__c}`,
-                    value: `${objPL.Filter_Name__c}`
+                    value: `${objPL.Filter_Name__c}`,
+                    object: `${objPL.SobjectType__c}`,
+                    field: `${objPL.SobjectFieldType__c}`
                 };
             });
+            if(this.datas==undefined || this.datas.length==0){
+                console.log('Data is at size--->',this.datas.length);
+                this.filterListCheck = false;
+            }
+            else{
+                this.filterListCheck = true;
+            }
         }
         console.log('datas',this.datas);
     }
@@ -100,6 +114,7 @@ export default class FilterDetail extends LightningElement {
     // on create filter
     createFilter()
     {
+        console.log("here");
             this.isCreateFilter = true;
             this.clickedButtonLabelCheck = false;
     }
@@ -154,7 +169,109 @@ export default class FilterDetail extends LightningElement {
         this.filterListCheck = true;
         this.detailHide = false;
         this.backHandle = false;
-        this.cardTitle = "Filter List"
+        this.cardTitle = "Filter List";
+        this.clickedButtonLabelCheck = false;
         console.log("false check",this.isCreateFilter);
+    }
+
+    ////////////////////////////////////////////
+
+  @track dataSet;
+    @track picklistVal;
+     @track chartAmtData = [];
+    @track chartLabel = [];
+    @wire(pickListValueDynamically, {customObjInfo: {'sobjectType' : 'Case'},
+    selectPicklistApi: 'Status'}) selectTargetValues;
+        
+      selectOptionChanveValue(event){       
+           this.picklistVal = event.target.value;
+           var ctx = this.template.querySelector(".pie-chart").getContext('2d');
+           console.log("picklistchangefunction");
+           this.getcallby();
+           //refreshApex(this.dataSet);
+       }  
+
+   getcallby()
+   {
+       console.log('ghdfhgdgdgh');
+      getLeadByStatus({status: this.picklistVal,objectVal: this.objectVal,Field: this.objectField,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh: this.isFilterSave})
+		.then(data=>{
+             if (data) {
+
+            console.log('resultdata',data);
+            this.dataSet = data;
+            //setInterval(refreshApex.bind(this, this.dataSet), 5e3);
+                this.Initializechartjs();
+         
+         } else if (result.error) 
+        {
+            return result.error;
+        }
+        
+	 	}) 
+   }
+    
+    @api chartjsInitialized = false;
+    renderedCallback() {
+        refreshApex(this.getFilterDetails);
+        if (this.chartjsInitialized) {
+           
+            return;
+        }
+        this.chartjsInitialized = true;
+        Promise.all([
+                loadScript(this, ChartJS)
+            ])
+            .then(() => {
+                //this.Initializechartjs();
+            })
+            .catch(error => {
+                console.log(error.message)
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error loading chartJs',
+                        message: error.message,
+                        variant: 'error'
+                    })
+                );
+            });
+    }
+    Initializechartjs() {
+        console.log('>>>>>>>',window.bar);
+        if(window.bar!=undefined){
+                    window.bar.destroy();
+                }
+        //ctxx.destroy();
+        console.log("loaded");
+         console.log("dataSet',result.data",this.dataSet);
+         console.log('Object.keys(this.dataSet',Object.keys(this.dataSet));
+          console.log('Object.values(this.dataSet)',Object.values(this.dataSet));
+          var labell = [];
+          var count = [];
+          for(let ownerLabel in Object.values(this.dataSet)){
+              console.log('>>>>>>>>'+Object.values(this.dataSet)[ownerLabel]);
+            labell.push(Object.values(this.dataSet)[ownerLabel].label);
+            count.push(Object.values(this.dataSet)[ownerLabel].count);
+          }
+          console.log('labell',labell);
+         console.log('count',count);
+
+        var ctx = this.template.querySelector(".pie-chart").getContext('2d');
+         window.bar = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                
+                labels: labell,  
+                datasets: [{
+                    label: 'Average Time Spent On Owner Leader Board Per Status',
+                    data:count, 
+                    backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001F3F", "#39CCCC", "#01FF70", "#85144B", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
+                }],
+                },
+                options: {
+         
+                   },
+        });
+         
     }
 }

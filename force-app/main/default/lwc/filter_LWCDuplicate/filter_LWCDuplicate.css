@@ -44,7 +44,8 @@
     border-color: none;
     box-shadow: none;
 }
-.spins::after {
+.spins::after 
+{
     position: absolute;
     content: 'please save a filter';
     width: 100%;
@@ -53,8 +54,16 @@
     font-weight: bold;
     color: #000;
 }
-.pick{
+.pick
+{
     width: 20%;
     margin-left: 4%;
     padding-left: 1%;
+}
+.searchDrop{
+    max-width: 50%;
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    background-color: #fff;
 }
