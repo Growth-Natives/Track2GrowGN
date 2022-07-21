@@ -1,4 +1,4 @@
-public with sharing class ObjectPicklistController
+public with sharing class ObjectPicklistControllerDuplicate
 {
     //static Map<String, SObjectType> objects = Schema.getGlobalDescribe();
     @AuraEnabled

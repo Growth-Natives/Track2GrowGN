@@ -1,4 +1,4 @@
-public with sharing class averagetimechartcontroller 
+public with sharing class averagetimechartcontrollerDuplicate 
 {
     @AuraEnabled
     public static ID retriveAccs(String objectVal, String Field,list<String> fieldValues, list<String> recordTypes, String businessHour, string dates, date startDate, date endDate, boolean willRefresh, string filterName,boolean historySwitch) {
@@ -7,13 +7,12 @@ public with sharing class averagetimechartcontroller
         Id recordId;
         Id batchJobId;
         String errorName;
-        System.debug('fieldVal ='+fieldVal);
         list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:businessHour and Dates__c =: dates AND EndDate__c =: endDate AND StartDate__c =: startDate AND SobjectFieldType__c =: Field AND SobjectFieldValue__c =: fieldVal AND SobjectRecordType__c =: recordType AND SobjectType__c =: objectVal LIMIT 1]);
         if(bi != null && !bi.isEmpty())
         {
             recordId = bi[0].Id;
             if(bi[0].LastRefreshedDate__c == null || bi[0].LastRefreshedDate__c != system.today()){
-                averageTimeBatchClass atbc = new averageTimeBatchClass(fieldValues,Field,objectVal,recordTypes,dates,startDate,endDate,recordId,willRefresh,businessHour,filterName,false,historySwitch);
+                duplicateaveragebatch atbc = new duplicateaveragebatch(fieldValues,Field,objectVal,recordTypes,dates,startDate,endDate,recordId,willRefresh,businessHour,filterName,false,historySwitch);
                 batchJobId=database.executeBatch(atbc);
             }
             else{
@@ -32,13 +31,13 @@ public with sharing class averagetimechartcontroller
                 }
                 if(bInfo!=null && Schema.sObjectType.BatchInfo__c.isAccessible()  && Schema.sObjectType.BatchInfo__c.isCreateable() && Schema.sObjectType.BatchInfo__c.isCreateable())
                 {
-                    database.update(bInfo);
+                     database.update(bInfo);
                 }
             }
         }
         else
         {
-            averageTimeBatchClass atbc = new averageTimeBatchClass(fieldValues,Field,objectVal,recordTypes,dates,startDate,endDate,recordId,willRefresh,businessHour,filterName,false,historySwitch);
+            duplicateaveragebatch atbc = new duplicateaveragebatch(fieldValues,Field,objectVal,recordTypes,dates,startDate,endDate,recordId,willRefresh,businessHour,filterName,false,historySwitch);
             batchJobId=database.executeBatch(atbc);
         }
         return batchJobId;        
@@ -51,28 +50,41 @@ public with sharing class averagetimechartcontroller
         Id recordId;
         Id batchJobId;
         String errorName;
-        System.debug('fieldValues='+fieldValues);
-        list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:businessHour and SobjectFieldValue__c =:fieldVal and Dates__c =: dates AND EndDate__c =: endDate AND StartDate__c =: startDate AND SobjectFieldType__c =: Field AND SobjectRecordType__c =: recordType AND SobjectType__c =: objectVal LIMIT 1]);
+        System.debug('fieldVal ='+fieldVal);
+        System.debug('fieldValues = '+fieldValues);
+        System.debug('recordType ='+recordType);
+        System.debug('businessHour = '+businessHour);
+        System.debug('dates = '+dates);
+        System.debug('field = '+Field);
+        System.debug('objectVal = '+objectVal);
+        //System.debug('dates = '+dates);
+        System.debug('filterName='+filterName);
+        
+        list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:businessHour and Dates__c =: dates AND EndDate__c =: endDate AND StartDate__c =: startDate AND SobjectFieldType__c =: Field AND SobjectFieldValue__c =: fieldVal AND SobjectRecordType__c =: recordType AND SobjectType__c =: objectVal and StartDate__c =:startDate and EndDate__c =:endDate LIMIT 1]);
         System.debug('bi ='+bi);
+        /*BatchInfo__c BIc = new BatchInfo__c();
+        for(bi.SobjectFieldValue__c sofv:fieldVal){
+            
+        }*/
         if(bi != null && !bi.isEmpty()){
             recordId = bi[0].Id;  
             System.debug('Record Id ='+recordId);
-                if(bi[0].willRefresh__c == true)
-                {
-                    if(bi[0].Filter_Name__c!=filterName)
-                    {
-                        errorName = 'Filter already exists as a '+bi[0].Filter_Name__c;
-                    }
-            }
-        }
-        for(BatchInfo__c b : [SELECT id, Filter_Name__c, willRefresh__c FROM BatchInfo__c WHERE willRefresh__c = true])
-        {
-            System.debug('b ='+b);
-            if(b.Filter_Name__c == filterName)
+            if(bi[0].willRefresh__c == true)
             {
-                errorName = 'Filter name already exists';
+                if(bi[0].Filter_Name__c!=filterName)
+                {
+                    errorName = 'Filter already exists as a '+bi[0].Filter_Name__c;
+                }
             }
-        }
+          }
+        for(BatchInfo__c b : [SELECT id, Filter_Name__c, willRefresh__c FROM BatchInfo__c WHERE willRefresh__c = true])
+			{
+                 System.debug('b ='+b);
+                if(b.Filter_Name__c == filterName)
+                {
+                    errorName = 'Filter name already exists';
+                }
+            }
         System.debug('errorName='+errorName);
         return errorName;
     }
@@ -130,10 +142,10 @@ public with sharing class averagetimechartcontroller
         }
         else
         {
-            inputdata = '['+dataRepresentation+']';
+             inputdata = '['+dataRepresentation+']';
         }
-        List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata); 
-        for(Object obj : result) 
+         List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata); 
+         for(Object obj : result) 
         { 
             Map<String,Object> map1 = (Map<String,Object>)obj;
             if(map1!=null)
@@ -141,17 +153,17 @@ public with sharing class averagetimechartcontroller
                 for(String key : map1.keyset()) 
                 {
                     valuestorepickliststage.put(key,(decimal)map1.get(key));
-                }
+                  }
             }
         }
-        return valuestorepickliststage;
+          return valuestorepickliststage;
     }
     
     //fetch picklist values from custom object in lwc
     @AuraEnabled(cacheable=true)
     public static List < customValueWrapper > pickListValueDynamically(sObject customObjInfo, string selectPicklistApi) 
     {
-        Schema.DescribeSObjectResult objDescribe = customObjInfo.getSObjectType().getDescribe();   
+          Schema.DescribeSObjectResult objDescribe = customObjInfo.getSObjectType().getDescribe();   
         map < String, Schema.SObjectField > customFieldMap = objDescribe.fields.getMap();      
         list < Schema.PicklistEntry > custPickValues = customFieldMap.get(selectPicklistApi).getDescribe().getPickListValues();
         list < customValueWrapper > customObjWrapper = new list < customValueWrapper > ();
@@ -160,7 +172,7 @@ public with sharing class averagetimechartcontroller
             customValueWrapper selectOptionValueWrapper = new customValueWrapper();
             selectOptionValueWrapper.custFldlabel = myCustPick.getLabel();
             selectOptionValueWrapper.custFldvalue = myCustPick.getValue();
-            customObjWrapper.add(selectOptionValueWrapper);
+             customObjWrapper.add(selectOptionValueWrapper);
         }
         return customObjWrapper;
     }
@@ -207,8 +219,8 @@ public with sharing class averagetimechartcontroller
         string ss;
         for(object sst: result)
         {
-            // ss=String.valueof(sst);
-            // ss = ss.replace('{','');
+           // ss=String.valueof(sst);
+           // ss = ss.replace('{','');
             //ss = ss.replace('}','');
             
             Map<string,object> data=(Map<string,object>)sst;
@@ -222,21 +234,21 @@ public with sharing class averagetimechartcontroller
                 }
             }
         }
-        // List<String> res = ss.split(',');
+       // List<String> res = ss.split(',');
         set<id> ownerid;
-        if(ownertostagetotime.containskey(status_val))
+         if(ownertostagetotime.containskey(status_val))
         {
-            for(CustomUser__c u:[Select id,Name from CustomUser__c where id IN:ownertostagetotime.get(status_val).keySet()])
+             for(CustomUser__c u:[Select id,Name from CustomUser__c where id IN:ownertostagetotime.get(status_val).keySet()])
             {
                 usermap.put(u.id,u.Name);
             }
         }
-        if(ownertostagetotime.containskey(status_val))
+         if(ownertostagetotime.containskey(status_val))
         {
-            for(string owneriddata:ownertostagetotime.get(status_val).keySet()){
+             for(string owneriddata:ownertostagetotime.get(status_val).keySet()){
                 dataSet.add(new DataSet(usermap.get(owneriddata) ,ownertostagetotime.get(status_val).get(owneriddata)));
             }
-        }
+         }
         return dataSet ;
     }
     public class DataSet
