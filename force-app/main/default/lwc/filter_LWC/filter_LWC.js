@@ -44,7 +44,7 @@ export default class Filter_LWC extends LightningElement
     @track picklistVal;
     @track picklistValueStr = false;
     @track objectVal;
-    @track objectFieldVal;
+    objectFieldVal;
     @track businessNameVal;
     @track objectFieldValueVal;
     @track objectRecordTypeVal;
@@ -56,7 +56,7 @@ export default class Filter_LWC extends LightningElement
     requiredOptions1;
     recordsList=[];
     message='';
-    @track havingValue = false;
+    havingValue = false;
     errorMsg = 'Error Message - ';
     clickedButtonLabel;
     requiredField1 = false;
@@ -64,10 +64,16 @@ export default class Filter_LWC extends LightningElement
     requiredField3 = false;
     requiredField4 = false;
     requiredField5 = false;
+    isObjFieldHistory = false;
     requiredCustomDate = false;
     @track myInterval;
-    @track progress;
+    @track progress;       
+    enableHandle = true;
+    @track disableHandle = false;
+    batchStart = false;
+    batchEnd = false;
     jobinfo;
+    objectFieldValMessage;
 
 
     connectedCallback(){
@@ -97,7 +103,7 @@ export default class Filter_LWC extends LightningElement
     }
     get classCustomDate(){
         return this.requiredCustomDate ? 'slds-form-element slds-form-element slds-has-error slds-p-top_small' : 'slds-form-element slds-form-element slds-p-top_small';
-    }
+    }    
     get objVal(){
         if(this.objectVal!=null){
             return this.objectVal.charAt(0).toUpperCase() + this.objectVal.slice(1)+ " Field";
@@ -129,20 +135,14 @@ export default class Filter_LWC extends LightningElement
     constructor()
     {
         super();
-        // console.log('label value --->',picklistLabel);
-         console.log('label1 value --->',objectLabel);
         this.picklistStr = picklistLabel.split(',');
-        this.objectStr = objectLabel.split(',');
-         //this.hourNameStr = hourNameLabel.split(',');
-        // console.log('picklistStr value --->',this.picklistStr);
-        // console.log('objectStr value --->',this.objectStr);
+        this.objectStr = objectLabel.split(',');  
     }
 
     selectPicklistValueChange(event)
     {   
         this.clickedButtonLabelCheck = false; 
         this.picklistVal = event.target.value;
-        // console.log('picklistVal value-->',this.picklistVal);
         if(this.picklistVal == 'Custom Date')
         {
             this.picklistValueStr = true;
@@ -155,6 +155,18 @@ export default class Filter_LWC extends LightningElement
     
 onHandleObjectSearch(event){
     this.objectVal = event.target.value;
+    if(event.target.value==''|| event.target.value==' ')
+    {
+        this.recordsList=[];
+        this.havingValue = false;
+        this.objectFieldVal = [];
+        this.selectedVal=[];
+        this.options=[];
+        this.defaultValues=[];
+        this.selectedVal1=[];
+        this.options1=[];
+        this.defaultValues1=[];
+   }
        getObject({searchObject:this.objectVal})
        .then((result)=>{
         if (result.length===0){
@@ -174,20 +186,34 @@ onHandleObjectSearch(event){
 
     selectObjectValueChange()
     {  
-        console.log('selectObjectValueChange');
-       // this.objectField = 'Field';
         this.options = [];
         this.options1 = [];
         this.objectFieldVal = [];
         this.defaultValues1 = [];
         this.defaultValues = [];
-       this.clickedButtonLabelCheck = false;  
-       console.log('object value---->',this.objectVal);
+       this.clickedButtonLabelCheck = false; 
+       if(this.objectVal==''||this.objectVal==' '||this.objectVal==null){
+        this.selectedVal1=[];
+        this.options1=[];
+        this.defaultValues1=[];
+        this.objectFieldVal=[];
+    } 
+    else{ 
        getPicklistFields({ sobjectValue: this.objectVal})
        .then((result) =>
         {
-            console.log('result of object fields -->',result);
-            this.objectFieldVal = result;
+            console.log('length result of object fields -->',result.length);
+            if(result.length!=0){
+                console.log('result of object fields -->',result);
+                this.objectFieldVal = result;
+                this.isObjFieldHistory = false;
+            }
+            else{
+                // console.log('result of object fields -->',result.length);
+                this.isObjFieldHistory = true;
+                this.objectFieldValMessage = 'History of '+this.objectVal + ' field is not ON';
+                
+            }
         })
        .catch((error) =>
         {
@@ -197,27 +223,27 @@ onHandleObjectSearch(event){
        getRecordType({ objectName:  this.objectVal})
        .then((result) =>
        {
-            if(result)
+            if(result.length!=0)
             {
-                // console.log('result-->',result);
+                console.log('record result-->',result);
                 for(let key in result)
                 {
                    
-                    console.log('options value -->',result[key]);
                     this.options1 = Object.keys(result).map(key => ({ label: result[key], value: result[key] }));
                     this.defaultValues1.push(result[key]);
-                    // console.log('options1 value---',this.options1);
-                    console.log('defaultValues1 value---',this.defaultValues1);
                 }
                 this.selectedVal1 = this.defaultValues1;
-                // this.defaultValues1 =['opt2', 'opt4', 'opt6'];
+            }
+            else{
+                this.selectedVal1 =[];
+                this.defaultValues1=[];
             }
         })
         .catch((error) => 
         {
             this.error = error;
         });   
-          
+    }  
     }
 
     selectHourValueChange(event)
@@ -231,44 +257,51 @@ onHandleObjectSearch(event){
     {   
         this.clickedButtonLabelCheck = false;   
         this.objectField = event.target.value;
-        picklistValues({ objectName: this.objectVal, fieldName: event.target.value})
-        .then((result) => 
-        {
-            if(result)
+        if(this.objectField==''||this.objectField==' '||this.objectField==null){
+            this.defaultValues=[];
+            this.selectedVal = [];
+            this.options=[];
+        }
+        else{
+            picklistValues({ objectName: this.objectVal, fieldName: event.target.value})
+            .then((result) => 
             {
-                for(let key in result)
+                if(result.length!=0)
                 {
-                    this.options = Object.keys(result).map(key => ({ label: result[key], value: result[key] }));
-                    this.defaultValues.push(result[key]);
-                    console.log('defaultValues value---',this.defaultValues);
+                    for(let key in result)
+                    {
+                        this.options = Object.keys(result).map(key => ({ label: result[key], value: result[key]}));
+                        this.defaultValues.push(result[key]);
+                    }
+                    this.defaultValues.sort();
+                    this.selectedVal = this.defaultValues.sort();
                 }
-                this.selectedVal = this.defaultValues;
-            }
-            
-        })
-        .catch((error) => 
-        {
-            this.error = error;
-        });      
+                else{
+                    this.defaultValues=[];
+                    this.selectedVal = [];
+                }
+            })
+            .catch((error) => 
+            {
+                this.error = error;
+            });  
+        }    
     }
 
     handleChange(event) 
     {  
         this.clickedButtonLabelCheck = false; 
         this.selectedVal = event.detail.value;
-        // console.log('selectedVal value---',this.selectedVal);
     }
     
     onHandleCheckBox(event){
         this.isFilterSave = event.target.checked;       
-        // console.log("Todo: " + event.target.checked);
     }
 
     handleChange1(event) 
     {
         this.clickedButtonLabelCheck = false;  
         this.selectedVal1 = event.detail.value;
-        // console.log('selectedVal1 value---',this.selectedVal1);
     }
 
     datehandle(event)
@@ -296,31 +329,28 @@ onHandleObjectSearch(event){
 
             if(this.objectVal == undefined || this.objectVal == '')
         {
-            // console.log('this.objectVal value in if',this.objectVal);
             this.requiredField1 = true;
+            this.recordsList=[];
             this.errorMsg += ' Please select the Object Type,';
         }
         else
         {
-            console.log('this.objectVal value in else',this.objectVal);
             this.requiredField1 = false;
         }
 
         if(this.objectField == undefined || this.objectField == '')
         {
-            // console.log('this.objectField value in if',this.objectField);
             this.requiredField2 = true;
+
             this.errorMsg += ' Please select the Object Field Type,';
         }
         else
         {
-            console.log('this.objectFieldVal value in else',this.objectFieldVal);
             this.requiredField2 = false;
         }
 
         if(this.selectedVal == undefined || this.objectVal == ' ')
         {
-            // console.log('this.selectedVal value in if',this.selectedVal);
             this.errorMsg += ' Please select the Object Field Value Type,';
         }
         
@@ -349,17 +379,13 @@ onHandleObjectSearch(event){
             if(Boolean(this.startdate)  && Boolean(this.enddate))
             {
                 this.requiredCustomDate = false;
-                console.log('In if this.startdate',this.startdate);
-                console.log('In if this.enddate',this.enddate);
                 
             }
             else
             {
                 this.requiredCustomDate = true;
-                console.log('this.startdate',Boolean(this.startdate));
-                console.log('this.enddate',this.enddate);
             }
-        }
+        }        
 
         if(this.errorMsg != 'Error Message - ')
         {
@@ -372,24 +398,18 @@ onHandleObjectSearch(event){
             this.dispatchEvent(evt);
             this.errorMsg = 'Error Message - ';
         }
-        
-        
             if(this.requiredField1 == false && this.requiredField2 == false && this.requiredField3 == false && this.requiredField4 == false && this.selectedVal != undefined && this.requiredCustomDate == false)
                 {
                     if(this.isFilterSave==true && this.isCheckFilter == true)
-                    {
-                        console.log('this.isFilterSave==true');
-                       
+                    {                       
                             if(this.filterName == undefined || this.objectVal == '' ||this.filterName == '' || this.filterName == null)
                             {
                                 this.requiredField5 = true;
-                                console.log('Req 5 if - ',this.requiredField5); 
                                 this.errorMsg += 'Please fill unique filter name';
                             }
                             else
                             {
                                 this.requiredField5 = false;
-                                console.log('Req 5 else - ',this.requiredField5);
                                 this.checkFilter();
                             }
                     
@@ -406,8 +426,6 @@ onHandleObjectSearch(event){
                             }
                     }
                     else if(this.isFilterSave == false){
-                        console.log('this.isFilterSave==false');
-                        // this.checkFilter();
                         this.getAllcaserecords();
                         this.getcaseowner();
                     }
@@ -417,8 +435,7 @@ onHandleObjectSearch(event){
     }
   
     checkFilter(){
-        console.log('\nthis.isFilterSave==true and check Filter');
-        retriveFilter({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName})
+        retriveFilter({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal.sort(),recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName})
         .then((data) => {
             if(data!=null){
                 this.isCheckFilter = true;
@@ -433,7 +450,6 @@ onHandleObjectSearch(event){
                 this.dispatchEvent(event);
             }
             else{
-                console.log('Error data else of data null',this.isCheckFilter);
                 this.isCheckFilter = false;
                 if(this.filterName!=null && this.filterName!='' && this.filterName!=' ' && this.isCheckFilter == false){
                     this.getAllcaserecords();
@@ -446,39 +462,34 @@ onHandleObjectSearch(event){
     }
    
     getAllcaserecords(){
-        this.isCheckFilter = false;
-        console.log('getAllcaserecords = isCheckFilter = ',this.isCheckFilter);
-   
-    getAllcaserecord({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName,historySwitch:this.toggleValue})
+    this.isCheckFilter = false;   
+    getAllcaserecord({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal.sort(),recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName,historySwitch:this.toggleValue})
     .then(result => {
       this.jobid = result;
-    //   console.log('value of jobid',this.jobid);
+      console.log('value of jobid',result);
      if(this.jobid!=null)
-      {
-        //    console.log('if');  
-          var intervaldata =setInterval(function (jobid111,parentthis){   
-          console.log('time halt started>>>'+jobid111);
-
-          getBatchJobStatus({jobID: jobid111})
-          .then(result => {
-                  this.jobinfo = result;
-                //   console.log('value of jobinfo',result);
-          })
-              if(jobinfo.Status=='Completed' )
-          {
-              clearInterval(intervaldata);
-            //   console.log('passing');
-              alert('batch is Completed');
-              //this.myStopFunction();
-              parentthis.callOnRender();
-              //parentthis.runchart=true;      
-          }
-      }, 3000,this.jobid,this);
-      this.myInterval=intervaldata;
-    //    console.log('intervalid >>>>',this.myInterval);  
-      }
+    {
+        this.batchStart = true; 
+          this.disableEnableButton();    
+          var intervaldata =setInterval(function (jobid111,parentthis)          
+          {   
+            getBatchJobStatus({jobID: jobid111})
+            .then(result => {
+                    this.jobinfo = result;
+                    console.log('value of jobinfo', this.jobinfo);
+            })
+                if(this.jobinfo.Status == 'Completed')
+                {
+                    //this.enableHandle = false;
+                    clearInterval(intervaldata) ;
+                    alert('batch is Completed');
+                    parentthis.callOnRender();
+                }
+        }, 3000,this.jobid,this);
+        console.log('this.jobinfo.Status = ',this.jobinfo.Status);
+            this.myInterval=intervaldata;
+    }
       else{
-        //   console.log('else');  
          alert('already saved');
            this.callOnRender(); 
       }
@@ -496,13 +507,9 @@ this.isCheckFilter = true;
    }
    onobjectselection(event)
    {
-   console.log('inside onobjectselection');
-//    this.selectedValue = event.target.dataset.name;
    this.objectVal = event.target.dataset.name;
    this.recordsList = [];
    this.message = '';
-   console.log(' this.selectedValue', this.selectedValue);
-   console.log('this.objectVal',this.objectVal);
    this.selectObjectValueChange();  
    //this.onSeletedRecordUpdate();
    }
@@ -510,10 +517,10 @@ this.isCheckFilter = true;
 // case owner execution
     getcaseowner()
     {   
-  getcaseowner({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName})
+  getcaseowner({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal.sort(),recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh:this.isFilterSave,filterName:this.filterName})
     .then(result => {
     this.caseownerdel = result;
-     console.log('value of this.caseownerdel',this.caseownerdel);
+    //  console.log('value of this.caseownerdel',result);
 })
     }
    ///chart functionalitiy
@@ -524,51 +531,47 @@ this.isCheckFilter = true;
     @api checkRendredChild=false;
     @api checkRendred=false;
     @track clickedButtonLabel;
+
   callOnRender(){
-    //   console.log('call on render');
-      getLeadByStatus1({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh: this.isFilterSave})
+      getLeadByStatus1({objectVal: this.objectVal,Field: this.objectField,fieldValues: this.selectedVal.sort(),recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh: this.isFilterSave})
 		.then(data=>{
             //  console.log('value of render>>>>',data);
              this.chartLabel=[];
             this.chartAmtData=[]; 
-			  if (data) {
+		if (data) {
             for (let key in data) 
-        {
-            this.chartLabel.push(key);
-            this.chartAmtData.push(data[key]);
-        }
-        // console.log('eeeeeeeeee', this.selectedOption);
-        this.chartConfiguration = {
-            type: this.selectedOption,
-        data: {
-            datasets: [{
-                     label: 'Tracking Based On Average Time',
-                    backgroundColor: ["red", "blue", "green", "blue", "red", "blue"],
-                    data: this.chartAmtData,
+            {
+                this.chartLabel.push(key);
+                this.chartAmtData.push(data[key]);
+            }
+            this.chartConfiguration = {
+                type: this.selectedOption,
+                data: {
+                    datasets: [{
+                            label: 'Tracking Based On Average Time',
+                            backgroundColor: ["red", "blue", "green", "blue", "red", "blue"],
+                            data: this.chartAmtData,
+                        },
+                        ],
+                    labels: this.chartLabel,
                 },
-                ],
-            labels: this.chartLabel,
-        },
-        
-        options: {},
-        
-        };
-        this.checkRendred = false;
-        this.checkRendredChild = true;
-        this.clickedButtonLabelCheck = true; 
-        this.error = undefined;
-            } 
-            else if (error) {
+                
+                options: {},
+                
+            };
+            this.checkRendred = false;
+            this.checkRendredChild = true;
+            this.clickedButtonLabelCheck = true; 
+            this.error = undefined;
+        } 
+        else if (error) {
             this.error = error;
             this.record = undefined;
         }
-        // console.log('no its becoming true>>>',this.chartConfiguration);
-        
-	 	})
+	})
  }
 
  backClick(event){
-    console.log('Back Button is clicked');
     const childEvent = new CustomEvent("handleback", {detail: false});
     this.dispatchEvent(childEvent);
 }
@@ -586,20 +589,24 @@ this.isCheckFilter = true;
       selectOptionChanveValue(event){       
            this.picklistVal12 = event.target.value;
            var ctx = this.template.querySelector(".pie-chart").getContext('2d');
-           console.log("picklistchangefunction");
            this.getcallby();
-           //refreshApex(this.dataSet);
        }  
 
    getcallby()
    {
-       console.log('ghdfhgdgdgh');
       getLeadByStatus({status: this.picklistVal12,objectVal: this.objectVal,Field: this.objectField,recordTypes: this.selectedVal1,businessHour:this.businessNameVal,dates: this.picklistVal,startDate: this.startdate,endDate: this.enddate,willRefresh: this.isFilterSave})
 		.then(data=>{
              if (data) {
 
-            console.log('resultdata',data);
-            this.dataSet = data;
+              var dataArray = [];
+              dataArray=data;
+           
+           let dataIndexes = dataArray.map((d, i) => i);
+            dataIndexes.sort((a, b) => {
+            return dataArray[a] - dataArray[b];
+              });
+
+            this.dataSet = dataArray;
             //setInterval(refreshApex.bind(this, this.dataSet), 5e3);
                 this.Initializechartjs();
          
@@ -613,7 +620,7 @@ this.isCheckFilter = true;
     
     @api chartjsInitialized = false;
     renderedCallback() {
-        if(this.recordsList != null && this.recordsList != undefined){
+        if(this.recordsList != null && this.recordsList != undefined && this.recordsList.length>0){
             this.havingValue = true;
         }
         if (this.chartjsInitialized) {
@@ -628,7 +635,7 @@ this.isCheckFilter = true;
                 //this.Initializechartjs();
             })
             .catch(error => {
-                console.log(error.message)
+                // console.log(error.message)
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Error loading chartJs',
@@ -639,15 +646,10 @@ this.isCheckFilter = true;
             });
     }
     Initializechartjs() {
-        console.log('>>>>>>>',window.bar);
         if(window.bar!=undefined){
                     window.bar.destroy();
                 }
         //ctxx.destroy();
-        console.log("loaded");
-         console.log("dataSet',result.data",this.dataSet);
-         console.log('Object.keys(this.dataSet',Object.keys(this.dataSet));
-          console.log('Object.values(this.dataSet)',Object.values(this.dataSet));
           var labell = [];
           var count = [];
           for(let ownerLabel in Object.values(this.dataSet)){
@@ -655,9 +657,7 @@ this.isCheckFilter = true;
             labell.push(Object.values(this.dataSet)[ownerLabel].label);
             count.push(Object.values(this.dataSet)[ownerLabel].count);
           }
-          console.log('labell',labell);
-         console.log('count',count);
-
+       
         var ctx = this.template.querySelector(".pie-chart").getContext('2d');
          window.bar = new Chart(ctx, {
             type: 'bar',
@@ -667,7 +667,7 @@ this.isCheckFilter = true;
                 datasets: [{
                     label: 'Average Time Spent On Owner Leader Board Per Status',
                     data:count, 
-                    backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001F3F", "#39CCCC", "#01FF70", "#85144B", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
+                    backgroundColor:"green" //["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001F3F", "#39CCCC", "#01FF70", "#85144B", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
                 }],
                 },
                 options: {
@@ -679,6 +679,23 @@ this.isCheckFilter = true;
 
     toggleHandle(event){
             this.toggleValue = event.target.checked;
-            console.log('toggleValue',this.toggleValue);
     }
+    disableEnableButton()
+    {        
+        console.log('In disable Button')
+        this.enableHandle = false;
+        this.disableHandle = true;
+        // disableButton = document.getElementById('saveDisableButton');
+        if (this.batchStart==true) {
+            //disableButton.disabled = true;
+            this.enableHandle = false;
+            this.disableHandle = true;
+        }
+        else if(this.batchEnd==true){
+            //disableButton.disabled = false;
+            this.enableHandle = true;
+            this.disableHandle = false;
+        }
+    }
+
 }

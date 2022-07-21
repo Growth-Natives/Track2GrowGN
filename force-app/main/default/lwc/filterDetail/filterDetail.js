@@ -9,8 +9,7 @@ import ChartJS from '@salesforce/resourceUrl/ChartJs';
 import {loadScript} from 'lightning/platformResourceLoader';
  import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.getLeadByStatus';
 import pickListValueDynamically from '@salesforce/apex/averagetimechartcontroller.pickListValueDynamically';
-export default class FilterDetail extends LightningElement 
-{
+export default class FilterDetail extends LightningElement {
     @track datas = [];
     isfilterNameSelected = false;
     @track isCreateFilter = false;
@@ -213,7 +212,6 @@ isFilterVal = false;
     
     @api chartjsInitialized = false;
     renderedCallback() {
-        refreshApex(this.getFilterDetails);
         if (this.chartjsInitialized) {
            
             return;
