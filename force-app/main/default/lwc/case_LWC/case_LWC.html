@@ -4,14 +4,8 @@
                 <canvas class="barChart" lwc:dom="manual"></canvas>
             </div>
             <div>
-                <p>This case is likly to be closed in  this {minutes} minutes.</p>
+                <p>Total time to close a case in {Average} minutes</p>
+                <p>Life of case {Total} minutes</p>
             </div>
-            <template if:true={chartConfiguration}>
-                <div class="slds-p-around_small slds-grid slds-grid--vertical-align-center slds-grid--align-center">
-                    <div if:false={isChartJsInitialized} class="slds-col--padded slds-size--1-of-1">
-                        <lightning-spinner alternative-text="Loading" size="medium" variant={loaderVariant}></lightning-spinner>
-                    </div>
-                </div>
-            </template>
     </lightning-card>
 </template>

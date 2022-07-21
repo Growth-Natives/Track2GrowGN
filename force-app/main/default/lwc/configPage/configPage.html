@@ -1,0 +1,141 @@
+<template>
+  <div class="slds-modal__header">
+    <div class="slds-modal__title slds-hyphenate">
+      <p style="text-align:center;font-size:23px;">Setting Editor</p>
+      <b>
+        <p style="text-align:center;font-size:23px;">Track2Grow</p>
+      </b>
+    </div>
+  </div>
+
+  <div class=" slds-grid">
+    <div class="slds-size_1-of-1">
+      <div class="slds-box slds-box_x-small  slds-theme_default">
+        <lightning-tabset>
+          <lightning-tab label="History Object Setting">
+            <div>
+              <div class="slds-p-around_medium lgc-bg">
+                <label>
+                  <b>Enter Your History Object</b>
+                  <abbr class="slds-required" title="Enter Your History Object">*</abbr>
+                </label>
+                <lightning-input type="text" placeholder="type here..." onchange={handleInputChange}></lightning-input>
+              </div>
+            </div>
+          </lightning-tab>
+          <lightning-tab label="Record Level Chart Setting" title="2nd tab extended title">
+            <div class="slds-p-horizontal--medium">
+              <label>
+                <b>Select Object</b>
+                <abbr class="slds-required" title="Select Object">*</abbr>
+              </label>
+              <div class="slds-form-element__control">
+                <div class="slds-select_container dropdown">
+                    
+                    <div>
+                      <lightning-input type="text" value={objectVal} onkeyup={onHandleObjectSearch}
+                        onchange={onHandleObjectSearch} class="slds-combobox" id="combobox-id-2"
+                        aria-autocomplete="list" aria-controls="listbox-id-2" role="textbox"
+                        placeholder="Search Object...">
+                      </lightning-input>
+                    </div>
+                    <template if:true={havingValue}>
+                      <div id="listbox-id-3-venu" data-key="dropdownresult"
+                        class="slds-show slds-dropdown_length-with-icon-7 searchDrop" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                          <template if:true={message}>
+                            <p class="slds-has-error">{message}</p>
+                          </template>
+                          <template for:each={recordsList} for:item="record">
+                            <li id={record.Id} key={record.Id} onclick={onobjectselection} role="presentation"
+                              class="slds-listbox__item">
+                              <div data-key={record.Id} data-name={record}
+                                class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                role="option">
+                                <span class="slds-media__body">
+                                  <span data-key={record.Id} data-name={record}
+                                    class="slds-listbox options-text slds-listbox__option-text_entity">{record}
+                                  </span>
+                                </span>
+                              </div>
+                            </li>
+                          </template>
+                        </ul>
+                      </div>
+                    </template>
+                    <template if:true={requiredField2}>
+                      <div class="slds-form-element__help">Select Object Field Type.</div>
+                    </template>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="slds-p-horizontal--medium">
+                <div class="slds-form-element__control">
+                  <div class="slds-select_container dropdown">
+                    <div>
+                      <label class="slds-form-element__label">
+                        <b>Object Field</b>
+                        <abbr class="slds-required" title="Select Object Field">*</abbr>
+                      </label>
+                      <div class="slds-form-element__control">
+                        <div class="slds-select_container">
+                          <select class="slds-select" onchange={selectObjectFieldChange} required="">
+                            <option value="">---None---</option>
+                            <template for:each={objectFieldVal} for:item="selectObjectFieldItem">
+                              <option key={selectObjectFieldItem} value={selectObjectFieldItem}>
+                                {selectObjectFieldItem}
+                              </option>
+                            </template>
+                          </select>
+                        </div>
+                      </div>
+                      <template if:true={requiredField2}>
+                        <div class="slds-form-element__help">Select Object Field Type.</div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slds-p-horizontal--medium slds-p-top_x-small" data-id="divblock">
+                <div class="slds-form-element__control">
+                  <div class="slds-select_container dropdown">
+                    <div>
+                      <label class="slds-form-element__label">
+                        <b>Business Hours</b>
+                        <abbr class="slds-required" title="Select Business Hour">*</abbr>
+                      </label>
+                      <div class="slds-form-element__control">
+                        <div class="slds-select_container">
+                          <select aria-describedby="error-01" class="slds-select" onchange={selectHourValueChange}
+                            required>
+                            <option value="">---None---</option>
+                            <template for:each={hourNameLabel} for:item="hourName">
+                              <option key={hourName.id} value={hourName.Name}>
+                                {hourName.Name}
+                              </option>
+                            </template>
+                          </select>
+                        </div>
+                      </div>
+                      <template if:true={requiredField4}>
+                        <div class="slds-form-element__help">Select Business Hour Type.</div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </lightning-tab>
+        </lightning-tabset>
+
+
+      </div>
+    </div>
+  </div>
+  <div class="slds-modal__footer">
+    <button class="slds-button slds-button_brand" onclick={Saveconfigdetail}>Save</button>
+  </div>
+</template>

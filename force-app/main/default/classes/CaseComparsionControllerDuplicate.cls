@@ -1,102 +1,70 @@
-public with sharing class CaseComparsionController
+public with sharing class CaseComparsionControllerDuplicate
 {
-    @AuraEnabled(cacheable=true)
-    public static String getStatusValue(String id,String objectName)
-    {
-        system.debug('id'+id);
-        system.debug('objectName'+objectName);
-        String condition = 'Id =:id';
-        String query;
-        query = 'SELECT Status FROM ' + objectName + ' WHERE ' + condition;
-        System.debug('Database.query(query) --'+Database.query(query));
-        String statusvalue =  String.valueof(Database.query(query)[0].get('Status'));
-        System.debug('statusvalue --'+Database.query(query)[0].get('status'));
-        return statusvalue;
-
-    }
     @AuraEnabled(cacheable=true)
     public static id getBatchid(String id,String objectName)
     {
         system.debug('getBatchid');
         id batchjobid = null;
         id recordId;
-        List<Track2Grow__mdt> listTrack2Grow = [SELECT Id,Masterlabel,Business_Hour__c,FieldVal__c,Object_Name__c,HistoryObject__c from Track2Grow__mdt];
+        List<Track2Grow__mdt> listTrack2Grow = [SELECT Id,Masterlabel,Business_Hour__c,FieldVal__c,Object_Name__c from Track2Grow__mdt WHERE Object_Name__c =: objectName];
         System.debug('Track2GrowList:'+listTrack2Grow);
         list<string> recordtypes = new list<string>();
         list<string> fieldValues = new list<string>();
-		string Businesshour;
-        String FieldName;
-        String HistoryObjectName;
-        String objName;
-        //string fieldName = listTrack2Grow[0].FieldVal__c;
-		for(Track2Grow__mdt md : listTrack2Grow)
+        string fieldName = listTrack2Grow[0].FieldVal__c;
+        List<Schema.PicklistEntry> ple = new list<Schema.PicklistEntry>();
+        
+        if(Schema.getGlobalDescribe().containskey(objectName))
         {
-            if(md.Masterlabel == 'HistoryObject')
-            {
-                HistoryObjectName=md.HistoryObject__c;
-                System.debug('HistoryObjectName value -->'+HistoryObjectName);
-            }
-            else if(md.Masterlabel != 'HistoryObject')
-            {
-                Businesshour=md.Business_Hour__c;
-                FieldName = md.FieldVal__c;
-                objName=md.Object_Name__c;
-                System.debug('objName value -->'+objName);
-            }
-        }
-		
-        List<Schema.PicklistEntry> ple = new list<Schema.PicklistEntry>(); 
-        if(Schema.getGlobalDescribe().containskey(objName))
-        {
-            SObjectType objecttype = Schema.getGlobalDescribe().get(objName);
+            SObjectType objecttype = Schema.getGlobalDescribe().get(objectName);
             Map<String,Schema.SObjectField> mfields = objecttype.getDescribe().fields.getMap();
-            if(mfields.containskey(FieldName))
+            if(mfields.containskey(fieldName))
             {
-                Schema.DescribeFieldResult fieldm= mfields.get(FieldName).getDescribe();
+                Schema.DescribeFieldResult fieldm= mfields.get(fieldName).getDescribe();
                 ple = fieldm.getPicklistValues();
             }
             System.debug('ple value-->'+ple);
         }
-		System.debug('ple value-->'+ple);
-		
+        
         for(Schema.PicklistEntry pickListVal : ple)
         {
             fieldValues.add((String)pickListVal.getLabel());
-        }
-		System.debug('fieldValues-->'+fieldValues);
-        System.debug('id-->'+id);
-		
+        } 
+        system.debug('id-->'+id);
+        System.debug('ple value-->'+ple);
+        
         list<case> caselist = new list<case>([select id, recordtype.name from case where id =: id LIMIT 1]);
         System.debug('Case List :'+caselist);
+        
         for(case c : caselist)
         {
             system.debug(c.recordtype.name);
             recordtypes.add(c.recordtype.name);
         }
-        System.debug('recordtypes List :'+recordtypes);
-        System.debug('Businesshour__c'+Businesshour);
-        System.debug('SobjectFieldType__c'+FieldName);
+        
+        System.debug('Businesshour__c'+listTrack2Grow[0].Business_Hour__c);
+        System.debug('SobjectFieldType__c'+listTrack2Grow[0].FieldVal__c);
         System.debug('SobjectFieldValue__c'+string.join(fieldValues,', '));
         System.debug('SobjectRecordType__c'+string.join(recordtypes,', '));
-        System.debug('SobjectType__c'+objName);
-        System.debug('SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =: '+Businesshour+' and Dates__c = \'Last Week\' AND SobjectFieldType__c =: '+FieldName+ ' AND SobjectFieldValue__c =: '+string.join(fieldValues,', ')+' AND SobjectRecordType__c =: '+string.join(recordtypes,', ')+' AND SobjectType__c =: '+objName +' LIMIT 1');
-        list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:Businesshour and Dates__c = 'Last Week' AND SobjectFieldType__c =:FieldName AND SobjectFieldValue__c =: string.join(fieldValues,', ') AND SobjectRecordType__c =: string.join(recordtypes,', ') AND SobjectType__c =: objName LIMIT 1]);
+        System.debug('SobjectType__c'+objectName);
+        //system.debug('SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =: '+listTrack2Grow[0].Business_Hour__c+ ' and Dates__c = \'This Week\' AND SobjectFieldType__c =: '+ listTrack2Grow[0].FieldVal__c  + ' AND SobjectFieldValue__c =: '+string.join(fieldValues,', ')+' AND SobjectRecordType__c =: '+string.join(recordtypes,', ')+' AND SobjectType__c =: '+objectName +' LIMIT 1');
+        list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:listTrack2Grow[0].Business_Hour__c and Dates__c = 'Last 6 Months' AND SobjectFieldType__c =: listTrack2Grow[0].FieldVal__c AND SobjectFieldValue__c =: string.join(fieldValues,', ') AND SobjectRecordType__c =: string.join(recordtypes,', ') AND SobjectType__c =: objectName LIMIT 1]);
         System.debug('Bi :'+bi);
         if(bi != null && !bi.isEmpty())
         {
             recordId = bi[0].Id;
             if(bi[0].LastRefreshedDate__c == null || bi[0].LastRefreshedDate__c != system.today())
             {
-                averageTimeBatchClass atbc = new averageTimeBatchClass(fieldValues,FieldName,objName,recordtypes,'Last Week',null,null,recordId,True,Businesshour,null,false,true);
+                duplicateaveragebatch atbc = new duplicateaveragebatch(fieldValues,listTrack2Grow[0].FieldVal__c,objectName,recordtypes,'Last 6 Months',null,null,recordId,True,listTrack2Grow[0].Business_Hour__c,null,false,true);
                 batchJobId=database.executeBatch(atbc);
             }
         }
         else
         {
             system.debug('BATCH EXECUTED');
-            averageTimeBatchClass atbc = new averageTimeBatchClass(fieldValues,FieldName,objName,recordtypes,'Last Week',null,null,recordId,True,Businesshour,null,false,true);
+            duplicateaveragebatch atbc = new duplicateaveragebatch(fieldValues,listTrack2Grow[0].FieldVal__c,objectName,recordtypes,'Last 6 Months',null,null,recordId,True,listTrack2Grow[0].Business_Hour__c,null,false,true);
             batchJobId=database.executeBatch(atbc);
         }
+        
         return batchjobid;
     }
     
@@ -107,8 +75,8 @@ public with sharing class CaseComparsionController
         Map<string,Map<String,decimal>> chartdata = new Map<String,Map<String,decimal>>();
         Map<String,Long> pickValMap = new Map<String,Long>();
         List<Track2Grow__mdt> listTrack2Grow = [SELECT Id,Masterlabel,Business_Hour__c,FieldVal__c,Object_Name__c,HistoryObject__c from Track2Grow__mdt];
+        string Businesshour;
         System.debug('listTrack2Grow value'+listTrack2Grow);
-		string Businesshour;
         String FieldName;
         String HistoryObjectName;
         String objName;
@@ -378,7 +346,7 @@ public with sharing class CaseComparsionController
         System.debug('SobjectFieldValue__c value '+string.join((Iterable<String>)newset,', '));
         System.debug('SobjectRecordType__c value'+caselist[0].recordtype.name);
         System.debug('SobjectType__c value'+objectName);
-        list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:Businesshour and Dates__c = 'Last Week' AND SobjectFieldType__c =: FieldName AND SobjectFieldValue__c =: string.join((Iterable<String>)newset,', ') AND SobjectRecordType__c =: caselist[0].recordtype.name  AND SobjectType__c =: objectName LIMIT 1]);
+        list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:Businesshour and Dates__c = 'Last 6 Months' AND SobjectFieldType__c =: FieldName AND SobjectFieldValue__c =: string.join((Iterable<String>)newset,', ') AND SobjectRecordType__c =: caselist[0].recordtype.name  AND SobjectType__c =: objectName LIMIT 1]);
         system.debug('bi value-->'+bi);
         if(bi != null && !bi.isEmpty())
         {

@@ -5,8 +5,11 @@
         <div style="height: 100%;">
 
           <lightning-card title="Filter" icon-name="custom:custom25">
+            
             <lightning-button label="Back" icon-name="utility:back" slot="actions" onclick={backClick}>
             </lightning-button>
+            
+<!-- Select Object start -->
             <div class="slds-p-horizontal--medium" data-id="divblock">
               <div class="slds-form-element__control">
                 <div class="slds-select_container dropdown">
@@ -22,9 +25,8 @@
                         placeholder="Search Object..">
                       </lightning-input>
                     </div>
-                    <!-- Suggestion of object search -->
+        <!-- Suggestion of object search start-->
                     <template if:true={havingValue}>
-
                       <div id="listbox-id-2-venu" data-key="dropdownresult"
                         class="slds-show slds-dropdown_length-with-icon-7 searchDrop" role="listbox">
                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">
@@ -48,7 +50,8 @@
                         </ul>
                       </div>
                     </template>
-
+        <!-- Suggestion of object search end-->
+        <!-- required Object error message -->
                     <template if:true={requiredField1}>
                       <div class="slds-form-element__help">Select Object</div>
                     </template>
@@ -56,7 +59,8 @@
                 </div>
               </div>
             </div>
-
+<!-- Select Object end -->
+<!-- Select Object Field start -->
             <div class="slds-p-horizontal--medium">
               <div class="slds-form-element__control">
                 <div class="slds-select_container dropdown">
@@ -67,16 +71,20 @@
                     </label>
                     <div class="slds-form-element__control">
                       <div class="slds-select_container">
-                        <select class="slds-select" onchange={selectObjectFieldChange} required="">
-                          <option value="">---None---</option>
-                          <template for:each={objectFieldVal} for:item="selectObjectFieldItem">
-                            <option key={selectObjectFieldItem} value={selectObjectFieldItem}>
-                              {selectObjectFieldItem}
-                            </option>
-                          </template>
-                        </select>
+                          <select class="slds-select" onchange={selectObjectFieldChange} required="">
+                            <option value="">---None---</option>
+                            <template for:each={objectFieldVal} for:item="selectObjectFieldItem">
+                              <option key={selectObjectFieldItem} value={selectObjectFieldItem}>
+                                {selectObjectFieldItem}
+                              </option>
+                            </template>
+                          </select>
                       </div>
                     </div>
+        <!-- Show message if object field value is empty or history of object field is off -->
+                    <template if:true={isObjFieldHistory}>
+                      <div class="slds-m-horizontal_medium">{objectFieldValMessage}</div>
+                    </template>
                     <template if:true={requiredField2}>
                       <div class="slds-form-element__help">Select Object Field Type.</div>
                     </template>
@@ -84,7 +92,8 @@
                 </div>
               </div>
             </div>
-
+<!-- Select Object Field end -->
+<!--  -->
             <div class="slds-p-horizontal--medium slds-p-top_x-small">
               <div class="slds-form-element__control">
                 <div class="slds-select_container dropdown1">
@@ -225,7 +234,7 @@
                       <div class="slds-form-element__control">
                         <div class="slds-select_container dropdown1"></div>
                         <lightning-button variant="brand" label="Save" title="Primary action" onclick={handleClick}
-                          class="slds-m-left_x-small"></lightning-button>
+                          class="slds-m-left_x-small" id="saveButton" ></lightning-button>
                       </div>
                     </div>
                   </div>
