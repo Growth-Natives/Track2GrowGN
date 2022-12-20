@@ -1,4 +1,4 @@
-.spins::after 
+/* .spins::after 
 {
     position: absolute;
     content: 'Please Select a Filter';
@@ -38,3 +38,17 @@ padding: 7px;
 {
   cursor:default
 }
+
+.chartWrapper { w w w. j a v  a2 s.co  m
+   position: relative;
+}
+.chartWrapper > canvas {
+   position: absolute;
+   left: 0;
+   top: 0;
+   pointer-events:none;
+}
+.chartAreaWrapper {
+   width: 600px;
+   overflow-x: scroll;
+} */

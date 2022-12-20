@@ -1,4 +1,4 @@
-.spins::after {
+/* .spins::after {
     position: absolute;
     content: 'Please Select a Filter';
     width: 100%;
@@ -32,4 +32,4 @@ padding: 7px;
 }
 .default{
   cursor:default
-}
+} */

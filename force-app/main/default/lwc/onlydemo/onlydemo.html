@@ -1,0 +1,109 @@
+<template>
+	<!--<div class="slds-gutters">
+		<div class="slds-grid">
+			<div if:false={isCreateFilter} class="slds-col slds-size_1-of-3">
+				<template if:true={cardCheck}>
+					<lightning-card if:false={isCreateFilter} title={cardTitle}>
+						<template if:true={backHandle}>
+							<lightning-button label="Back" icon-name="utility:back" onclick={detailBackClick}
+								slot="actions">
+							</lightning-button>
+						</template>
+						<template if:true={filterListCheck}>
+							<div class="slds-gutters slds-grid slds-container_center">
+								 <div class="slds-col slds-size_1-of-3"></div> 
+								<div class="slds-m-horizontal_x-small slds-m-vertical_x-small" style="display: flex;">
+									<table class="filtertable">
+										<tr>
+											<th>Filter Name</th>
+											<th>Object</th>
+											<th>Field</th>
+											<th>Actions</th>
+
+										</tr>
+										<template for:each={datas} for:item=items>
+											<tr key={items.Id}>
+												<td width="100px" style="text-align:center">
+													{items.value}
+												</td>
+												<td width="100px" style="text-align:center">
+													{items.object}
+												</td>
+												<td width="100px" style="text-align:center">
+													{items.field}
+												</td>
+												<td width="100px">
+													<p data-id={items.value} onclick={selectFilterNameChange}
+														style="color:blue; display:inline" class="default">View</p>
+
+													<lightning-button-icon data-id={items.value}
+														onclick={handleDeleteFilter} icon-name="utility:delete"
+														alternative-text="Delete" class="slds-p-left_xx-small"
+														title="Delete" variant="bare"
+														style="display:inline;float:right;margin-top: -2px;">
+													</lightning-button-icon>
+												</td>
+											</tr>
+										</template>
+									</table>
+
+								</div>
+								 <div class="slds-col slds-size_1-of-3"></div>
+							</div>
+						</template>
+
+						<template if:true={detailHide}>
+							<template for:each={filterDetailVal} for:item="filterVal" if:true={isfilterNameSelected}>
+								<div class="slds-p-horizontal_medium slds-p-vertical_medium" key={filterVal.Id}
+									style="font-size: 15px;">
+									<b>Object : </b>{filterVal.SobjectType__c}<br />
+									<b>Field : </b>{filterVal.SobjectFieldType__c}<br />
+									<b>Field Value : </b>{filterVal.SobjectFieldValue__c}<br />
+									<b>Record Type : </b>{filterVal.SobjectRecordType__c}<br />
+									<b>Business Hours : </b>{filterVal.Businesshour__c}<br />
+									<b>Date : </b>{filterVal.Dates__c}<br />
+									<div if:true={filterVal.StartDate__c}>
+										<b>Start Date : </b>{filterVal.StartDate__c}<br />
+										<b>End Date : </b>{filterVal.EndDate__c}<br />
+                  </div>
+									</div>
+							</template>
+						</template>
+						<lightning-button class="slds-p-around_x-small" variant="Brand" label="Create new Filter"
+							onclick={createFilter}></lightning-button>
+					</lightning-card>
+				</template>
+			</div>
+			<div if:false={isCreateFilter} class="slds-col slds-size_2-of-3">
+				<div class="demo-only demo-only--sizing slds-grid slds-wrap">
+					<div class="slds-size_1-of-2 ">
+           <template if:true={clickedButtonLabelCheck} >
+            <c-filter3-component selected-filter-name={selectedFilterName}></c-filter3-component>
+           </template>
+		   </div>
+		   <div class="slds-size_1-of-2">
+                 <template if:true={clickedButtonLabelCheck}>
+							
+
+								<div class="slds-scrollable_x">
+									<c-filter2-component selected-filter-name={selectedFilterName}></c-filter2-component>
+
+								</div>
+							 
+						</template>
+
+					</div>
+				</div>
+				<template if:false={clickedButtonLabelCheck}>
+					<lightning-spinner class="spins" style="margin-left:33.33% ;" alternative-text="Loading">
+					</lightning-spinner>
+				</template>
+			</div>
+		</div>
+		<template if:true={isCreateFilter}>
+			<div>
+				<c-filter-_-l-w-c-duplicate onhandleback={handleBack}></c-filter-_-l-w-c-duplicate>
+			</div>
+		</template>
+	</div>
+</template> -->
