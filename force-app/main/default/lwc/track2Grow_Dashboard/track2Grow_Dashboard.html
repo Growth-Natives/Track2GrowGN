@@ -1,25 +1,23 @@
 <template>
-    <!-- <template if:false={spin}> -->
-        <div class="slds-grid slds-gutters" style="height:100%;"> 
-            <div>
-                <template if:true={isLoad}>
-                    <template if:true={spin}>
-                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
-                            <div class="slds-modal__container slds-align_absolute-center">
-                                <div class="slds-modal__content slds-p-around_small loadSpin" id="modal-content-id-2">
-                                    <span>
-                                        <img src={w3webSlider1} height="50" width="50">Please wait while we are Processing...
-                                    </span> 
-                                </div>
+    <div class="slds-grid slds-gutters" style="height:100%;"> 
+        <div>
+            <template if:true={isLoad}>
+                <template if:true={spin}>
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container slds-align_absolute-center">
+                            <div class="slds-modal__content slds-p-around_small loadSpin" id="modal-content-id-2">
+                                <span>
+                                    <img src={w3webSlider1} height="50" width="50">Please wait while we are Processing...
+                                </span> 
                             </div>
-                        </section>
-                        <div class="slds-backdrop slds-backdrop_open"></div>
-                    </template> 
-                </template>
-            </div>
-            <template if:false={isChartShow}>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template> 
+            </template>
+        </div>
+        <template if:true={isLeftMenu}>
                 <lightning-layout-item size="2" large-device-size="2" medium-device-size="2" small-device-size="2" class="container">
-                <!-- <div class="slds-col slds-size_1-of-4 container" > -->
                 <div class="LogoContainer slds-p-top_small">
                         <img src={Logo}/>
                     </div>
@@ -70,13 +68,11 @@
                                     </div>
                                 </div>
                                 <div class="slds-p-bottom_small">
-                                    <!-- <div class="searchBox"> -->
                                         <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right slds-p-vertical_small">
                                             <Input type="search" class="slds-align_absolute-center searchBox" placeholder="Search..." value={searchVal} oninput={onSearchSaveFilter} onchange={onSearchSaveFilter}></Input>
                                             <lightning-icon class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default searchIcon" icon-name="utility:search" size="x-small"></lightning-icon>
                                         </div>
-                                    <!-- </div> -->
-                                    <template if:false={isInclude}>
+                                    <template if:false={isManagePackage}>
                                         <template if:false={isSearch}>
                                             <div class="listData">
                                                 <template for:each={datas} for:item="dt" for:index="index">
@@ -120,20 +116,17 @@
                                             <template if:false={noDataFound}>
                                                 <div class="listData">
                                                 <template for:each={searchDatas} for:item="dt" for:index="index">
-                                                    <!-- <template data-id={index}> -->
                                                         
                                                         <div key={dt.Id} class="slds-grid slds-border_bottom filterListStyle">
-                                                            <!-- <div data-id="myDiv" class={className}> -->
                                                                 <div data-id={dt.Filter_Name__c} onclick={onFilterDetail} class="slds-col"> {dt.Filter_Name__c}</div>
                                                                 <lightning-icon icon-name="utility:delete" size="xx-small" data-id={dt.Filter_Name__c} onclick={handleDeleteFilter} class="deleteIcon"></lightning-icon>
-                                                            <!-- </div> -->
                                                         </div>
                                                 </template>
                                                 </div>
                                             </template>
                                         </template>
                                     </template>
-                                    <template if:true={isInclude}>
+                                    <template if:true={isManagePackage}>
                                         <template if:false={isSearch}>
                                             <div class="listData">
                                                 <template for:each={datas} for:item="dt" for:index="index">
@@ -177,13 +170,10 @@
                                             <template if:false={noDataFound}>
                                                 <div class="listData">
                                                 <template for:each={searchDatas} for:item="dt" for:index="index">
-                                                    <!-- <template data-id={index}> -->
                                                         
                                                         <div key={dt.Id} class="slds-grid slds-border_bottom filterListStyle">
-                                                            <!-- <div data-id="myDiv" class={className}> -->
                                                                 <div data-id={dt.Track2Grow__Filter_Name__c} onclick={onFilterDetail} class="slds-col"> {dt.Track2Grow__Filter_Name__c}</div>
                                                                 <lightning-icon icon-name="utility:delete" size="xx-small" data-id={dt.Track2Grow__Filter_Name__c} onclick={handleDeleteFilter} class="deleteIcon"></lightning-icon>
-                                                            <!-- </div> -->
                                                         </div>
                                                 </template>
                                                 </div>
@@ -210,18 +200,13 @@
                         </div>
                     </div> -->
                 </lightning-layout-item>
-        
+            <template if:false={isChartShow}>
                 <lightning-layout-item size="10" large-device-size="10" medium-device-size="10" small-device-size="10" class="detailContainer">
                     <template if:true={isLoadMessage}>
                         <div class="detail slds-align_absolute-center">
-                            <!-- <template if:true={isLoad}>
-                                <span>
-                                    <img src={w3webSlider1} height="50" width="50">Please wait while we are Processing...
-                                </span> 
-                            </template> -->
                             <template if:false={isLoad}>
                                 <span>
-                                      <img src={w3webSlider1} height="50" width="50"><b>Please Create a new or select a saved filter.</b>
+                                    <img src={w3webSlider1} height="50" width="50"><b>Please Create a new filter.</b>
                                 </span> 
                             </template>
                         </div>
@@ -239,8 +224,6 @@
                                                             size="x-small" onclick={closeCreateFilters}></lightning-icon>
                                                         <span class="slds-assistive-text">Close</span>
                                                     </button>
-                                                    <!-- <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Modal/PopUp Box header LWC</h2> -->
-                                            
                                                 <div class="slds-modal__content slds-p-around_x-small" id="modal-content-id-1">
                                                             <c-new-filter-design onsaveclick={onCloseCreateFilter} onbatchcomplete={onBatchCmp}></c-new-filter-design>
                                                     </div>
@@ -248,83 +231,75 @@
                                         </section>
                                         <div class="slds-backdrop slds-backdrop_open"></div>
                             </template>
-                            <!-- <template if:true={isConfigClick}>
-                                <c-config-page></c-config-page>
-                            </template> -->
+                        
                         </div>
                     </template>
                 </lightning-layout-item>
             </template>
-            <template if:true={isChartShow}>
-                <template if:true={isSelect}> 
-                    <!-- <div class="slds-grid"> -->
-                        <lightning-layout-item size="2" large-device-size="2" medium-device-size="2" small-device-size="2" class="container">
-                            <!-- <div class="slds-size_1-of-4"  style="height:100%; background-color:#000 "> -->
-                                <!-- <lightning-card style="height:100%; background-color:#000 "> -->
-                                    <div class="slds-no-flex">
-                                        <div class="LogoContainer slds-p-top_small">
-                                            <img src={Logo}/>
-                                        </div>
-                                        <header slot="title" class="slds-grid slds-page-header slds-page-header_record-home cardHead">
-                                            <div class="slds-col">{cardTitle}</div>
-                                                <div class="slds-col" onclick={detailBackClick}>
-                                                    <img src={backIcon} height="20" width="20" class="backIcon"/>
-                                                </div>
-                                        </header>
+        </template>
+        
+            <template if:true={isSelect}> 
+                <template if:false={isLeftMenu}>
+                    <lightning-layout-item size="2" large-device-size="2" medium-device-size="2" small-device-size="2" class="container">
+                         <div class="slds-no-flex">
+                                    <div class="LogoContainer slds-p-top_small">
+                                        <img src={Logo}/>
                                     </div>
-                                    <template if:true={isInclude} for:each={filterDetailVal} for:item="filterVal" >
-                                                <div class="slds-p-horizontal_medium slds-p-vertical_medium filterChartDetailDiv" key={filterVal.Id} style="font-size: 15px;">
-                                                    <b>Object : </b>{filterVal.Track2Grow__SobjectType__c}<br />
-                                                    <b>Field : </b>{filterVal.Track2Grow__SobjectFieldType__c}<br />
-                                                    <b>Field Value : </b>{filterVal.Track2Grow__SobjectFieldValue__c}<br />
-                                                    <b>Record Type : </b>{filterVal.Track2Grow__SobjectRecordType__c}<br />
-                                                    <b>Business Hours : </b>{filterVal.Track2Grow__Businesshour__c}<br />
-                                                    <b>Date : </b>{filterVal.Track2Grow__Dates__c}<br />
-                                                    <div if:true={filterVal.Track2Grow__StartDate__c}>
-                                                        <b>Start Date : </b>{filterVal.Track2Grow__StartDate__c}<br />
-                                                        <b>End Date : </b>{filterVal.Track2Grow__EndDate__c}<br />
-                                                    </div>
-                                                </div>
-                                    </template>
-                                    <template if:false={isInclude} for:each={filterDetailVal} for:item="filterVal" >
-                                        <div class="slds-p-horizontal_medium slds-p-vertical_medium filterChartDetailDiv" key={filterVal.Id} style="font-size: 15px;">
-                                            <b>Object : </b>{filterVal.SobjectType__c}<br />
-                                            <b>Field : </b>{filterVal.SobjectFieldType__c}<br />
-                                            <b>Field Value : </b>{filterVal.SobjectFieldValue__c}<br />
-                                            <b>Record Type : </b>{filterVal.SobjectRecordType__c}<br />
-                                            <b>Business Hours : </b>{filterVal.Businesshour__c}<br />
-                                            <b>Date : </b>{filterVal.Dates__c}<br />
-                                            <div if:true={filterVal.StartDate__c}>
-                                                <b>Start Date : </b>{filterVal.StartDate__c}<br />
-                                                <b>End Date : </b>{filterVal.EndDate__c}<br />
+                                    <header slot="title" class="slds-grid slds-page-header slds-page-header_record-home cardHead">
+                                        <div class="slds-col">{cardTitle}</div>
+                                            <div class="slds-col" onclick={detailBackClick}>
+                                                <img src={backIcon} height="20" width="20" class="backIcon"/>
                                             </div>
+                                    </header>
+                                </div>
+                                <template if:true={isManagePackage} for:each={filterDetailVal} for:item="filterVal" >
+                                            <div class="slds-p-horizontal_medium slds-p-vertical_medium filterChartDetailDiv" key={filterVal.Id} style="font-size: 15px;">
+                                                <b>Object : </b>{filterVal.Track2Grow__SobjectType__c}<br />
+                                                <b>Field : </b>{filterVal.Track2Grow__SobjectFieldType__c}<br />
+                                                <b>Field Value : </b>{filterVal.Track2Grow__SobjectFieldValue__c}<br />
+                                                <b>Record Type : </b>{filterVal.Track2Grow__SobjectRecordType__c}<br />
+                                                <b>Business Hours : </b>{filterVal.Track2Grow__Businesshour__c}<br />
+                                                <b>Date : </b>{filterVal.Track2Grow__Dates__c}<br />
+                                                <div if:true={filterVal.Track2Grow__StartDate__c}>
+                                                    <b>Start Date : </b>{filterVal.Track2Grow__StartDate__c}<br />
+                                                    <b>End Date : </b>{filterVal.Track2Grow__EndDate__c}<br />
+                                                </div>
+                                            </div>
+                                </template>
+                                <template if:false={isManagePackage} for:each={filterDetailVal} for:item="filterVal" >
+                                    <div class="slds-p-horizontal_medium slds-p-vertical_medium filterChartDetailDiv" key={filterVal.Id} style="font-size: 15px;">
+                                        <b>Object : </b>{filterVal.SobjectType__c}<br />
+                                        <b>Field : </b>{filterVal.SobjectFieldType__c}<br />
+                                        <b>Field Value : </b>{filterVal.SobjectFieldValue__c}<br />
+                                        <b>Record Type : </b>{filterVal.SobjectRecordType__c}<br />
+                                        <b>Business Hours : </b>{filterVal.Businesshour__c}<br />
+                                        <b>Date : </b>{filterVal.Dates__c}<br />
+                                        <div if:true={filterVal.StartDate__c}>
+                                            <b>Start Date : </b>{filterVal.StartDate__c}<br />
+                                            <b>End Date : </b>{filterVal.EndDate__c}<br />
                                         </div>
-                            </template>
-                                        <!-- </lightning-card> -->
-                            <!-- </div> -->
-                        </lightning-layout-item>
-                                <!--  ////////////////////////////////by ravi ///////////////// - -->
-                                <!-- <div class="slds-size_3-of-4" style="overflow:scroll;"> -->
-                        <lightning-layout-item size="10" large-device-size="10" medium-device-size="10" small-device-size="10" class="detailContainer" style="overflow:scroll;">
-                            <!-- <div if:false={isCreateFilter} class="slds-size_3-of-4" > -->
-                                    <template if:true={clickedButtonLabelCheck}>
-                                        
-                                            <c-filter3-component selected-filter-name={selectedFilterName} save-filter-id={saveFilterId} filter-detail-val={filterDetailVal} ></c-filter3-component>
-                                    
-                                    </template>
-                                    <template if:true={clickedButtonLabelCheck}>
-                                        <div class="slds-scrollable_x" >
-                                            <c-filter2-component is-include={isInclude} selected-filter-name={selectedFilterName} save-filter-id={saveFilterId} filter-detail-val={filterDetailVal}></c-filter2-component>
-                                        </div>
-                                    </template>
-                                    <template if:false={clickedButtonLabelCheck}>
-                                        <lightning-spinner  class="spins" spinner-text="Loading Details..." style="margin-left:33.33% ;" alternative-text="Loading"></lightning-spinner>
-                                    </template>
-                            <!-- </div> -->
-                        </lightning-layout-item>
-                    <!-- </div> -->
+                                    </div>
+                        </template>
+                    </lightning-layout-item>
                 </template>
+                <template if:true={isChartShow}>
+                    <lightning-layout-item size="10" large-device-size="10" medium-device-size="10" small-device-size="10" class="detailContainer" style="overflow:scroll;">
+                                <template if:true={clickedButtonLabelCheck}>
+                                         <c-poc is-manage-package={isManagePackage} selected-filter-name={selectedFilterName} save-filter-id={saveFilterId} filter-detail-val={filterDetailVal}></c-poc>
+                                
+                                        <c-filter3-component  selected-filter-name={selectedFilterName} save-filter-id={saveFilterId} filter-detail-val={filterDetailVal} ></c-filter3-component>
+                                
+                                </template>
+                                <template if:true={clickedButtonLabelCheck}>
+                                    <div class="slds-scrollable_x" >
+                                        <c-filter2-component is-manage-package={isManagePackage} selected-filter-name={selectedFilterName} save-filter-id={saveFilterId} filter-detail-val={filterDetailVal}></c-filter2-component>
+                                    </div>
+                                </template>
+                                <template if:false={clickedButtonLabelCheck}>
+                                    <lightning-spinner  class="spins" spinner-text="Loading Details..." style="margin-left:33.33% ;" alternative-text="Loading"></lightning-spinner>
+                                </template>
+                    </lightning-layout-item>
             </template>
-        </div>
-    <!-- </template> -->
+        </template>
+    </div>
 </template>

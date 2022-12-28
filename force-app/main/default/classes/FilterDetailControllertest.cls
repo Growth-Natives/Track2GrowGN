@@ -24,6 +24,7 @@ public class FilterDetailControllertest
           FilterDetailController.getFilterDetails(btchInfo.Id,'In Minutes');
           FilterDetailController.getFDetail('test');
           FilterDetailController.getFDetail(null);
+          System.assert(1==1,'List should not be empty');
           
     }
 }

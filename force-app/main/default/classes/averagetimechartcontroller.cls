@@ -288,6 +288,126 @@ public with sharing class averagetimechartcontroller
             System.debug('BI getFD ========'+BI);
         return BI;
     }
+    
+    ////////////owner based on average time
+      @AuraEnabled(cacheable = true)
+    public static List<DataSet> ownerbasedonaveragetime(String status,String objectVal, String Field, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh,String selectedName,string ownerpicklist)
+    {
+        System.debug('value of getLeadByStatus');
+        map<String,String> usermap = new map<String,String>();
+
+        List<DataSet> dataSet = new List<DataSet>();
+        String status_val = status;
+        String dataRepresentation;
+        String recordType = String.join(recordTypes,', ');
+        List<BatchInfo__c> ctendays = new List<BatchInfo__c>();
+         List<BatchInfo__c> bi = new list<BatchInfo__c>();
+        if(selectedName != null){
+                bi = [SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Filter_Name__c=:selectedName];
+        }
+        else{
+               bi=[SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c  order by createddate desc limit 1];
+        }
+        system.debug('value of bii'+bi);
+        
+        List<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:bi[0].id];
+        system.debug('value of doc'+doc);
+        map<String,map<String,decimal>> ownertostagetotime=new map<String,map<String,decimal>>();
+        if(bi != null && !bi.isEmpty())
+        {
+            dataRepresentation = doc[0].body.toString(); 
+        }
+        else
+        {
+            ctendays = [select id, OwnerDataRepresentation__c from BatchInfo__c order by createddate desc limit 1];
+        }
+        String inputdata;  
+        map<String,double> valuestorepickliststage= new map<String,double>();
+        
+        if(dataRepresentation != null)
+        {
+            inputdata = '['+dataRepresentation+']';
+        }
+        system.debug('inputdata'+inputdata);
+        List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata);
+        system.debug('result...'+result);
+        String ss;
+        for(object sst: result)
+        {
+           
+            Map<String,object> data=(Map<String,object>)sst;
+               for(String ownerstage:data.keySet())
+               {
+                List<String> ownerstagearray=ownerstage.split(':');
+                system.debug('containssss...'+ownertostagetotime.containsKey(ownerstagearray[1]));
+
+                if(ownertostagetotime.containsKey(ownerstagearray[1]) && ownertostagetotime!=null)
+                {
+                    ownertostagetotime.get(ownerstagearray[1]).put(ownerstagearray[0],decimal.valueOf(String.valueOf(data.get(ownerstage))));
+                }
+                else
+				{
+                   if(data.get(ownerstage)!=null)
+                        {
+                            ownertostagetotime.put(ownerstagearray[1], new map<String,decimal>{ownerstagearray[0]=>decimal.valueOf(String.valueOf(data.get(ownerstage)))}) ;
+						}
+                }
+            }
+        }
+        
+        List<user> acc=[Select id from User where name=:ownerpicklist];
+        system.debug('value of ><><>'+acc[0].id);
+        string picklist='0052w000003cdO7AAI';            
+       //map<string,decimal> final=new map<string,decimal>(); 
+        map<string,decimal> fn= new map<string,decimal>();
+        for(string str:ownertostagetotime.keyset())
+        {
+            map<string,decimal> yes=ownertostagetotime.get(str);
+                for(string fg:ownertostagetotime.get(str).keyset())  
+            {
+                if(acc[0].id==fg){
+                    fn.put(str,yes.get(fg));
+                     dataSet.add(new DataSet(str,yes.get(fg)));
+                }
+            }	  
+        }
+        
+         //List<user> acc=[Select id from User where name=:ownerpicklist];
+        
+        /* set<id> ownerid;
+        if(ownertostagetotime.containskey(status_val))
+        {
+            for(User u:[Select id,Name from User where id IN:ownertostagetotime.get(status_val).keySet()])
+            {
+                usermap.put(u.id,u.Name);
+            }
+        }
+        if(ownertostagetotime.containskey(status_val))
+        {
+            for(String owneriddata:ownertostagetotime.get(status_val).keySet())
+			{
+                dataSet.add(new DataSet(usermap.get(owneriddata) ,ownertostagetotime.get(status_val).get(owneriddata)));
+            }
+        } */
+        System.debug('value of dataset'+dataset);
+        return dataSet ;
+    }
+    //////////////////////////////////////
+    //
+    //
+    @AuraEnabled
+     public static list<String> getUserList(){
+         
+     list<String> userr= new list<String>();
+    List<user> acc=[Select name from User];
+       system.debug('acc==>'+acc);
+       for(user us:acc)
+       {
+           userr.add(string.valueof(us.name));
+       }
+    return userr;
+}
+    
     public class DataSet
     {
         public DataSet(String label ,decimal count)

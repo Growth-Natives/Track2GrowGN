@@ -1,10 +1,38 @@
-import { LightningElement, track, api, wire } from 'lwc';
+import { LightningElement,track,api } from 'lwc';
 import pickListValueDynamically from '@salesforce/apex/averagetimechartcontroller.pickListValueDynamically';
-import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.getLeadByStatus';
+import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.ownerbasedonaveragetime';
+import getUserList from '@salesforce/apex/averagetimechartcontroller.getUserList';
 import ChartJS from '@salesforce/resourceUrl/ChartJs';
 import { loadScript } from 'lightning/platformResourceLoader';
-import { refreshApex } from '@salesforce/apex';
-export default class Filter2Component extends LightningElement {
+export default class Poc extends LightningElement {
+
+   options=[]; 
+   picklistVal;
+
+    dynmic()
+    {
+        getUserList()
+         .then(result => {
+                if (result) {
+                         console.log('result',result);
+                    // this.selectTargetValues = data;
+                   for (let key in result) {
+                            this.options = Object.keys(result).map(key => ({ label: result[key], value: result[key] }));
+                        }
+                }
+                else if (result.error) {
+                    return result.error;
+                }
+            })
+            console.log('hdghdf',this.dataSet)
+    }
+    handlePicklistChange(event) {
+        this.picklistVal = event.target.value;
+        this.getcallby();
+       console.log('this.picklistVal',this.picklistVal);
+    }
+
+    ////////////////
     @track isModalOpen = false;
     @track picklistVal;
     @track cardTitle;
@@ -36,6 +64,7 @@ export default class Filter2Component extends LightningElement {
     }
 
     connectedCallback() {
+       this.dynmic();
         var fieldType;
         var fieldValue;
         var arr = [];
@@ -94,9 +123,10 @@ export default class Filter2Component extends LightningElement {
         this.getcallby();
     }
     getcallby() {
-        getLeadByStatus({ status: this.picklistVal, maxNum: this.picklistValRight, objectVal: this.objectVal, Field: this.objectField, recordTypes: this.selectedVal1, businessHour: this.businessNameVal, dates: this.picklistVal, startDate: this.startdate, endDate: this.enddate, willRefresh: this.isFilterSave, selectedName: this.selectedFilterName })
+        getLeadByStatus({ status: this.picklistVal, maxNum: this.picklistValRight, objectVal: this.objectVal, Field: this.objectField, recordTypes: this.selectedVal1, businessHour: this.businessNameVal, dates: this.picklistVal, startDate: this.startdate, endDate: this.enddate, willRefresh: this.isFilterSave, selectedName: this.selectedFilterName,ownerpicklist:this.picklistVal})
             .then(data => {
                 if (data) {
+                    console.log('value of >>>',data);
                     this.dataSet = data;
                     this.Initializechartjs();
                 }
@@ -116,25 +146,6 @@ export default class Filter2Component extends LightningElement {
             labell.push(Object.values(this.dataSet)[ownerLabel].label);
             count.push(Object.values(this.dataSet)[ownerLabel].count);
         }
-
-        var arrayOfObj = labell.map(function (d, i) {
-            return {
-                label: d,
-                data: count[i] || 0
-            };
-        });
-
-
-        var sortedArrayOfObj = arrayOfObj.sort(function (a, b) {
-            return a.data - b.data;
-        });
-
-        var newArrayLabel = [];
-        var newArrayData = [];
-        sortedArrayOfObj.forEach(function (d) {
-            newArrayLabel.push(d.label);
-            newArrayData.push(d.data);
-        });
         var ctx = this.template.querySelector(".pie-chart").getContext('2d');
         if (this.picklistValRight != null || this.picklistValRight != undefined) {
             var type = this.picklistValRight.split(' ')[0];
@@ -153,11 +164,11 @@ export default class Filter2Component extends LightningElement {
             type: 'bar',
             data: {
 
-                labels: newArrayLabel,
+                labels: labell,
                 datasets: [{
 
                     label: this.cardTitle,
-                    data: newArrayData,
+                    data: count,
                     backgroundColor: "green"
                 }],
             },
@@ -204,5 +215,6 @@ export default class Filter2Component extends LightningElement {
                 );
             });
     }
+    ////////////////
 
 }

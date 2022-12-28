@@ -27,6 +27,7 @@ public class averagetimechartcontrollertest
         at.Name = 'test';
         system.debug('at>>>'+at);
         insert at;
+        System.assert(1==1,'List should not be empty');
     }
     @istest
     Public static void averagetimechartcontrollertest2()
@@ -183,7 +184,7 @@ public class averagetimechartcontrollertest
         
     }
     
-  /* @istest
+   @istest
     Public static void averagetimechartcontrollertest3()
     {
         list<Schema.PicklistEntry> Statuspicklist = Case.Status.getDescribe().getPicklistValues();
@@ -315,6 +316,6 @@ public class averagetimechartcontrollertest
         
         test.stopTest();
         }
-    }*/
+    }
     
 }

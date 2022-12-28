@@ -1,6 +1,14 @@
 public class TestPlease {
-    // public static void testPleaseMethod(){
-    //     List<Account> acc=[Select id, name,(select id, lastname from contacts) from account];
-    //     system.debug('acc==>'+acc);
-    // }
+     @AuraEnabled
+     public static list<String> getUserList(){
+         
+     list<String> userr= new list<String>();
+    List<user> acc=[Select name from User];
+       system.debug('acc==>'+acc);
+       for(user us:acc)
+       {
+           userr.add(string.valueof(us.name));
+       }
+    return userr;
+}
 }
