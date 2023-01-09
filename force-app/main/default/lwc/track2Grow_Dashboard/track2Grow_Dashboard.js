@@ -172,6 +172,17 @@ export default class Track2Grow_Dashboard extends LightningElement {
             this.getFilterDetailViewLess();
         }
     }
+     onCaseComparision(){
+        console.log('case');
+        this.isDataFilter = false;
+        this.isConfigClick = true;
+        this.isCreateFilterClick = false;
+        this.isChartShow = false;
+        // this.isLoad=true;
+        // this.isLoad = false;
+        this.isLoadMessage = false;
+        console.log('isConfigClick===',this.isConfigClick);
+    }
     getFilterDetails() {
         var conts;
         let obj = [];

@@ -81,9 +81,13 @@
 			<!--DualListBox 1-->
 			<lightning-dual-listbox name="fieldValue" label={objFieldVal} source-label="Available"
 				selected-label="Selected" field-level-help="Select values of the field you want to track the time of"
-				onchange={handleChange} options={options} value={defaultValues} required="true" size=4
+				onchange={handleChange} options={options} value={defaultValues}  size=4
 				disable-reordering=true>
-			</lightning-dual-listbox><br><br>
+			</lightning-dual-listbox>
+			<template if:true={requiredFieldVal}>
+				<div class="slds-m-horizontal_medium errorMsg">Select atleast one Object Field value</div>
+			</template>
+			<br><br>
 			<!--DualListBox 1-->
 			<lightning-dual-listbox name="recordValue" label={objRecordType} source-label="Available"
 				selected-label="Selected"

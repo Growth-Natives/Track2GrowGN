@@ -365,10 +365,21 @@ public with sharing class averagetimechartcontroller
             map<string,decimal> yes=ownertostagetotime.get(str);
                 for(string fg:ownertostagetotime.get(str).keyset())  
             {
-                if(acc[0].id==fg){
-                    fn.put(str,yes.get(fg));
-                     dataSet.add(new DataSet(str,yes.get(fg)));
+               
+                if(fg==null)
+                {
                 }
+                else
+                {
+                    if(acc[0].id!=null && acc[0].id==fg){
+                     system.debug('value of fg id'+fg);
+                     system.debug('value of acc[0].id'+acc[0].id);
+                    fn.put(str,yes.get(fg));
+                          dataSet.add(new DataSet(str,yes.get(fg)));
+                   
+                }
+                }
+                
             }	  
         }
         

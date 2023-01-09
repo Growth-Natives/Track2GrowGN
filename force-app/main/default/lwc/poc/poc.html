@@ -1,32 +1,4 @@
 <template>
-<!----<div class="pick" style="width: 20%;display:inline-flex;padding-bottom:0.5rem;">
-              <div class="pick" style="width: 40%;padding-Right: 1%;display:flex-direction;">
-                <label class="slds-form-element__label">
-                      <b>Owner</b>
-                    </label>
-          <select class="slds-select" label="Status" onchange={selectOptionChanveValue}>
-            <option key={none} value="none">None</option>
-            <template for:each={defaultValues} for:item="selectOptItem">
-                <option key={selectOptItem} value={selectOptItem}>
-                    {selectOptItem}
-                  </option>
-            </template>
-            </select>
-              </div >
-              <div class="pick" style="width: 40%;margin-left: 10%;padding-Right: 1%;display:flex-direction;">
-                <label class="slds-form-element__label">
-                      <b>Case</b>
-                    </label>
-              <Select class="slds-select" name = "recalsend" label = "Meeting Type" onchange={selectOptionChanveValueRight}>    
-               <option value="Max 50">Max 50</option>
-                <option value="Max 20">Max 20 </option>  
-                <option value="Max 10">Max 10</option>
-                <option value="Min 50">Min 50</option>
-                <option value="Min 20">Min 20 </option>  
-                <option value="Min 10">Min 10</option>
-               </Select>
-              </div>
-          </div> ---->
     <lightning-card>
         <div style="width:200px; padding:0.5rem;">
             <lightning-combobox
@@ -40,6 +12,7 @@
         </div>
     </lightning-card>
    <template if:false={isModalOpen}>
+     <template if:true={showchart}>
     <div class="slds-size_6-of-6 slds-grid slds-wrap">
 					<div class="slds-size_6-of-6">
               <lightning-card title={cardTitle} icon-name="utility:chart">
@@ -54,6 +27,7 @@
     
   </div>
 				</div>
+     </template>
   </template>
 
 <template if:true={isModalOpen}>

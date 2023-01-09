@@ -2,8 +2,6 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
     public map<string,decimal> pickValMap = new map<string,decimal>();
     public map<string,decimal> ownerTimeMap = new map<string,decimal>();
     public map<string,integer> recordcountperowner = new map<string,integer>();
-    public map<id,decimal> ownerChangeMap = new map<id,decimal>();
-    public set<string> ownerset = new set<string>();
     public Set<string> recordPerIdSet = new Set<string>();
     public integer recordsProcessed = 0;
     public string query;
@@ -24,8 +22,8 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
     public id businessHourId;
     public string filterName;
     public string historyObject;
-    
-    public AverageTimeBatchClass(list<String> fieldValues, String field, String objectVal, list<String> recordTypes, string dates, date startDate, date endDate, Id recordId, boolean willRefresh, string businessHour, String filterName, boolean scheduled) {
+   
+    public averageTimeBatchClass(list<String> fieldValues, String field, String objectVal, list<String> recordTypes, string dates, date startDate, date endDate, Id recordId, boolean willRefresh, string businessHour, String filterName, boolean scheduled) {
         String query;
         String gsRecordTypeID;
         this.field = field;
@@ -37,7 +35,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         this.scheduled = scheduled;
         this.willRefresh = willRefresh;
         this.filterName = filterName;
-        this.fieldValues = string.join(fieldValues,', '); 
+        this.fieldValues = string.join(fieldValues,', ');
         if(recordTypes == null||recordTypes.isEmpty()){
             this.recordTypes=null;
         }
@@ -76,72 +74,72 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         this.query = query;
     }
     public String handleDate(String dates,list<String>recordTypes){
-        String  query='';
+        String  q='';
         if(dates != 'Custom Date'){
             if(recordTypes == null || recordTypes.isEmpty()){
-                query = query + ' WHERE ';
+                q = q + ' WHERE ';
             }
             else if(recordTypes != null && !recordTypes.isEmpty()){
-                query = query + ' AND ';
+                q = q + ' AND ';
             }
             if(dates == 'Last Week')
-                query = query + ' CreatedDate = LAST_WEEK';
+                q = q + ' CreatedDate = LAST_WEEK';
             else if(dates == 'Last Month')
-                query = query + ' CreatedDate = LAST_MONTH';
+                q = q + ' CreatedDate = LAST_MONTH';
             else if(dates == 'This Month')
-                query = query + ' CreatedDate = THIS_MONTH';
+                q = q + ' CreatedDate = THIS_MONTH';
             else if(dates == 'Last 3 Months')
-                query = query + ' CreatedDate = LAST_N_MONTHS:3';
+                q = q + ' CreatedDate = LAST_N_MONTHS:3';
             else if(dates == 'Last 6 Months')
-                query = query + ' CreatedDate = LAST_N_MONTHS:6';
+                q = q + ' CreatedDate = LAST_N_MONTHS:6';
             else if(dates == 'Last Year')
-                query = query + ' CreatedDate = LAST_YEAR';
+                q = q + ' CreatedDate = LAST_YEAR';
             else if(dates == 'This Week')
-                query = query + ' CreatedDate = THIS_WEEK';
+                q = q + ' CreatedDate = THIS_WEEK';
             else if(dates == 'This Year')
-                query = query + ' CreatedDate = THIS_YEAR';
+                q = q + ' CreatedDate = THIS_YEAR';
         }
         else if(dates == 'Custom Date'){
             if(recordTypes == null || recordTypes.isEmpty()){
-                query = query + ' WHERE ';
+                q = q + ' WHERE ';
             }
             else if(recordTypes != null && !recordTypes.isEmpty()){
-                query = query + ' AND ';
+                q = q + ' AND ';
             }
             if(startDate != null & endDate != null){
                 string startDateTime = string.valueof(startDate);
                 startDateTime = startDateTime + 'T00:00:00Z';
                 string endDateTime = string.valueof(endDate);
                 endDateTime = endDateTime + 'T23:59:59Z';
-                query = query + ' CreatedDate <= ' + endDateTime + ' AND CreatedDate >= ' + startDateTime;
+                q = q + ' CreatedDate <= ' + endDateTime + ' AND CreatedDate >= ' + startDateTime;
             }
-            query = query + ' LIMIT 1000';
+            q = q + ' LIMIT 1000';
         }
-        return query;
+        return q;
     }
     public void attachmentJSONFile(BatchInfo__c bInfo,String Name,String ContentType,map<string,decimal> ownerTimeMap){
         Attachment jsonfile = new Attachment();
-        if (Schema.sObjectType.Attachment.fields.ParentId.isCreateable()) 
+        if (Schema.sObjectType.Attachment.fields.ParentId.isCreateable())
         {
             jsonfile.ParentId = bInfo.ID;
         }
-        if (Schema.sObjectType.Attachment.fields.Name.isCreateable()) 
+        if (Schema.sObjectType.Attachment.fields.Name.isCreateable())
         {
             jsonfile.Name = name;
         }
-        if (Schema.sObjectType.Attachment.fields.ContentType.isCreateable()) 
+        if (Schema.sObjectType.Attachment.fields.ContentType.isCreateable())
         {
             jsonfile.ContentType = ContentType;
         }
-        if (Schema.sObjectType.Attachment.fields.Body.isCreateable()) 
+        if (Schema.sObjectType.Attachment.fields.Body.isCreateable())
         {
             jsonfile.Body = Blob.valueOf(JSON.serialize(ownerTimeMap));
         }
         if(jsonfile!=null && Schema.sObjectType.Attachment.isAccessible()  && Schema.sObjectType.Attachment.isCreateable()){
             insert jsonfile;
-        } 
+        }
     }
-    public BatchInfo__c createBatchInfoRecord(map<string,decimal> pickValMap,Id recordId,map<string,decimal> ownerTimeMap,string dates,date startDate,date endDate,string field,String fieldValues,string recordTypes,string objectVal,boolean willRefresh,string businessHour,string filterName,string recordTypeids){
+   public BatchInfo__c createBatchInfoRecord(map<string,decimal> pickValMap,Id recordId,map<string,decimal> ownerTimeMap,string dates,date startDate,date endDate,string field,String fieldValues,string recordTypes,string objectVal,boolean willRefresh,string businessHour,string filterName,string recordTypeids){
         BatchInfo__c bInfo = new BatchInfo__c();
         if(recordId!=null){
            BatchInfo__c getinfobatchrec=[SELECT Id, Name, LastReferencedDate, Businesshour__c, DataRepresentation__c, Dates__c, EndDate__c, Filter_Name__c, LastRefreshedDate__c, OwnerDataRepresentation__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, StartDate__c, WillRefresh__c FROM BatchInfo__c where id =:recordId];
@@ -228,73 +226,21 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         return bInfo;   
         }
        }
-    public void infoBatch(map<id,decimal> ownerChangeMap,set<string> ownerset,map<string,decimal> ownerTimeMap,Map<String, Object> mapObj1,map<string,object> mapObj2,id businessHourId,datetime recentRecTime,id newValue,id oldValue, decimal timee){
-        if(ownerChangeMap != null && !ownerChangeMap.isEmpty()){
-            for(string s : ownerChangeMap.keyset()){
-                ownerset.add(s+':'+(string)mapObj2.get('OldValue'));
-                if(!ownerTimeMap.containskey(s+':'+(string)mapObj2.get('OldValue'))){
-                    ownerTimeMap.put(s+':'+(string)mapObj2.get('OldValue'),ownerChangeMap.get(s));
-                }
-                else{
-                    ownerTimeMap.put(s+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(s+':'+(string)mapObj2.get('OldValue'))+ownerChangeMap.get(s));
-                }
-            }
-            ownerset.add(newValue+':'+(string)mapObj2.get('OldValue'));
-            if(!ownerTimeMap.containsKey(newValue+':'+(string)mapObj2.get('OldValue'))){
-                ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),(BusinessHours.diff(businessHourId,recentRecTime,(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class))/1000)/60);
-            }
-            else{
-                ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(newValue+':'+(string)mapObj2.get('OldValue'))+(BusinessHours.diff(businessHourId,recentRecTime,(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class))/1000)/60);
-            }
-        }
-        else{
-            if(OldValue != null && newValue == null){
-                ownerset.add(oldValue+':'+(string)mapObj2.get('OldValue'));
-                if(!ownerTimeMap.containskey(oldValue+':'+(string)mapObj2.get('OldValue'))){
-                    ownerTimeMap.put(oldValue+':'+(string)mapObj2.get('OldValue'),timee);
-                }
-                else{
-                    ownerTimeMap.put(oldValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(oldValue+':'+(string)mapObj2.get('OldValue'))+timee);
-                }
-            }
-            if(newValue!=null){
-                ownerset.add(newValue+':'+(string)mapObj2.get('OldValue'));
-                if(!ownerTimeMap.containskey(newValue+':'+(string)mapObj2.get('OldValue'))){
-                    ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),timee);
-                }
-                else{
-                    ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(newValue+':'+(string)mapObj2.get('OldValue'))+timee);
-                }
-            }
-            if(oldValue == null && newValue == null){
-                ownerset.add((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'));
-                if(!ownerTimeMap.containskey((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'))){
-                    ownerTimeMap.put((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'),timee);
-                }
-                else{
-                    ownerTimeMap.put((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'))+timee);
-                }
-                
-            }
-        }
-    }     
     public Database.QueryLocator start(Database.BatchableContext bc){
         return Database.getQueryLocator(query);      
     }
     public void execute(Database.BatchableContext bc, List<object> records){
         for(object data :(list<object>)records){
+            Map<String, Object> mapObj1 =(Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data));
+            map<String,object> hisdata = (map<string,object>)JSON.deserializeUntyped(JSON.serialize(mapObj1.get('Histories')));                
             boolean firstTime = true;
             boolean ownerfirstTime = true;
             dateTime subtime;
             datetime recentRecTime;
             id newValue;
             id oldValue;
-            
+            map<id,decimal> ownerChangeMap = new map<id,decimal>();
             set<string> ownerset = new set<string>();
-            
-            Map<String, Object> mapObj1 =(Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data));
-            map<String,object> hisdata = (map<string,object>)JSON.deserializeUntyped(JSON.serialize(mapObj1.get('Histories')));                
-            
             if((list<object>)hisdata.get('records')!=null){
                 for(object data2 : (list<object>)hisdata.get('records')){
                     map<string,object> mapObj2 =(map<string,object>)JSON.deserializeUntyped(JSON.serialize(data2));
@@ -307,7 +253,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                     decimal ownersubtime;
                     dateTime dt;
                     id oldVal;
-                    
+                   
                     map<string,object> mapObj2 =(map<string,object>)JSON.deserializeUntyped(JSON.serialize(data2));
                     if(mapObj2.get('Field') == 'Owner' && mapObj2.get('DataType') == 'EntityId'){
                         if(ownerfirstTime){
@@ -331,7 +277,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                             }
                         }
                         newValue = (ID)string.valueOf(mapObj2.get('NewValue'));
-                        
+                       
                     }    
                     if(mapObj2.get('Field') == field){
                         if(firstTime){
@@ -340,7 +286,55 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                             dt = (DateTime)JSON.deserialize('"' + mapObj1.get('CreatedDate')+'"', DateTime.class);
                             decimal timee = BusinessHours.diff(businessHourId,(DateTime)JSON.deserialize('"' + mapObj1.get('CreatedDate')+'"', DateTime.class),(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class));
                             timee = (timee/1000)/60;
-                            infoBatch(ownerChangeMap,ownerset,ownerTimeMap,mapObj1,mapObj2,businessHourId,recentRecTime,newValue,oldValue,timee);
+                           
+                            if(ownerChangeMap != null && !ownerChangeMap.isEmpty()){
+                                for(string s : ownerChangeMap.keyset()){
+                                    ownerset.add(s+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey(s+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put(s+':'+(string)mapObj2.get('OldValue'),ownerChangeMap.get(s));
+                                    }
+                                    else{
+                                        ownerTimeMap.put(s+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(s+':'+(string)mapObj2.get('OldValue'))+ownerChangeMap.get(s));
+                                    }
+                                }
+                                ownerset.add(newValue+':'+(string)mapObj2.get('OldValue'));
+                                if(!ownerTimeMap.containsKey(newValue+':'+(string)mapObj2.get('OldValue'))){
+                                    ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),(BusinessHours.diff(businessHourId,recentRecTime,(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class))/1000)/60);
+                                }
+                                else{
+                                    ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(newValue+':'+(string)mapObj2.get('OldValue'))+(BusinessHours.diff(businessHourId,recentRecTime,(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class))/1000)/60);
+                                }
+                            }
+                            else{
+                                if(OldValue != null && newValue == null){
+                                    ownerset.add(oldValue+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey(oldValue+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put(oldValue+':'+(string)mapObj2.get('OldValue'),timee);
+                                    }
+                                    else{
+                                        ownerTimeMap.put(oldValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(oldValue+':'+(string)mapObj2.get('OldValue'))+timee);
+                                    }
+                                }
+                                if(newValue!=null){
+                                    ownerset.add(newValue+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey(newValue+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),timee);
+                                    }
+                                    else{
+                                        ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(newValue+':'+(string)mapObj2.get('OldValue'))+timee);
+                                    }
+                                }
+                                if(oldValue == null && newValue == null){
+                                    ownerset.add((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'),timee);
+                                    }
+                                    else{
+                                        ownerTimeMap.put((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'))+timee);
+                                    }
+                                   
+                                }
+                            }
                             if (pickValMap.containsKey(string.valueOf(mapObj2.get('OldValue')))){
                                 if(pickValMap.get(string.valueOf(mapObj2.get('OldValue'))) == null){
                                     pickValMap.put(string.valueOf(mapObj2.get('OldValue')),timee);
@@ -355,7 +349,54 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                             decimal timee = BusinessHours.diff(businessHourId ,subtime,dt);
                             subtime = dt;
                             timee = (timee/1000)/60;
-                            infoBatch(ownerChangeMap,ownerset,ownerTimeMap,mapObj1,mapObj2,businessHourId,recentRecTime,newValue,oldValue,timee);
+                           
+                            if(ownerChangeMap != null && !ownerChangeMap.isEmpty()){
+                                for(string s : ownerChangeMap.keyset()){
+                                    ownerset.add(s+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey(s+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put(s+':'+(string)mapObj2.get('OldValue'),ownerChangeMap.get(s));
+                                    }
+                                    else{
+                                        ownerTimeMap.put(s+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(s+':'+(string)mapObj2.get('OldValue'))+ownerChangeMap.get(s));
+                                    }
+                                }
+                                ownerset.add(newValue+':'+(string)mapObj2.get('OldValue'));
+                                if(!ownerTimeMap.containskey(newValue+':'+(string)mapObj2.get('OldValue'))){
+                                    ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),(BusinessHours.diff(businessHourId,recentRecTime,(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class))/1000)/60);
+                                }
+                                else{
+                                    ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(newValue+':'+(string)mapObj2.get('OldValue'))+(BusinessHours.diff(businessHourId,recentRecTime,(DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class))/1000)/60);
+                                }
+                            }
+                            else{
+                                if(oldValue != null && newValue == null){
+                                    ownerset.add(oldValue+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey(oldValue+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put(oldValue+':'+(string)mapObj2.get('OldValue'),timee);
+                                    }
+                                    else{
+                                        ownerTimeMap.put(oldValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(oldValue+':'+(string)mapObj2.get('OldValue'))+timee);
+                                    }
+                                }
+                                else if(newValue!=null){
+                                    ownerset.add(newValue+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey(newValue+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),timee);
+                                    }
+                                    else{
+                                        ownerTimeMap.put(newValue+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get(newValue+':'+(string)mapObj2.get('OldValue'))+timee);
+                                    }
+                                }
+                                else if(oldValue == null && newValue == null){
+                                    ownerset.add((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'));
+                                    if(!ownerTimeMap.containskey((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'))){
+                                        ownerTimeMap.put((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'),timee);
+                                    }
+                                    else{
+                                        ownerTimeMap.put((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'),ownerTimeMap.get((string)mapObj1.get('OwnerId')+':'+(string)mapObj2.get('OldValue'))+timee);
+                                    }
+                                }
+                            }
                             if (pickValMap.containsKey(string.valueOf(mapObj2.get('OldValue')))){
                                 if(pickValMap.get(string.valueOf(mapObj2.get('OldValue'))) != null){
                                     pickValMap.put(string.valueOf(mapObj2.get('OldValue')),pickValMap.get(string.valueOf(mapObj2.get('OldValue')))+timee);
@@ -371,7 +412,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                     ownerfirstTime = false;
                     if(mapObj2.get('Field') == 'Created' ||mapObj2.get('Field') == field || (mapObj2.get('Field') == 'Owner' && mapObj2.get('DataType') == 'EntityId')){
                         recentRecTime = (DateTime)JSON.deserialize('"' + mapObj2.get('CreatedDate')+'"', DateTime.class);
-                    } 
+                    }
                 }
                 for(string os : ownerset){
                     if(!recordcountperowner.containsKey(os)){
@@ -385,7 +426,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         }
         recordsProcessed=recordsProcessed+records.size();
     }
-    public void finish(Database.BatchableContext bc){   
+    public void finish(Database.BatchableContext bc){  
         for(string s : pickValMap.keyset()){
             Decimal avg;
             if(pickValMap.get(s) != null && pickValMap.get(s)!=0){
@@ -414,9 +455,9 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         }
         if(this.scheduled == false){
             if(this.recordId == null){
-                BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
+                BatchInfo__c bInfo= createbatchinforecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
                 if(bInfo!=null && Schema.sObjectType.BatchInfo__c.isAccessible()  && Schema.sObjectType.BatchInfo__c.isCreateable()){
-                    database.insert(bInfo); 
+                    database.insert(bInfo);
                 }
                 IF(this.filterName!=NULL){
                     attachmentJSONFile(bInfo, this.filterName, 'text/plain', ownerTimeMap);
@@ -426,7 +467,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                 }
             }
             else{
-                 BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
+                BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
                  database.update(bInfo);
                 list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
                 if (BatchInfo__c.sObjectType.getDescribe().isDeletable()){
@@ -442,10 +483,10 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                     averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,null,true);
                     database.executeBatch(atbc);
                 }
-            } 
+            }
              BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
                database.update(bInfo);
-               list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
+            list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
             if (BatchInfo__c.sObjectType.getDescribe().isDeletable()){
                 delete doc;
             }

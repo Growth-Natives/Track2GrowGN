@@ -8,6 +8,7 @@ export default class Poc extends LightningElement {
 
    options=[]; 
    picklistVal;
+   showchart=false;
 
     dynmic()
     {
@@ -30,6 +31,7 @@ export default class Poc extends LightningElement {
         this.picklistVal = event.target.value;
         this.getcallby();
        console.log('this.picklistVal',this.picklistVal);
+       this.showchart=true;
     }
 
     ////////////////
@@ -90,16 +92,16 @@ export default class Poc extends LightningElement {
 
                 arr.push(this.SobjectFieldvalue.split(','));
                 this.picklistVal = arr[0][0];
-                this.cardTitle = 'Average Time Spent On Owner Leader Board Per ' + fieldType + ':' + this.picklistVal + ' (In Minutes)';
+                this.cardTitle = 'Owner Based On Average Time(In Minutes)';
                 this.dynamic();
                 this.getcallby();
             }
             else {
-                window.location.reload();
+               // window.location.reload();
             }
         }
         else {
-            window.location.reload();
+           // window.location.reload();
         }
     }
 
@@ -147,20 +149,7 @@ export default class Poc extends LightningElement {
             count.push(Object.values(this.dataSet)[ownerLabel].count);
         }
         var ctx = this.template.querySelector(".pie-chart").getContext('2d');
-        if (this.picklistValRight != null || this.picklistValRight != undefined) {
-            var type = this.picklistValRight.split(' ')[0];
-            var size = parseInt(this.picklistValRight.replace(/[^\d.]/g, ''), 10);
-            if (type == 'Max') {
-
-                newArrayLabel = newArrayLabel.slice(-size);
-                newArrayData = newArrayData.slice(-size);
-            }
-            else if (type == 'Min') {
-                newArrayLabel = newArrayLabel.slice(0, size);
-                newArrayData = newArrayData.slice(0, size);
-            }
-        }
-        this.mychart = new Chart(ctx, {
+         this.mychart = new Chart(ctx, {
             type: 'bar',
             data: {
 

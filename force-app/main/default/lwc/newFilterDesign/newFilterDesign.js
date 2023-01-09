@@ -94,6 +94,7 @@ export default class Filter_LWC extends LightningElement {
     havingValue = false;
     requiredField1 = false;
     requiredField2 = false;
+    requiredFieldVal = false;
     requiredField3 = false;
     requiredField4 = false;
     requiredField5 = false;
@@ -307,9 +308,9 @@ export default class Filter_LWC extends LightningElement {
     }
 
     handleChange(event) {
-
         this.clickedButtonLabelCheck = false;
         this.selectedVal = event.detail.value;
+        console.log('this.selectedVal==>',this.selectedVal);
     }
 
     onHandleCheckBox(event) {
@@ -395,11 +396,13 @@ export default class Filter_LWC extends LightningElement {
                     this.requiredField3 = false;
                     this.requiredField4 = false;
                     this.requiredField5 = false;
+                    this.requiredFieldVal = false;
                     this.requiredCustomDate = false;
                     this.isObjFieldHistory = false;
                 }
                 if (isObjectVal == true && this.isObjFieldHistory == true) {
                     this.requiredField2 = false;
+                    this.requiredFieldVal=false;
                     this.requiredField3 = false;
                     this.requiredField4 = false;
                     this.requiredField5 = false;
@@ -413,7 +416,13 @@ export default class Filter_LWC extends LightningElement {
                 else {
                     this.requiredField2 = false;
                 }
-
+                if(isObjectVal == false && (this.selectedVal.length==0||this.selectedVal==undefined||this.selectedVal==''||this.selectedVal==null)){
+                    this.requiredFieldVal = true;
+                    this.errorMsg += ' Object Field Value,';
+                }
+                else{
+                    this.requiredFieldVal = false;
+                }
                 if (isObjectVal == false && (this.selectedVal == undefined || this.objectVal == ' ')) {
                     this.errorMsg += ' Object Field Value Type,';
                 }
@@ -456,7 +465,7 @@ export default class Filter_LWC extends LightningElement {
 
                     }
                 }
-                if (isObjectVal == false && this.requiredField1 == false && this.requiredField2 == false && this.requiredField3 == false && this.requiredField4 == false && this.selectedVal != undefined && this.requiredCustomDate == false) {
+                if (isObjectVal == false && this.requiredField1 == false && this.requiredField2 == false && this.requiredFieldVal == false && this.requiredField3 == false && this.requiredField4 == false && this.selectedVal != undefined && this.requiredCustomDate == false) {
                     if (this.isFilterSave == true && this.isCheckFilter == true) {
                         if (this.filterName == undefined || this.objectVal == '' || this.filterName == '' || this.filterName == null) {
                             this.requiredField5 = true;
