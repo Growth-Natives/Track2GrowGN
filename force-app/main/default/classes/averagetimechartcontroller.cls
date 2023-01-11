@@ -6,10 +6,10 @@ public with sharing class averagetimechartcontroller
         String fieldVal = String.join(fieldValues,', '); 
         String recordType=null;
         if(recordTypes == null||recordTypes.isEmpty()){
-             recordType=null;
-       }
+            recordType=null;
+        }
         else{
-           recordType = String.join(recordTypes,', ');
+            recordType = String.join(recordTypes,', ');
         }
         Id recordId;
         Id batchJobId;
@@ -23,13 +23,13 @@ public with sharing class averagetimechartcontroller
         {
             recordId = bi[0].Id;
             if(bi[0].LastRefreshedDate__c == null || bi[0].LastRefreshedDate__c != system.today())
-			{
+            {
                 system.debug('in LastRefreshedDate');
                 averageTimeBatchClass atbc = new averageTimeBatchClass(fieldValues,field,objectVal,recordTypes,dates,startDate,endDate,recordId,willRefresh,businessHour,filterName,false);
                 batchJobId=database.executeBatch(atbc);
             }
             else
-			{
+            {
                 system.debug('in LastRefreshedDate elsee');
                 BatchInfo__c bInfo = new BatchInfo__c();
                 if (Schema.sObjectType.BatchInfo__c.fields.Id.isAccessible()) 
@@ -51,7 +51,7 @@ public with sharing class averagetimechartcontroller
                 }
                 System.debug('--BatchInfo__c Datat ='+bInfo);
             }
-
+            
         }
         else
         {
@@ -63,7 +63,7 @@ public with sharing class averagetimechartcontroller
     
     @AuraEnabled
     public static String retriveFilter(String objectVal, String field,List<String> fieldValues, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh, String filterName) 
-	{
+    {
         String fieldVal = String.join(fieldValues,', '); 
         String recordType = String.join(recordTypes,', ');
         Id recordId;
@@ -71,14 +71,14 @@ public with sharing class averagetimechartcontroller
         String errorName;
         List<BatchInfo__c> bi = new List<BatchInfo__c>([SELECT Id,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Businesshour__c =:businessHour and SobjectFieldValue__c =:fieldVal and Dates__c =: dates AND EndDate__c =: endDate AND StartDate__c =: startDate AND SobjectFieldType__c =: field AND SobjectRecordType__c =: recordType AND SobjectType__c =: objectVal AND willRefresh__c = true LIMIT 1]);
         if(bi != null && !bi.isEmpty())
-		{
+        {
             recordId = bi[0].Id;  
-               // if(bi[0].willRefresh__c == true)
-                //{
-                    if(bi[0].Filter_Name__c!=filterName)
-                    {
-                        errorName = 'Filter already exists as a '+bi[0].Filter_Name__c;
-                    }
+            // if(bi[0].willRefresh__c == true)
+            //{
+            if(bi[0].Filter_Name__c!=filterName)
+            {
+                errorName = 'Filter already exists as a '+bi[0].Filter_Name__c;
+            }
             //}
         }
         for(BatchInfo__c b : [SELECT id, Filter_Name__c, willRefresh__c FROM BatchInfo__c WHERE willRefresh__c = true])
@@ -101,17 +101,17 @@ public with sharing class averagetimechartcontroller
     @AuraEnabled
     public static List<AsyncApexJob> getBatchJobStatusValue(List<String> jobID)
     {
-		List<AsyncApexJob> statsList = new List<AsyncApexJob>();
-		for(AsyncApexJob a :[SELECT Status FROM AsyncApexJob WHERE Id In :jobID])
-		{
-			statsList.add(a);
-            }
+        List<AsyncApexJob> statsList = new List<AsyncApexJob>();
+        for(AsyncApexJob a :[SELECT Status FROM AsyncApexJob WHERE Id In :jobID])
+        {
+            statsList.add(a);
+        }
         return statsList;
     }
-  
+    
     @AuraEnabled
     public static map<string,double> mapvalue(String objectVal, String Field,List<String> fieldValues, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh, String filterName) 
-	{
+    {
         String dataRepresentation; 
         String fieldVal = String.join(fieldValues,', '); 
         String recordType = String.join(recordTypes,', ');
@@ -182,18 +182,18 @@ public with sharing class averagetimechartcontroller
     {
         System.debug('value of getLeadByStatus');
         map<String,String> usermap = new map<String,String>();
-
+        
         List<DataSet> dataSet = new List<DataSet>();
         String status_val = status;
         String dataRepresentation;
         String recordType = String.join(recordTypes,', ');
         List<BatchInfo__c> ctendays = new List<BatchInfo__c>();
-         List<BatchInfo__c> bi = new list<BatchInfo__c>();
+        List<BatchInfo__c> bi = new list<BatchInfo__c>();
         if(selectedName != null){
-                bi = [SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Filter_Name__c=:selectedName];
+            bi = [SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Filter_Name__c=:selectedName];
         }
         else{
-               bi=[SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c  order by createddate desc limit 1];
+            bi=[SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c  order by createddate desc limit 1];
         }
         system.debug('value of bii'+bi);
         
@@ -221,23 +221,23 @@ public with sharing class averagetimechartcontroller
         String ss;
         for(object sst: result)
         {
-           
+            
             Map<String,object> data=(Map<String,object>)sst;
-               for(String ownerstage:data.keySet())
-               {
+            for(String ownerstage:data.keySet())
+            {
                 List<String> ownerstagearray=ownerstage.split(':');
                 system.debug('containssss...'+ownertostagetotime.containsKey(ownerstagearray[1]));
-
+                
                 if(ownertostagetotime.containsKey(ownerstagearray[1]) && ownertostagetotime!=null)
                 {
                     ownertostagetotime.get(ownerstagearray[1]).put(ownerstagearray[0],decimal.valueOf(String.valueOf(data.get(ownerstage))));
                 }
                 else
-				{
-                   if(data.get(ownerstage)!=null)
-                        {
-                            ownertostagetotime.put(ownerstagearray[1], new map<String,decimal>{ownerstagearray[0]=>decimal.valueOf(String.valueOf(data.get(ownerstage)))}) ;
-						}
+                {
+                    if(data.get(ownerstage)!=null)
+                    {
+                        ownertostagetotime.put(ownerstagearray[1], new map<String,decimal>{ownerstagearray[0]=>decimal.valueOf(String.valueOf(data.get(ownerstage)))}) ;
+                    }
                 }
             }
         }
@@ -252,7 +252,7 @@ public with sharing class averagetimechartcontroller
         if(ownertostagetotime.containskey(status_val))
         {
             for(String owneriddata:ownertostagetotime.get(status_val).keySet())
-			{
+            {
                 dataSet.add(new DataSet(usermap.get(owneriddata) ,ownertostagetotime.get(status_val).get(owneriddata)));
             }
         }
@@ -261,7 +261,7 @@ public with sharing class averagetimechartcontroller
     }
     @AuraEnabled
     public static List<BatchInfo__c> getFD(String objectVal, String field,List<String> fieldValues, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh)
-	{
+    {
         String fieldVal = String.join(fieldValues,', '); 
         String recordType = String.join(recordTypes,', ');
         Id recordId;
@@ -276,37 +276,36 @@ public with sharing class averagetimechartcontroller
         System.debug('BI getFD FN null ========'+BI);
         return BI;
     }
-     @AuraEnabled
+    @AuraEnabled
     public static List<BatchInfo__c> getFD1(String objectVal, String field,List<String> fieldValues, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh, String FN)
-	{
+    {
         String fieldVal = String.join(fieldValues,', '); 
         String recordType = String.join(recordTypes,', ');
         List<BatchInfo__c> BI = new List<BatchInfo__c>();
         List<BatchInfo__c> BIs = [SELECT Id,Filter_Name__c, Businesshour__c, Dates__c, SobjectFieldValue__c, EndDate__c, StartDate__c, SobjectFieldType__c, SobjectRecordType__c, SobjectType__c,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c where Businesshour__c =:businessHour and Dates__c =: dates AND EndDate__c =: endDate AND StartDate__c =: startDate AND SobjectFieldType__c =: Field AND SobjectFieldValue__c =: fieldVal AND SobjectRecordType__c =: recordType AND SobjectType__c =: objectVal  LIMIT 1];
-            System.debug('BI getFD ========'+BIs);
-            BI = BIs;
-            System.debug('BI getFD ========'+BI);
+        System.debug('BI getFD ========'+BIs);
+        BI = BIs;
+        System.debug('BI getFD ========'+BI);
         return BI;
     }
     
     ////////////owner based on average time
-      @AuraEnabled(cacheable = true)
+    @AuraEnabled(cacheable = true)
     public static List<DataSet> ownerbasedonaveragetime(String status,String objectVal, String Field, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh,String selectedName,string ownerpicklist)
     {
-        System.debug('value of getLeadByStatus');
         map<String,String> usermap = new map<String,String>();
-
         List<DataSet> dataSet = new List<DataSet>();
-        String status_val = status;
+        status = status.replace(' ', '');
+        list<string> status_val=status.split(',');
         String dataRepresentation;
         String recordType = String.join(recordTypes,', ');
         List<BatchInfo__c> ctendays = new List<BatchInfo__c>();
-         List<BatchInfo__c> bi = new list<BatchInfo__c>();
+        List<BatchInfo__c> bi = new list<BatchInfo__c>();
         if(selectedName != null){
-                bi = [SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Filter_Name__c=:selectedName];
+            bi = [SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c,Filter_Name__c From BatchInfo__c where Filter_Name__c=:selectedName];
         }
         else{
-               bi=[SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c  order by createddate desc limit 1];
+            bi=[SELECT Id,OwnerDataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c  order by createddate desc limit 1];
         }
         system.debug('value of bii'+bi);
         
@@ -334,90 +333,139 @@ public with sharing class averagetimechartcontroller
         String ss;
         for(object sst: result)
         {
-           
+            
             Map<String,object> data=(Map<String,object>)sst;
-               for(String ownerstage:data.keySet())
-               {
+            for(String ownerstage:data.keySet())
+            {
                 List<String> ownerstagearray=ownerstage.split(':');
-                system.debug('containssss...'+ownertostagetotime.containsKey(ownerstagearray[1]));
-
                 if(ownertostagetotime.containsKey(ownerstagearray[1]) && ownertostagetotime!=null)
                 {
                     ownertostagetotime.get(ownerstagearray[1]).put(ownerstagearray[0],decimal.valueOf(String.valueOf(data.get(ownerstage))));
                 }
                 else
-				{
-                   if(data.get(ownerstage)!=null)
-                        {
-                            ownertostagetotime.put(ownerstagearray[1], new map<String,decimal>{ownerstagearray[0]=>decimal.valueOf(String.valueOf(data.get(ownerstage)))}) ;
-						}
+                {
+                    if(data.get(ownerstage)!=null)
+                    {
+                        ownertostagetotime.put(ownerstagearray[1], new map<String,decimal>{ownerstagearray[0]=>decimal.valueOf(String.valueOf(data.get(ownerstage)))}) ;
+                    }
                 }
             }
         }
         
-        List<user> acc=[Select id from User where name=:ownerpicklist];
-        system.debug('value of ><><>'+acc[0].id);
-        string picklist='0052w000003cdO7AAI';            
-       //map<string,decimal> final=new map<string,decimal>(); 
-        map<string,decimal> fn= new map<string,decimal>();
+        List<user> listOfUser=[Select id from User where name=:ownerpicklist];
+        list<case> getCaseBasedOwner=[select CaseNumber from case where owner.name=:ownerpicklist];
+        system.debug('value of ><><>'+listOfUser[0].id);
+        map<string,decimal> MapOfOwnerBasedOnAverageTime= new map<string,decimal>();
         for(string str:ownertostagetotime.keyset())
         {
-            map<string,decimal> yes=ownertostagetotime.get(str);
-                for(string fg:ownertostagetotime.get(str).keyset())  
+            map<string,decimal> MapOfKeyOwnerToStageToTime=ownertostagetotime.get(str);
+            for(string fg:ownertostagetotime.get(str).keyset())  
             {
-               
-                if(fg==null)
-                {
-                }
-                else
-                {
-                    if(acc[0].id!=null && acc[0].id==fg){
-                     system.debug('value of fg id'+fg);
-                     system.debug('value of acc[0].id'+acc[0].id);
-                    fn.put(str,yes.get(fg));
-                          dataSet.add(new DataSet(str,yes.get(fg)));
-                   
-                }
-                }
                 
+                if(listOfUser[0].id!=null && listOfUser[0].id==fg){
+                    MapOfOwnerBasedOnAverageTime.put(str,MapOfKeyOwnerToStageToTime.get(fg));
+                   for(string statu:status_val)
+                   {
+                       if(str==statu)
+                       {
+                           dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
+                       }
+                   }
+                   // dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
+                }
             }	  
-        }
-        
-         //List<user> acc=[Select id from User where name=:ownerpicklist];
-        
-        /* set<id> ownerid;
-        if(ownertostagetotime.containskey(status_val))
-        {
-            for(User u:[Select id,Name from User where id IN:ownertostagetotime.get(status_val).keySet()])
-            {
-                usermap.put(u.id,u.Name);
-            }
-        }
-        if(ownertostagetotime.containskey(status_val))
-        {
-            for(String owneriddata:ownertostagetotime.get(status_val).keySet())
-			{
-                dataSet.add(new DataSet(usermap.get(owneriddata) ,ownertostagetotime.get(status_val).get(owneriddata)));
-            }
-        } */
+        } 
         System.debug('value of dataset'+dataset);
         return dataSet ;
     }
     //////////////////////////////////////
-    //
-    //
     @AuraEnabled
-     public static list<String> getUserList(){
-         
-     list<String> userr= new list<String>();
-    List<user> acc=[Select name from User];
-       system.debug('acc==>'+acc);
-       for(user us:acc)
-       {
-           userr.add(string.valueof(us.name));
-       }
-    return userr;
-}
+    public static list<String> getUserList(){
+        
+        list<String> userr= new list<String>();
+        List<user> acc=[Select name from User];
+        system.debug('acc==>'+acc);
+        for(user us:acc)
+        {
+            userr.add(string.valueof(us.name));
+        }
+        return userr;
+    }
+    
+    ////// average time case single record
+    @AuraEnabled
+    public static map<string,decimal> avergetimesinglerecord(string casevalueid,string id){
+        system.debug('id'+id);
+        system.debug('casevalueid'+casevalueid);
+        map<string,decimal> pickvalmap = new map<string,decimal>();
+        map<string,decimal> pickvalmapglobal = new map<string,decimal>();
+         list<case> caserecord;
+        if(casevalueid!=null)
+        {
+            caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where CaseNumber=:casevalueid];
+        
+        }
+        else if(id!=null)
+        {
+            caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where id=:id];
+        }
+         for(case c : caserecord){
+           system.debug('c'+c); 
+            boolean firsttime = true;
+            datetime recentRecTime;
+            if(c.Histories != null && !(c.Histories).isEmpty()){
+                for(CaseHistory ch : c.Histories){
+                    if(ch.field == 'Status'){
+                        if(firsttime){
+                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',c.CreatedDate,ch.CreatedDate);
+                            timee = (timee/1000)/60;
+                            timee = timee.setScale(2);
+                            if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
+                                pickvalmap.put(string.valueof(ch.OldValue),timee);
+                            }
+                            else{
+                                pickvalmap.put(string.valueof(ch.OldValue),pickvalmap.get(string.valueof(ch.OldValue))+timee);
+                            }
+                            if(!pickvalmapglobal.containskey(string.valueof(ch.OldValue))){
+                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,timee);
+                            }
+                            else{
+                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
+                            }
+                            firsttime = false;
+                        }
+                        else{
+                            
+                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',recentRecTime,ch.CreatedDate);
+                            timee = (timee/1000)/60;
+                            timee = timee.setScale(2);
+                            if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
+                                pickvalmap.put(string.valueof(ch.OldValue),timee);
+                            }
+                            else{
+                                pickvalmap.put(string.valueof(ch.OldValue),pickvalmap.get(string.valueof(ch.OldValue))+timee);
+                            }
+                            if(!pickvalmapglobal.containskey(string.valueof(ch.OldValue))){
+                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,timee);
+                            }
+                            else{
+                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
+                            }
+                        }
+                        recentRecTime = ch.CreatedDate; 
+                    }
+                }
+            }
+            system.debug('value off pickvalmap'+pickvalmap);
+        } 
+        if(!pickvalmap.isEmpty()){
+            return pickvalmap;
+        }
+        else {
+            return null;
+        }
+    }
+    //////
     
     public class DataSet
     {

@@ -447,7 +447,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                 avg = avg.setScale(2);
             }
             if(avg==null || avg==0.00){
-                ownerTimeMap.put(s,null);
+                ownerTimeMap.put(s,0.0);
             }
             else{
                 ownerTimeMap.put(s,avg);

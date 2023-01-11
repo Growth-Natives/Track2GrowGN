@@ -2,6 +2,7 @@ import { LightningElement, track, api, wire } from 'lwc';
 import Track2GrowI from '@salesforce/resourceUrl/Track2GrowI';
 import getFilterDetail from '@salesforce/apex/FilterDetailController.getFilterDetail';
 import getSearchFilterDetail from '@salesforce/apex/FilterDetailController.getSearchFilterDetail';
+// import scheduleClass from '@salesforce/apex/SAPOrdersSchedule.scheduleClass';
 import getFilterDetailFromName from '@salesforce/apex/FilterDetailController.getFilterDetailFromName';
 import deleteFilter from '@salesforce/apex/FilterDetailController.deleteFilter';
 import getDetail from '@salesforce/apex/FilterDetailController.getDetail';
@@ -135,6 +136,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
             }
         }
     }
+
     getfDetail() {
         if (this.datas.length >= 1) {
             this.isDataFilter = true;
@@ -157,6 +159,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
             this.isCreateFilterClick = false;
         }
     }
+
     onViewMore() {
         if (this.isShowAllData == false) {
             this.isShowAllData = true;
@@ -172,17 +175,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
             this.getFilterDetailViewLess();
         }
     }
-     onCaseComparision(){
-        console.log('case');
-        this.isDataFilter = false;
-        this.isConfigClick = true;
-        this.isCreateFilterClick = false;
-        this.isChartShow = false;
-        // this.isLoad=true;
-        // this.isLoad = false;
-        this.isLoadMessage = false;
-        console.log('isConfigClick===',this.isConfigClick);
-    }
+
     getFilterDetails() {
         var conts;
         let obj = [];
@@ -239,6 +232,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                 }
             })
     }
+
     getFilterDetailViewLess() {
         var conts;
         let obj = [];
@@ -279,11 +273,13 @@ export default class Track2Grow_Dashboard extends LightningElement {
                 }
             })
     }
+
     onSavedFilterClick() {
         this.isDataFilter = true;
         this.isConfigClick = false;
         this.isCreateFilterClick = false;
     }
+
     onHideSavedFilterClick() {
         this.isDataFilter = false;
         this.isConfigClick = false;
@@ -357,6 +353,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLoadMessage = true;
         refreshApex(this.dummyDatas);
     }
+
     onFilterDetail(event) {
         if (this.selectedFilterName != event.currentTarget.dataset.id) {
             this.clickedButtonLabelCheck = false;
@@ -441,7 +438,6 @@ export default class Track2Grow_Dashboard extends LightningElement {
             })
     }
 
-
     selectOptionChanveValue(event) {
         this.picklistVal = event.target.value;
         var ctx = this.template.querySelector(".pie-chart").getContext('2d');
@@ -484,6 +480,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                 }
             });
     }
+
     detailBackClick() {
         this.isLeftMenu = true;
         this.isSelect = false;
@@ -531,6 +528,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
             })
         return refreshApex(this.dummyDatas);
     }
+
     renderedCallback() {
         refreshApex(this.dummyDatas);
         if (this.chartjsInitialized) {
@@ -599,5 +597,31 @@ export default class Track2Grow_Dashboard extends LightningElement {
             },
         });
 
+    }
+closeConfig(){
+    this.isCreateFilterClick = false;
+        this.isLoad = false;
+        this.spin = false;
+        this.isLoadMessage = true;
+        this.isConfigClick=false;
+}
+    onConfigClick(){
+        this.isCreateFilterClick = false;
+        this.isConfigClick = true;
+        this.isChartShow = false;
+        this.isSelect = false;
+        this.isLoad = false;
+        this.isDataFilter = false;
+        this.isLoadMessage = false;
+                // scheduleClass()
+        // .then(()=>{
+        //     const event = new ShowToastEvent({
+        //                 title: 'SUCCESS',
+        //                 message: 'Configuration is done for 12 AM from MON-FRI',
+        //                 variant: 'SUCCESS ',
+        //                 mode: 'dismissable'
+        //             });
+        //             this.dispatchEvent(event);
+        // })
     }
 }

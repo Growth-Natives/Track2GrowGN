@@ -308,9 +308,9 @@ export default class Filter_LWC extends LightningElement {
     }
 
     handleChange(event) {
+
         this.clickedButtonLabelCheck = false;
         this.selectedVal = event.detail.value;
-        console.log('this.selectedVal==>',this.selectedVal);
     }
 
     onHandleCheckBox(event) {
@@ -402,7 +402,7 @@ export default class Filter_LWC extends LightningElement {
                 }
                 if (isObjectVal == true && this.isObjFieldHistory == true) {
                     this.requiredField2 = false;
-                    this.requiredFieldVal=false;
+                    this.requiredFieldVal = false;
                     this.requiredField3 = false;
                     this.requiredField4 = false;
                     this.requiredField5 = false;

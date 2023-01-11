@@ -1,0 +1,21 @@
+.heading{
+	padding: 10px;
+}
+
+
+td{	
+	padding-top: 40px;
+	overflow:hidden;
+}
+
+table { 
+  table-layout: fixed;
+}
+
+.main{
+	background-color: white;
+}
+
+.show{
+	padding-left: 70%;
+}

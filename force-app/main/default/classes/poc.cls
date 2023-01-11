@@ -1,4 +1,4 @@
-public  with sharing  class CaseComparison {
+public  with sharing  class poc {
     @AuraEnabled(cacheable=true)
     public static List<String> getAllUser(){
         List<case> caseList =[SELECT id,OwnerId,Owner.Name from Case];
@@ -6,11 +6,9 @@ public  with sharing  class CaseComparison {
         
         for(Integer i=0;i<caseList.size();i++){
             if(caseList.size()!=(i+1)){
-                if(caseList[i].OwnerId!=caseList[i+1].OwnerId){
-                    if(!UserName.contains(caseList[i].Owner.name)){
-                    	system.debug('CaseList==>'+caseList[i].Owner.name);
-                        UserName.add(caseList[i].Owner.Name);
-                    }
+                if(caseList[i].Owner.Id!=caseList[i+1].Owner.Id){
+                    system.debug('CaseList==>'+caseList[i].Owner.name);
+                    UserName.add(caseList[i].Owner.Name);
                 }
             }
         }
@@ -20,9 +18,6 @@ public  with sharing  class CaseComparison {
     @AuraEnabled(cacheable = true)
     public static Map<String,Map<String,Decimal>> getAllCasesForUser1(String ownerName,String selectedName)
     {
-        System.debug('selected Name==>'+selectedName);
-                System.debug('owner Name==>'+ownerName);
-
         Map<String,Decimal> ownerDetailMap = new Map<String,Decimal>();
         Map<String,Map<String,Decimal>> ownerData = new Map<String,Map<String,Decimal>>();
         String dataRepresentation;
@@ -102,8 +97,6 @@ public  with sharing  class CaseComparison {
      @AuraEnabled(cacheable = true)
     public static Map<String,Map<String,Decimal>> getAllCasesForUser2(String ownerName,String selectedName)
     {
-                System.debug('selected Name==>'+selectedName);
-        System.debug('owner Name==>'+ownerName);
         Map<String,Decimal> ownerDetailMap = new Map<String,Decimal>();
         Map<String,Map<String,Decimal>> ownerData = new Map<String,Map<String,Decimal>>();
         String dataRepresentation;

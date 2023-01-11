@@ -35,4 +35,5 @@ global class ScheduleBatchClass implements Schedulable {
             Database.executebatch(batch, 200);
         }
     }
+   
 }
