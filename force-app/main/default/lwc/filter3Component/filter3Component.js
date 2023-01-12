@@ -7,7 +7,7 @@ import { refreshApex } from '@salesforce/apex';
 export default class Filter3Component extends LightningElement {
 
     @track dataSet;
-    @track title = 'Tracking Based On Average Time(In Hours)'
+    @track title = '';
     @track TrackingBasedOnAverageTimeZonePickval = 'In Hours';
     @track isModalOpen = false;
 
@@ -34,6 +34,7 @@ export default class Filter3Component extends LightningElement {
     }
 
     connectedCallback() {
+        this.title = 'Tracking Based On Average Time(In Hours)';
         this.TrackingBasedOnAverageTimeZonePickval = 'In Hours';
         this.getcallby();
         if (this.chartjsInitialized) {

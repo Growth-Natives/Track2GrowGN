@@ -1,10 +1,13 @@
 .heading{
-	padding: 10px;
+	padding: 2%;
+}
+.search{
+	padding-left: 1%;
+	padding-right: 1%;
 }
 
-
 td{	
-	padding-top: 40px;
+	padding-top: 5%;
 	overflow:hidden;
 }
 
@@ -17,5 +20,5 @@ table {
 }
 
 .show{
-	padding-left: 70%;
+	padding-left: 60%;
 }

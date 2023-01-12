@@ -140,7 +140,7 @@ handleChange(event) {
         
         if (this.searchValMap != []) {
             console.log('JSON.stringify(this.searchValMap)>>',JSON.stringify(this.searchValMap));
-            getSearchHistoryData({ recid: this.recordId , searchVal: JSON.stringify(this.searchValMap), fieldName: this.field, data: this.recordsAll})
+            getSearchHistoryData({ recid: this.recordId , searchVal: JSON.stringify(this.searchValMap), data: this.recordsAll})
                 .then(data => {
                     console.log('data>>>',data);
                     if (data.length > 0) {
@@ -148,12 +148,14 @@ handleChange(event) {
                         this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
                         this.totalRecountCount = data.length; console.log('count',this.totalRecountCount); 
                         this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
+                        this.page = 1;
                         this.startingRecord = 1;
                         this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
                         //this.noDataFound = false;
                     }
                     else {
-                        this.message = "No data found with searchkey " + this.searchVal;
+                        this.result = data;
+                        this.message = "No data found with searchkey " + this.searchVal +' for '+ this.field+ ' field.';
                         //alert(this.message);
                         //this.noDataFound = true;
                     }

@@ -12,22 +12,22 @@
         <option value="5">5</option>
         </select></div>
         </div>
-        <table border="0" width="80%" align="center">
+        <table border="0" align="center">
             <tr> </tr>
-            <tr>
-                <th><lightning-input type="search" label="Date/Time" onchange={handleChange} value={searchVal1}></lightning-input></th>
-                <th><lightning-input type="search" label="Field" onchange={handleChange} value={searchVal2}></lightning-input></th>
-                <th><lightning-input type="search" label="User" onchange={handleChange} value={searchVal3}></lightning-input></th>
-                <th><lightning-input type="search" label="Original Value" onchange={handleChange} value={searchVal4}></lightning-input></th>
-                <th><lightning-input type="search" label="New Value" onchange={handleChange} value={searchVal5}></lightning-input></th>
+            <tr >
+                <th class= "search"><lightning-input type="date" label="Date/Time" onchange={handleChange} value={searchVal1}></lightning-input></th>
+                <th class= "search"><lightning-input type="search" label="Field" onchange={handleChange} value={searchVal2}></lightning-input></th>
+                <th class= "search"><lightning-input type="search" label="User" onchange={handleChange} value={searchVal3}></lightning-input></th>
+                <th class= "search"><lightning-input type="search" label="Original Value" onchange={handleChange} value={searchVal4}></lightning-input></th>
+                <th class= "search"><lightning-input type="search" label="New Value" onchange={handleChange} value={searchVal5}></lightning-input></th>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th>Date/Time</th>
                 <th>Field</th>
                 <th>User</th>
                 <th>Original Value</th>
                 <th>New Value</th>
-            </tr>
+            </tr> -->
             
                 <template for:each ={result} for:item="rec" for:index="i">
                 <tr key = {rec.Id}>

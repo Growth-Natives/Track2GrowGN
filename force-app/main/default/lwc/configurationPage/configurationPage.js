@@ -4,8 +4,12 @@ import getObject from '@salesforce/apex/SAPOrdersSchedule.scheduleClass';
 export default class ConfigurationPage extends LightningElement {
        jobName='';
        frequencyValue = '';
+       monthlyPriority='';
        preferredTime = '';
        value=[];
+       days=[];
+       isDay = false;
+       isOrdinal = true;
        isWeekely = true;
        requireJobName = false;
        requireToSelectFrequency = false;
@@ -13,10 +17,11 @@ export default class ConfigurationPage extends LightningElement {
        requireStartDate = false;
        requireEndDate = false;
        requirePreferredTime = false;
+       requireMonthlyPriority = false;
        preferredStartTime = [];
        startDate;
        endDate;
-       get option() {
+       get weekDay() {
         return [
             { label: 'Sunday', value: 'SUN' },
             { label: 'Monday', value: 'MON' },
@@ -27,11 +32,14 @@ export default class ConfigurationPage extends LightningElement {
             { label: 'Saturday', value: 'SAT' },
         ];
     }
-      get options() {
+      get frqOption() {
         return [
             { label: 'Weekly', value: 'Weekly' },
             { label: 'Monthly', value: 'Monthly' },
         ];
+    }
+    get getOrdinalNumbers(){
+         return ['the 1st','the 2nd','the 3rd','the 4th','the Last'];
     }
     get getMonthOption() {
         return [
@@ -44,15 +52,45 @@ export default class ConfigurationPage extends LightningElement {
      console.log('config click');
      this.frequencyValue = 'Weekly';
      this.preferredStartTime = ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'];
+    for(var i=1;i<=31;i++){
+            this.days.push(i);
+        }
+    this.days.push('Last');
     }
 
     onHandleJobNameChange(event){
         console.log('event.currentTarget.value;===>',event.currentTarget.value);
             this.jobName = event.currentTarget.value;
     }
+    onSelectMonthlyPriority(event){
+        this.monthlyPriority = event.currentTarget.value;
+        console.log('onSelectMonthlyPriority change==>',event.currentTarget.value);
+        if(this.monthlyPriority==='day'){
+            this.isDay=false;
+            this.isOrdinal=true;
+        }
+        else{
+            this.isDay=true;
+            this.isOrdinal=false;
+        }
+    }
     handleWeekChange(e){
         this.value =e.detail.value;
         console.log('Weeks==>',this.value);
+    }
+     onSelectDay(e){
+        //this.value =e.detail.value;
+        console.log('onSelectDay==>',e.target.value);
+    }
+     onSelectOrdinal(e){
+          console.log('onSelectOrdinal==>',e.target.value);
+        // this.value =e.detail.value;
+        // console.log('Weeks==>',this.value);
+    }
+     onSelectWeek(e){
+          console.log('onSelectWeek==>',e.target.value);
+        // this.value =e.detail.value;
+        // console.log('Weeks==>',this.value);
     }
     onHandleFrequencyChange(event){
         this.frequencyValue = event.currentTarget.value;
@@ -114,8 +152,15 @@ export default class ConfigurationPage extends LightningElement {
         else{
             this.requirePreferredTime = false;
         }
+        if(this.isWeekely==false && this.monthlyPriority==''){
+            this.requireMonthlyPriority = true;
+        }
+        else{
+            this.requireMonthlyPriority = false;
+        }
+
         console.log('requireToSelectWeekDays===',this.requireToSelectWeekDays);
-        if(this.requireJobName==false&&this.requireToSelectFrequency==false&&this.requireStartDate==false&&this.requireEndDate==false&&this.requireToSelectWeekDays==false&&this.requirePreferredTime==false){
+        if(this.requireJobName==false&&this.requireToSelectFrequency==false&&this.requireMonthlyPriority==false&&this.requireStartDate==false&&this.requireEndDate==false&&this.requireToSelectWeekDays==false&&this.requirePreferredTime==false){
             getObject({jobName:this.jobName,weekday:this.value,startDate:this.startDate,endDate:this.endDate,preferredTime:this.preferredTime})
             .then(()=>{
                 console.log('Val');

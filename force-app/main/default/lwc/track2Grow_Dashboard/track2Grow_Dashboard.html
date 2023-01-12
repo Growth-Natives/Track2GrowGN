@@ -324,8 +324,7 @@
         </lightning-tab>
          <lightning-tab label="Case Comparison">
               <template if:true={clickedButtonLabelCheck}>
-                   <c-case-Comparison-Component selected-filter-name={selectedFilterName}></c-case-Comparison-Component>
-                  <!-- <c-poc is-manage-package={isManagePackage} selected-filter-name={selectedFilterName} save-filter-id={saveFilterId} filter-detail-val={filterDetailVal}></c-poc> -->
+                   <c-case-Comparison-Component is-manage-package={isManagePackage}  selected-filter-name={selectedFilterName} filter-detail-val={filterDetailVal}></c-case-Comparison-Component>
               </template>              
         </lightning-tab>
     </lightning-tabset>

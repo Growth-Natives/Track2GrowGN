@@ -2,13 +2,18 @@ import { LightningElement, track, api, wire } from 'lwc';
 import chartjs from '@salesforce/resourceUrl/ChartJs';
 import { loadScript } from 'lightning/platformResourceLoader';
 import getAllUser from '@salesforce/apex/CaseComparison.getAllUser';
-import getAllCasesForUser1 from '@salesforce/apex/CaseComparison.getAllCasesForUser1';
-import getAllCasesForUser2 from '@salesforce/apex/CaseComparison.getAllCasesForUser2';
+import getAllCasesForUser from '@salesforce/apex/CaseComparison.getAllCasesForUser';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class CaseComparisonComponent extends LightningElement {
     @api selectedFilterName;
+    @api isManagePackage;
+    @api filterDetailVal;
+
     @track user1 = [];
     @track user2 = [];
+    graphTitle='';
+    objectField='';
+    objectField1='';
     @track caseUser1;
     @track caseUser2;
     @track chartLabel = [];
@@ -19,14 +24,41 @@ export default class CaseComparisonComponent extends LightningElement {
     isUser2 = true;
     isChartJsInitialized;
     mychart;
-
+    SobjectFieldType;
+    SobjectFieldvalue;
+    picklistVal;
     @wire(getAllUser) USE(result) {
         if (result.data != null || result.data != undefined) {
-            console.log('User==>',result.data);
             this.user1 = result.data;
         }
     }
+    connectedCallback() {
+         console.log('Connected callback');
+        var fieldType;
+        var fieldValue;
+        var arr = [];
+        if (this.filterDetailVal != undefined || this.filterDetailVal != null || this.filterDetailVal.length > 0) {
+            if (!this.isManagePackage) {
+                this.filterDetailVal.map((val) => {
+                    this.SobjectType = val.SobjectType__c;
+                    fieldType = val.SobjectFieldType__c;
+                    fieldValue = val.SobjectFieldValue__c;
+                });
+            }
+            else {
+                this.filterDetailVal.map(val => {
+                    this.SobjectType = val.Track2Grow__SobjectType__c;
+                    fieldType = val.Track2Grow__SobjectFieldType__c;
+                    fieldValue = val.Track2Grow__SobjectFieldValue__c;
+                });
+            }
+            this.SobjectFieldType = fieldType;
+            this.SobjectFieldvalue = fieldValue;
+        }
+        console.log('value of case SobjectFieldvalue', this.SobjectFieldvalue);
+    }
     graph() {
+        this.graphTitle='Case comparison based On Average Time(In Minutes) between '+this.objectField+' and '+this.objectField1;
         if (this.mychart != undefined) {
             this.mychart.destroy();
         }
@@ -69,9 +101,6 @@ export default class CaseComparisonComponent extends LightningElement {
     }
     selectObjectFieldChange(event) {
         this.user2 = [];
-        console.log('selectedFilterName==',this.selectedFilterName);
-                
-
         if (this.objectField1 != null || this.objectField1 != undefined) {
             if (this.objectField1 != event.target.value) {
                 this.objectField = event.target.value;
@@ -79,8 +108,8 @@ export default class CaseComparisonComponent extends LightningElement {
             else {
                  const evt = new ShowToastEvent({
                             title: this._title,
-                            message: "Please Select differnt User",
-                            variant: this.variant,
+                            message: "Please Select differnt User 2",
+                            variant: 'Warning',
                         });
                         this.dispatchEvent(evt);
                         this.objectField = '';
@@ -92,7 +121,7 @@ export default class CaseComparisonComponent extends LightningElement {
         this.objectField = event.target.value;
         if (this.objectField != null || this.objectField != undefined) {
             this.caseUser1 = [];
-            getAllCasesForUser1({ ownerName: this.objectField, selectedName: this.selectedFilterName })
+            getAllCasesForUser({ ownerName: this.objectField, selectedName: this.selectedFilterName,status:this.SobjectFieldvalue})
                 .then((data) => {
                     this.caseUser1 = data;
                 });
@@ -103,31 +132,23 @@ export default class CaseComparisonComponent extends LightningElement {
                 this.isUser2 = false;
             }
         });
-         console.log('objectField==',this.objectField);
     }
     selectObjectFieldChange1(event) {
-         console.log('selectedFilterName==',this.selectedFilterName);
-        
         this.objectField1 = event.target.value;
         if (this.objectField1 != null || this.objectField1 != undefined) {
             this.caseUser2 = [];
-            getAllCasesForUser2({ ownerName: this.objectField1, selectedName: this.selectedFilterName })
+            getAllCasesForUser({ ownerName: this.objectField1, selectedName: this.selectedFilterName,status:this.SobjectFieldvalue })
                 .then((data) => {
                     this.caseUser2 = data;
                 });
         }
-         console.log('objectField1==',this.objectField1);
     }
     chartConfig() {
-          console.log('this.objectField===>',this.objectField);
-              console.log('this.objectField111===',this.objectField1);
-              if((this.objectField==''|| this.objectField==undefined) && (this.objectField1==''||this.objectField1==undefined)){
-                    console.log('Please Select User');
-           
+              if((this.objectField==''|| this.objectField==undefined) || (this.objectField1==''||this.objectField1==undefined)){           
                 const evt = new ShowToastEvent({
                                 title: this._title,
                                 message: "Please Select User",
-                                variant: this.variant,
+                                variant: 'Error',
                             });
                             this.dispatchEvent(evt);
               }

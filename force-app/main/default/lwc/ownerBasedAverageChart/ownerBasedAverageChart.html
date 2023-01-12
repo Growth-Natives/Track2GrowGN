@@ -1,14 +1,15 @@
 <template>
     <lightning-card>
       <div style="display:flex">
-        <div style="width:200px; padding:0.5rem;">
+        <div  style="padding:0.5rem;width: -webkit-fill-available;">
             <lightning-combobox
                 name="filter"
                 label="Owner"
                 value={picklistVal}
                 options={options}
                 onchange={handlePicklistChange}
-                placeholder="Select Owner">
+                placeholder="Select Owner"
+                style="width:200px">
             </lightning-combobox>
              </div>
 
@@ -16,7 +17,7 @@
            <div style="width:200px; padding:0.5rem;float:right">
              <lightning-input type="text" field-level-help="" label="Enter Case Number" value={textValue} onchange={handleInputChange}></lightning-input> 
               </div>
-              <div style="width: 200px; padding: 0.5rem;margin-top:1.3rem;float:right">
+              <div style= "padding: 0.5rem;margin-top:1.3rem;float:right">
              <lightning-button variant="brand" label="Search" title="Primary action" onclick={handlePicklistcase} class="slds-m-left_x-small"></lightning-button>
              </div>
         </template>

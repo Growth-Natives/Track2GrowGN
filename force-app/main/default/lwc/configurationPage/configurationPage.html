@@ -32,14 +32,14 @@
 				</div>
 				<div class="slds-col slds-size_2-of-3">
 					<div class="slds-grid slds-gutters">
-						<div class="slds-col slds-size_2-of-4">
-							<lightning-radio-group name="radioGroup" label="Frequency" options={options}
+						<div class="slds-col slds-size_1-of-4">
+							<lightning-radio-group name="radioGroup" label="Frequency" options={frqOption}
 								onchange={onHandleFrequencyChange} value='Weekly' type="radio"></lightning-radio-group>
 						</div>
 						<template if:true={isWeekely}>
 							<div class="slds-col slds-size_3-of-4">
 								<lightning-checkbox-group name="Recurs every week on" label="Recurs every week on"
-									options={option} value={value} onchange={handleWeekChange}>
+									options={weekDay} value={value} onchange={handleWeekChange}>
 								</lightning-checkbox-group>
 								<br/>
 								<template if:true={requireToSelectWeekDays}>
@@ -48,19 +48,37 @@
 							</div>
 						</template>
 						<template if:false={isWeekely}>
-								<div class="slds-col slds-size_3-of-4" style="display:flex">
-                               		<input type="radio" name="Radiobutton" value="">On day 
-                               		<select class="slds-select" onchange={selectObjectFieldChange}>
-										<option value="">None</option>
-										<template for:each={preferredStartTime} for:item="time">
-											<option key={time} value={time}>
-												{time}
+								<div class="slds-col slds-size_3-of-4">
+                               		<input type="radio" name="Radiobutton" value="day" style="margin-right:5px;margin-top:2px "  onchange={onSelectMonthlyPriority}> On day
+                               		<select class="slds-select" disabled={isDay} style="width:120px;margin-right:5px;margin-left:5px;" onchange={onSelectDay}>
+										<template for:each={days} for:item="day">
+											<option key={day} value={day}>
+												{day}
+											</option>
+										</template>
+									</select> of every Month.<br/><br/>
+                            		<input type="radio" name="Radiobutton" value="ordinal" style="margin-right:5px;margin-top:2px " onchange={onSelectMonthlyPriority}> On 
+									<select disabled={isOrdinal} class="slds-select" style="width:80px;margin-right:5px;margin-left:5px;" onchange={onSelectOrdinal}>
+										<template for:each={getOrdinalNumbers} for:item="ordinalNumber">
+											<option key={ordinalNumber} value={ordinalNumber}>
+												{ordinalNumber}
 											</option>
 										</template>
 									</select>
-                            		<input type="radio" name="Radiobutton" value='' style="margin-right: 5px;" >
+									<select disabled={isOrdinal} class="slds-select" style="width:120px" onchange={onSelectWeek}>
+										<template for:each={weekDay} for:item="day">
+											<option key={day} value={day.label}>
+												{day.label}
+											</option>
+										</template>
+									</select> of every Month.
+									<br/>
+									<template if:true={requireMonthlyPriority}>
+										<div class="slds-form-element__help errorMsg">Select at least one option</div>
+									</template>
 								</div>
 						</template>	
+					
 					</div>
 					<template if:true={requireToSelectFrequency}>
 								<div class="slds-form-element__help errorMsg">Please Select any one frequency.</div>

@@ -104,12 +104,14 @@ public class customHistoryComponentController {
 
 
     @AuraEnabled
-    public static List<wrapper> getSearchHistoryData(id recid, String searchVal, String fieldName, List<wrapper> data)
+    public static List<wrapper> getSearchHistoryData(id recid, String searchVal, List<wrapper> data)
     {
         List<wrapper> hisdata = new List<wrapper>();
-        string temp;
-        System.debug('fieldName>>>'+fieldName);
-        System.debug('searchVal>>>'+searchVal);
+        List<wrapper> tempdata = new List<wrapper>();
+        List<wrapper> finaldata = new List<wrapper>();
+        String temp;
+        Integer count=0;
+        String searchKey;
         List<Object> result = (List<Object>)JSON.deserializeUntyped(searchVal); 
         System.debug('result>>>'+result);
         List<Map<String, Object>> searchMapList = new List<Map<String, Object>>();
@@ -120,68 +122,99 @@ public class customHistoryComponentController {
         System.debug('searchMapList>>>'+searchMapList);
         System.debug('data>>>'+data);
         System.debug('recid>>>'+recid);
-
         for(Map<String, Object> val : searchMapList)
         {
+            count++;
             system.debug('values>>'+val.keySet());
             system.debug('values>>'+val.values());
-        }
-        for(wrapper wrp : data)
-        {  
-            for(Map<String, Object> val : searchMapList)
+            searchKey = val.values().toString();
+            searchKey = searchKey.replace('(','');
+            searchKey = searchKey.replace(')','');
+            System.debug('searchKey...'+searchKey);
+            if(searchKey != null)
+            { system.debug('not null');
+            if(count == 1)
             {
-                system.debug('values>>'+val.keySet());
-                system.debug('values>>'+val.values());
-
-            if(fieldName == 'user')
+                tempdata = data;
+                system.debug('tempdata..'+tempdata);
+            }
+            else if(count >= 2)
+            {
+                tempdata = finaldata;
+                system.debug('tempdata..'+tempdata);
+                //finaldata.clear();
+                finaldata = new List<wrapper>();
+                system.debug('finaldata..'+finaldata);
+            }
+            system.debug('tempdata..'+tempdata);
+            for(wrapper wrp : tempdata)
+        { 
+            System.debug('in for>>>');
+            if(val.keySet().contains('user'))
             {
                 System.debug('in user>>>');
                 temp= wrp.user;
                 System.debug('temp>>>'+temp);
-                if(temp.containsIgnoreCase(searchVal))
+                if(temp.containsIgnoreCase(searchKey))
                 {
                     System.debug('contains');
-                    hisdata.add(wrp);
+                    finaldata.add(wrp);
                 }
             }
-            else if(fieldName == 'oldVal')
+            else if(val.keySet().contains('oldVal'))
             {
+                System.debug('in oldVal>>>');
                 temp= wrp.oldVal;
-                if(temp.containsIgnoreCase(searchVal))
+                System.debug('temp>>>'+temp);
+                if(temp.containsIgnoreCase(searchKey))
                 {
-                    hisdata.add(wrp);
+                    System.debug('contains');
+                    finaldata.add(wrp);
                 }
             }
-            else if(fieldName == 'newVal')
+            else if(val.keySet().contains('newVal'))
             {
+                System.debug('in newVal>>>');
                 temp= wrp.newVal;
-                if(temp.containsIgnoreCase(searchVal))
+                System.debug('temp>>>'+temp);
+                if(temp.containsIgnoreCase(searchKey))
                 {
-                    hisdata.add(wrp);
+                    System.debug('contains');
+                    finaldata.add(wrp);
                 }
             }
-            else if(fieldName == 'field')
+            else if(val.keySet().contains('field'))
             {
+                System.debug('in field>>>');
                 temp= wrp.field;
-                if(temp.containsIgnoreCase(searchVal))
+                System.debug('temp>>>'+temp);
+                if(temp.containsIgnoreCase(searchKey))
                 {
-                    hisdata.add(wrp);
+                    System.debug('contains');
+                    finaldata.add(wrp);
                 }
             }
-            else if(fieldName == 'timestamp')
+            else if(val.keySet().contains('timestamp'))
             {
+                System.debug('in timestamp>>>');
                 temp= wrp.timestamp;
-                if(temp.containsIgnoreCase(searchVal))
+                System.debug('temp>>>'+temp);
+                if(temp.containsIgnoreCase(searchKey))
                 {
-                    hisdata.add(wrp);
+                    System.debug('contains');
+                    finaldata.add(wrp);
                 }
+                
             }
-            
+            //system.debug('finaldata..'+finaldata);
         }
+      }
+        system.debug('finaldata..'+finaldata);
     }
+        hisdata = finaldata;
         system.debug('hisdata..'+hisdata);
         return hisdata;
-    }
+}
 
 
     public class wrapper{

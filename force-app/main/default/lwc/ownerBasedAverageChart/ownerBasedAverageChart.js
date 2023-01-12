@@ -48,22 +48,19 @@ export default class OwnerBasedAverageChart extends LightningElement {
         this.textValue = '';
         this.getcallby();
         this.showchart = true;
-        if (this.SobjectType == 'case') {
-            this.onlycase = true;
-        }
-
-    }
-
-    handlePicklistcase() {
+     }
+  handlePicklistcase() {
         //this.casevalue = event.target.label;
         this.casevalue = this.textValue;
         console.log('value hjghj', this.casevalue);
         if(this.casevalue.length>0)
         {
+           this.showchart = true;
           this.secondchart = false;
          this.cardTitle = 'Average Time On Case Status(In Minutes) for Case number:'+ this.casevalue;
-         this.getcallby();
-         this.picklistVal = '';
+         //this.getcallby();
+         this.singlecasenumber();
+        this.picklistVal = '';
          this.dynmic();
         }
         else{
@@ -148,6 +145,9 @@ export default class OwnerBasedAverageChart extends LightningElement {
             // window.location.reload();
         }
         console.log('value of case object', this.SobjectType);
+         if (this.SobjectType == 'case') {
+            this.onlycase = true;
+        }
     }
 
     dynamic() {
@@ -183,12 +183,38 @@ export default class OwnerBasedAverageChart extends LightningElement {
                     }
                 })
         }
-        else {
-            avergetimesinglerecord({ casevalueid: this.casevalue, id:this.id })
+        // else {
+        //     avergetimesinglerecord({ casevalueid: this.casevalue, id:this.id })
+        //         .then((result) => {
+        //             this.dataSetSingleRec = result;
+
+        //             console.log('RESULT===?',result);
+        //             if (result!=null) {
+        //                 console.log('value of case number', result);
+        //                 this.Initializechartjs();
+        //                 console.log('value dataSetSingleRec', this.dataSetSingleRec);
+        //             }
+        //             else {
+        //                 console.log('value of case number in else', result);
+        //                 const evt = new ShowToastEvent({
+        //                     title: this._title,
+        //                     message: "Please enter a valid case number",
+        //                     variant: this.variant,
+        //                 });
+        //                 this.dispatchEvent(evt);
+        //             }
+        //         })
+
+        // }
+    }
+
+    singlecasenumber()
+    {
+        avergetimesinglerecord({ casevalueid: this.casevalue, id:this.id })
                 .then((result) => {
                     this.dataSetSingleRec = result;
-
-                    console.log('RESULT===?',result);
+                    this.secondchart=false;
+                    //console.log('RESULT===?',result.size);
                     if (result!=null) {
                         console.log('value of case number', result);
                         this.Initializechartjs();
@@ -202,10 +228,9 @@ export default class OwnerBasedAverageChart extends LightningElement {
                             variant: this.variant,
                         });
                         this.dispatchEvent(evt);
+                        this.Initializechartjs();
                     }
                 })
-
-        }
     }
 
     Initializechartjs() {
