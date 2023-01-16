@@ -28,7 +28,6 @@ public class customHistoryComponentController {
         List<Object> hislist = new List<Object>();
         List<String> templist = new List<String>();
         List<String> templist2 = new List<String>();
-        List<String> templist3 = new List<String>();
         List<wrapper> hisdata = new List<wrapper>();
         String listRec;
         String tempRecAfter;
@@ -216,6 +215,33 @@ public class customHistoryComponentController {
         return hisdata;
 }
 
+
+
+@AuraEnabled
+    public static Boolean isHistoryOn(String obj, Id recId)
+    {
+        System.debug('objectName...'+obj);
+        System.debug('recId...'+recId);
+        List<sObject> dataList = new List<sObject>();
+        // List<sObject> hisList = new List<sObject>();
+        Map<String,object> hisdata = new Map<String,object>();
+        Boolean val;
+        String query = 'Select id,(Select id,field from Histories) From '+ obj + ' Where id =: recId';
+        dataList = Database.query(query);
+        for(sObject data :dataList){
+            Map<String, Object> mapObj =(Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data));
+            hisdata = (map<string,object>)JSON.deserializeUntyped(JSON.serialize(mapObj.get('Histories'))); 
+        }
+        system.debug('query>>'+query);
+        system.debug('dataList>>'+dataList);
+        system.debug('hisdata>>'+hisdata);
+        if(hisdata.size() == 0)
+        val = false;
+        else
+        val = true;
+
+        return val;
+    }
 
     public class wrapper{
     @AuraEnabled

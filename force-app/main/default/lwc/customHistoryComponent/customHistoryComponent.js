@@ -1,9 +1,11 @@
 import { LightningElement ,api, track} from 'lwc';
 import getHistoryData from '@salesforce/apex/customHistoryComponentController.getHistoryData';
 import getSearchHistoryData from '@salesforce/apex/customHistoryComponentController.getSearchHistoryData';
+import isHistoryOn from '@salesforce/apex/customHistoryComponentController.isHistoryOn';
 export default class CustomHistoryComponent extends LightningElement {
 
 @api recordId;
+@api objectApiName;
 @track records;
 @track recHis;
 @track searchVal = [];
@@ -21,10 +23,13 @@ export default class CustomHistoryComponent extends LightningElement {
 @track pageSize = 2;
 @track searchValMap = [];
 @track allKeys = [];
+@track isHisOn;
+columns;
 
 connectedCallback(){
     console.log('connectedCallback..');
     console.log('this.recordId>>',this.recordId);
+    console.log('this.objectApiName>>',this.objectApiName);
     
 getHistoryData({
                  recid: this.recordId,
@@ -38,7 +43,26 @@ getHistoryData({
     this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
     this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
 })  
+
+isHistoryOn({
+    obj : this.objectApiName,
+    recId: this.recordId,
+})
+.then(val=> {
+    this.isHisOn = val;
+    console.log('isHisOn,,',this.isHisOn);
+})
 }
+
+
+columns = [
+    { label: 'Date/Time', fieldName: 'timestamp' },
+    { label: 'Field', fieldName: 'field' },
+    { label: 'User', fieldName: 'user' },
+    { label: 'Original Value', fieldName: 'oldVal' },
+    { label: 'New Value', fieldName: 'newVal' },
+];
+
 
 handleChange(event) {
         this.searchVal = event.target.value;
@@ -103,7 +127,16 @@ handleChange(event) {
             if(this.field == i)
             {
                console.log('contains key...');
-               this.searchValMap[key][i] = this.searchVal;
+               if(this.field =='timestamp' && this.searchVal == null)
+                {
+                    console.log('in null...'); 
+                    this.searchValMap[key][i] = ''; 
+                }
+                else
+                {
+                   console.log('in else...'); 
+                   this.searchValMap[key][i] = this.searchVal; 
+                }
             }
          }
         }

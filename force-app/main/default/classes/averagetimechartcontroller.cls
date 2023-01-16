@@ -392,15 +392,18 @@ public with sharing class averagetimechartcontroller
         return userr;
     }
     
-    ////// average time case single record
+       ////// average time case single record
     @AuraEnabled
     public static map<string,decimal> avergetimesinglerecord(string casevalueid,string id){
         system.debug('id'+id);
         system.debug('casevalueid'+casevalueid);
         map<string,decimal> pickvalmap = new map<string,decimal>();
         map<string,decimal> pickvalmapglobal = new map<string,decimal>();
-         list<case> caserecord;
-        if(casevalueid!=null)
+         case  caserecord;
+        
+        //////////////////////////////////
+          try {
+             if(casevalueid!=null)
         {
             caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where CaseNumber=:casevalueid];
         
@@ -409,15 +412,14 @@ public with sharing class averagetimechartcontroller
         {
             caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where id=:id];
         }
-         for(case c : caserecord){
-           system.debug('c'+c); 
+ 
             boolean firsttime = true;
             datetime recentRecTime;
-            if(c.Histories != null && !(c.Histories).isEmpty()){
-                for(CaseHistory ch : c.Histories){
+            if(caserecord.Histories != null && !(caserecord.Histories).isEmpty()){
+                for(CaseHistory ch : caserecord.Histories){
                     if(ch.field == 'Status'){
                         if(firsttime){
-                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',c.CreatedDate,ch.CreatedDate);
+                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',caserecord.CreatedDate,ch.CreatedDate);
                             timee = (timee/1000)/60;
                             timee = timee.setScale(2);
                             if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
@@ -427,10 +429,10 @@ public with sharing class averagetimechartcontroller
                                 pickvalmap.put(string.valueof(ch.OldValue),pickvalmap.get(string.valueof(ch.OldValue))+timee);
                             }
                             if(!pickvalmapglobal.containskey(string.valueof(ch.OldValue))){
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,timee);
                             }
                             else{
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
                             }
                             firsttime = false;
                         }
@@ -446,10 +448,10 @@ public with sharing class averagetimechartcontroller
                                 pickvalmap.put(string.valueof(ch.OldValue),pickvalmap.get(string.valueof(ch.OldValue))+timee);
                             }
                             if(!pickvalmapglobal.containskey(string.valueof(ch.OldValue))){
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,timee);
                             }
                             else{
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
                             }
                         }
                         recentRecTime = ch.CreatedDate; 
@@ -457,13 +459,20 @@ public with sharing class averagetimechartcontroller
                 }
             }
             system.debug('value off pickvalmap'+pickvalmap);
-        } 
         if(!pickvalmap.isEmpty()){
             return pickvalmap;
         }
         else {
             return null;
         }
+          
+        } catch (Exception e) {
+
+            String errorMsg ='No case found';             //      e.getMessage();
+            system.debug('value of messege'+errorMsg);
+            throw new AuraHandledException(ErrorMsg);
+        }
+        ///////////////////////////////////
     }
     //////
     

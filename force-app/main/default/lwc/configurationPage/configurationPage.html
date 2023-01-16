@@ -60,14 +60,14 @@
                             		<input type="radio" name="Radiobutton" value="ordinal" style="margin-right:5px;margin-top:2px " onchange={onSelectMonthlyPriority}> On 
 									<select disabled={isOrdinal} class="slds-select" style="width:80px;margin-right:5px;margin-left:5px;" onchange={onSelectOrdinal}>
 										<template for:each={getOrdinalNumbers} for:item="ordinalNumber">
-											<option key={ordinalNumber} value={ordinalNumber}>
-												{ordinalNumber}
+											<option key={ordinalNumber} value={ordinalNumber.value}>
+												{ordinalNumber.label}
 											</option>
 										</template>
 									</select>
 									<select disabled={isOrdinal} class="slds-select" style="width:120px" onchange={onSelectWeek}>
 										<template for:each={weekDay} for:item="day">
-											<option key={day} value={day.label}>
+											<option key={day} value={day.value}>
 												{day.label}
 											</option>
 										</template>
@@ -125,7 +125,7 @@
 
 		</div>
 		<div slot="footer" style="margin-left:-1%;">
-			<lightning-button disabled={disableButton} variant="brand" label="Save" title="Primary action"
+			<lightning-button disabled={disableButton} variant="brand" label="Schedule" title="Primary action"
 				onclick={onSaveClick}></lightning-button>
 		</div><br>
 	</lightning-card>

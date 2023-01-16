@@ -204,28 +204,28 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
                     if (dataLength <= 3) {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else {
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else {
                                 obj.push({ ...conts[key], isFilterSelect: false });
-                            }
+                            // }
                         }
                     }
                     else {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else if (key > 2) {
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else if (key > 2) {
                                 if (this.filterViewTitle == 'View Less') {
                                     obj.push({ ...conts[key], isFilterSelect: false });
                                 }
-                            }
-                            else {
-                                obj.push({ ...conts[key], isFilterSelect: false });
+                            // }
+                            // else {
+                            //     obj.push({ ...conts[key], isFilterSelect: false });
                                 this.isViewMore = false;
-                            }
+                            // }
                         }
                     }
                     this.datas = obj;
@@ -244,25 +244,25 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     conts = data;
                     if (dataLength <= 3) {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else {
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else {
                                 obj.push({ ...conts[key], isFilterSelect: false });
-                            }
+                            // }
                         }
                     }
                     else {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else if (key > 2) {
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else if (key > 2) {
                                 if (this.isViewMore == false) {
                                     this.isViewMore = true;
                                 }
 
-                            }
+                            // }
                             else {
                                 obj.push({ ...conts[key], isFilterSelect: false });
                                 this.isViewMore = false;
@@ -288,6 +288,8 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLoadMessage = true;
         this.isLoad = false;
         this.searchVal = '';
+        this.datas[0].isFilterSelect =  false;
+        console.log('Data after back ==',this.datas);
     }
 
     onCreateFilterClick() {
@@ -364,24 +366,24 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLeftMenu = false;
         this.isChartShow = true;
         this.isLoad = false;
-        this.datas.map(val => {
-            if (this.isManagePackage) {
-                if (val.Track2Grow__Filter_Name__c == this.selectedFilterName) {
-                    val.isFilterSelect = true;
-                }
-                else {
-                    val.isFilterSelect = false;
-                }
-            }
-            else {
-                if (val.Filter_Name__c == this.selectedFilterName) {
-                    val.isFilterSelect = true;
-                }
-                else {
-                    val.isFilterSelect = false;
-                }
-            }
-        })
+        // this.datas.map(val => {
+        //     if (this.isManagePackage) {
+        //         if (val.Track2Grow__Filter_Name__c == this.selectedFilterName) {
+        //             val.isFilterSelect = true;
+        //         }
+        //         else {
+        //             val.isFilterSelect = false;
+        //         }
+        //     }
+        //     else {
+        //         if (val.Filter_Name__c == this.selectedFilterName) {
+        //             val.isFilterSelect = true;
+        //         }
+        //         else {
+        //             val.isFilterSelect = false;
+        //         }
+        //     }
+        // })
         refreshApex(this.dummyDatas);
         getDetail({ name: this.selectedFilterName })
             .then((data) => {
@@ -491,6 +493,8 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLoadMessage = true;
         this.clickedButtonLabelCheck = false;
         this.isCreateFilterClick = false;
+        this.datas[0].isFilterSelect =  false;
+        console.log('Data after back ==',this.datas);
         refreshApex(this.dummyDatas);
     }
 
@@ -623,5 +627,11 @@ closeConfig(){
         //             });
         //             this.dispatchEvent(event);
         // })
+    }
+    //////////event
+    hanldeProgressValueChange(event){
+    
+     //this.isSelect=event.detail;
+      console.log('value of><><<M',this.isSelect);
     }
 }

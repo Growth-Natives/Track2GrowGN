@@ -92,7 +92,14 @@ public  with sharing  class CaseComparison {
             for(string fg:ownertostagetotime.get(str).keyset())  
             {
                 if(acc[0].id!=null && acc[0].id==fg){
-                    fn.put(str,yes.get(fg));
+                     for(string statu:status_val)
+                   {
+                       if(str==statu)
+                       {
+                           fn.put(str,yes.get(fg));
+                       }
+                   }
+                    //fn.put(str,yes.get(fg));
                 }
             }	  
         }

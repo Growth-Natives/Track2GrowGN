@@ -17,6 +17,7 @@ export default class OwnerBasedAverageChart extends LightningElement {
     secondchart = true;
     textValue = '';
     id;
+    @api filtervaluedisable='false';
 
     ///////////////list
     handleInputChange(event) {
@@ -55,6 +56,11 @@ export default class OwnerBasedAverageChart extends LightningElement {
         console.log('value hjghj', this.casevalue);
         if(this.casevalue.length>0)
         {
+            ////////// event for disable filter
+            //this.filtervaluedisable = event.target.value;
+            const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
+            this.dispatchEvent(selectedEvent);
+            /////////
            this.showchart = true;
           this.secondchart = false;
          this.cardTitle = 'Average Time On Case Status(In Minutes) for Case number:'+ this.casevalue;
@@ -212,25 +218,34 @@ export default class OwnerBasedAverageChart extends LightningElement {
     {
         avergetimesinglerecord({ casevalueid: this.casevalue, id:this.id })
                 .then((result) => {
+                    console.log('value of case number in else', result);
                     this.dataSetSingleRec = result;
                     this.secondchart=false;
-                    //console.log('RESULT===?',result.size);
                     if (result!=null) {
-                        console.log('value of case number', result);
-                        this.Initializechartjs();
-                        console.log('value dataSetSingleRec', this.dataSetSingleRec);
+                      this.Initializechartjs();
                     }
                     else {
-                        console.log('value of case number in else', result);
+                        
                         const evt = new ShowToastEvent({
                             title: this._title,
-                            message: "Please enter a valid case number",
+                            message: "History Not Found For:-"+this.casevalue,
                             variant: this.variant,
                         });
                         this.dispatchEvent(evt);
                         this.Initializechartjs();
                     }
                 })
+                .catch((error) => {
+                    this.dataSetSingleRec='';
+                  console.log("some error in code:", error.body.message);
+                   const evt = new ShowToastEvent({
+                            title: this._title,
+                            message: error.body.message,
+                            variant:'error',
+                        });
+                        this.dispatchEvent(evt);
+                        this.Initializechartjs();
+                    });
     }
 
     Initializechartjs() {
