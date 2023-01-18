@@ -141,4 +141,16 @@ public class FilterDetailController
         System.debug('BI getFD ========'+BI);
         return BI;
     }
+    @AuraEnabled(cacheable=true)
+    public static Boolean getApexSchedule(){
+        Boolean isApex;
+        List<AsyncApexJob> asyncJobList=[select ApexClass.Name, Id, JobItemsProcessed, JobType, Status, NumberOfErrors, CronTrigger.CronExpression,CronTrigger.startTime,CronTrigger.endTime from AsyncApexJob where JobType in ('ScheduledApex') and status!='Aborted' and ApexClass.Name='AverageTimeBatchClassSchedule' limit 1];
+        if(asyncJobList.size()>0){
+             isApex = true;
+        }
+        else{
+             isApex = false;
+        }
+        return isApex;
+    }
 }

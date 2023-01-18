@@ -34,8 +34,15 @@
 					<div class="slds-grid slds-gutters">
 						<div class="slds-col slds-size_1-of-4">
 							<lightning-radio-group name="radioGroup" label="Frequency" options={frqOption}
-								onchange={onHandleFrequencyChange} value='Weekly' type="radio"></lightning-radio-group>
-						</div>
+								onchange={onHandleFrequencyChange} value='Weekly' type="radio"></lightning-radio-group><br/><br/>
+								<lightning-input label="Custom" type="checkbox" checked={isCheck} onchange={handleChange} value="Custom" >
+    </lightning-input>
+								<!-- <lightning-checkbox-group name="Checkbox Group"
+                                options={options}
+                                value={value}
+								checked={isCheck}
+                                onchange={handleChange}></lightning-checkbox-group> -->
+						</div><br/>
 						<template if:true={isWeekely}>
 							<div class="slds-col slds-size_3-of-4">
 								<lightning-checkbox-group name="Recurs every week on" label="Recurs every week on"
@@ -47,7 +54,7 @@
 							</template>
 							</div>
 						</template>
-						<template if:false={isWeekely}>
+						<template if:true={isMonthly}>
 								<div class="slds-col slds-size_3-of-4">
                                		<input type="radio" name="Radiobutton" value="day" style="margin-right:5px;margin-top:2px "  onchange={onSelectMonthlyPriority}> On day
                                		<select class="slds-select" disabled={isDay} style="width:120px;margin-right:5px;margin-left:5px;" onchange={onSelectDay}>
@@ -78,30 +85,31 @@
 									</template>
 								</div>
 						</template>	
-					
 					</div>
 					<template if:true={requireToSelectFrequency}>
 								<div class="slds-form-element__help errorMsg">Please Select any one frequency.</div>
 							</template>
-					<div class="slds-grid slds-gutters">
-						<div class="slds-col slds-size_2-of-4" style="margin-top:20px;">Start</div>
-						<div class="slds-col slds-size_2-of-4">
-							<lightning-input type="date" onchange={onStartDateChange} name="input1"></lightning-input>
+					<template if:true={isCustom}>
+						<div class="slds-grid slds-gutters">
+							<div class="slds-col slds-size_2-of-4" style="margin-top:20px;">Start</div>
+							<div class="slds-col slds-size_2-of-4">
+								<lightning-input type="date" onchange={onStartDateChange} name="input1"></lightning-input>
+							</div>
+							<!-- <div class="slds-col slds-size_1-of-4" style="margin-top:20px">Start</div> -->
 						</div>
-						<!-- <div class="slds-col slds-size_1-of-4" style="margin-top:20px">Start</div> -->
-					</div>
-					<template if:true={requireStartDate}>
-						<div class="slds-form-element__help errorMsg">Select Start Date.</div>
-					</template>
-					<div class="slds-grid slds-gutters">
-						<div class="slds-col slds-size_2-of-4" style="margin-top:20px;">End</div>
-						<div class="slds-col slds-size_2-of-4">
-							<lightning-input type="date" onchange={onEndDateChange} name="input1"></lightning-input>
+						<template if:true={requireStartDate}>
+							<div class="slds-form-element__help errorMsg">Select Start Date.</div>
+						</template>
+						<div class="slds-grid slds-gutters">
+							<div class="slds-col slds-size_2-of-4" style="margin-top:20px;">End</div>
+							<div class="slds-col slds-size_2-of-4">
+								<lightning-input type="date" onchange={onEndDateChange} name="input1"></lightning-input>
+							</div>
+							<!-- <div class="slds-col slds-size_1-of-4" style="margin-top:20px">End</div> -->
 						</div>
-						<!-- <div class="slds-col slds-size_1-of-4" style="margin-top:20px">End</div> -->
-					</div>
-					<template if:true={requireEndDate}>
-						<div class="slds-form-element__help errorMsg">Select End Date.</div>
+						<template if:true={requireEndDate}>
+							<div class="slds-form-element__help errorMsg">Select End Date.</div>
+						</template>
 					</template>
 					<div class="slds-grid slds-gutters">
 						<div class="slds-col slds-size_2-of-4" style="margin-top:20px;">Preferred Start Time
@@ -110,8 +118,8 @@
 							<select class="slds-select" onchange={selectPreferredTime}>
 							<option value="">None</option>
 							<template for:each={preferredStartTime} for:item="time">
-							<option  class="optionOnselect" key={time} value={time}>
-								{time}
+							<option  class="optionOnselect" key={time} value={time.value}>
+								{time.label}
 							</option>
 						</template>
 						</select>

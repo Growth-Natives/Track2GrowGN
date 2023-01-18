@@ -293,6 +293,7 @@ public with sharing class averagetimechartcontroller
     @AuraEnabled(cacheable = true)
     public static List<DataSet> ownerbasedonaveragetime(String status,String objectVal, String Field, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh,String selectedName,string ownerpicklist)
     {
+          system.debug('value of ownerpicklistownerpicklist'+ownerpicklist);
         map<String,String> usermap = new map<String,String>();
         List<DataSet> dataSet = new List<DataSet>();
         status = status.replace(' ', '');
@@ -325,7 +326,7 @@ public with sharing class averagetimechartcontroller
         
         if(dataRepresentation != null)
         {
-            inputdata = '['+dataRepresentation+']';
+            inputdata = '['+dataRepresentation+']';                                                                                          
         }
         system.debug('inputdata'+inputdata);
         List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata);

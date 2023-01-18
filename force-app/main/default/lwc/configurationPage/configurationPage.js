@@ -17,6 +17,9 @@ export default class ConfigurationPage extends LightningElement {
     isDay = false;
     isOrdinal = true;
     isWeekely = true;
+    isMonthly = false;
+    isDaily = false;
+    isCustom = false;
     requireJobName = false;
     requireToSelectFrequency = false;
     requireToSelectWeekDays = false;
@@ -25,24 +28,31 @@ export default class ConfigurationPage extends LightningElement {
     requirePreferredTime = false;
     requireMonthlyPriority = false;
 
-    startDate;
-    endDate;
+    startDate='';
+    endDate='';
 
     get weekDay() {
         return [
-            { label: 'Sunday', value: 'SUN' },
-            { label: 'Monday', value: 'MON' },
-            { label: 'Tuesday', value: 'TUE' },
-            { label: 'Wednesday', value: 'WED' },
-            { label: 'Thursday', value: 'THU' },
-            { label: 'Friday', value: 'FRI' },
-            { label: 'Saturday', value: 'SAT' },
+            { label: 'Sunday', value: '1' },
+            { label: 'Monday', value: '2' },
+            { label: 'Tuesday', value: '3' },
+            { label: 'Wednesday', value: '4' },
+            { label: 'Thursday', value: '5' },
+            { label: 'Friday', value: '6' },
+            { label: 'Saturday', value: '7' },
         ];
+    }
+    get isWeekShow(){
+        return this.isCustom || this.isWeekely;
+    }
+    get options(){
+        return [{label: 'Custom', value: 'Custom' }];
     }
     get frqOption() {
         return [
             { label: 'Weekly', value: 'Weekly' },
-            { label: 'Monthly', value: 'Monthly' },
+             { label: 'Daily', value: 'Daily' },
+            { label: 'Monthly', value: 'Monthly' }
         ];
     }
     get getOrdinalNumbers() {
@@ -61,14 +71,41 @@ export default class ConfigurationPage extends LightningElement {
 
     connectedCallback() {
         this.frequencyValue = 'Weekly';
-        this.monthlyPriority = 'day';
         this.isDay = false;
         this.isOrdinal = true;
-        this.preferredStartTime = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+        this.preferredStartTime =
+         [{label:'12:00 AM',value:'0'}, 
+                {label:'1:00 AM',value:'1'}, 
+                {label:'2:00 AM',value:'2'},  
+                {label:'3:00 AM',value:'3'}, 
+                {label:'4:00 AM',value:'4'},
+                {label:'5:00 AM',value:'5'},
+                {label:'6:00 AM',value:'6'},
+                {label:'7:00 AM',value:'7'},
+                {label:'8:00 AM',value:'8'},
+                {label:'9:00 AM',value:'9'},
+                {label:'10:00 AM',value:'10'},
+                {label:'11:00 AM',value:'11'},
+                {label:'12:00 PM',value:'12'},
+                {label:'1:00 PM',value:'13'},
+                {label:'2:00 PM',value:'14'},
+                {label:'3:00 PM',value:'15'},
+                {label:'4:00 PM',value:'16'},
+                {label:'5:00 PM',value:'17'},
+                {label:'6:00 PM',value:'18'},
+                {label:'7:00 PM',value:'19'},
+                {label:'8:00 PM',value:'20'},
+                {label:'9:00 PM',value:'21'},
+                {label:'10:00 PM',value:'22'},
+                {label:'11:00 PM',value:'23'}];
         for (var i = 1; i <= 31; i++) {
             this.days.push(i);
         }
         this.days.push('Last');
+    }
+    handleChange(event){
+         this.isCustom = event.currentTarget.checked;
+        console.log('isCustom--->',this.isCustom); 
     }
     onHandleJobNameChange(event) {
         console.log('event.currentTarget.value;===>', event.currentTarget.value);
@@ -115,14 +152,48 @@ export default class ConfigurationPage extends LightningElement {
         console.log('frequency change==>', event.currentTarget.value);
         if (this.frequencyValue === 'Weekly') {
             this.isWeekely = true;
+             this.value=[];
+            this.monthlyPriority = '';
+            this.monthlyDay='';
+            this.isDay = false;
+            this.isOrdinal = true;
+            this.isMonthly = false;
+            this.isDaily = false;
+            //this.isCustom = false;
         }
-        else {
+        else if (this.frequencyValue === 'Monthly') {
             this.isWeekely = false;
-            this.monthlyPriority = 'day';
+            this.isMonthly = true;
+            this.value=[];
+            this.monthlyPriority = '';
             this.monthlyDay='1';
             this.isDay = false;
             this.isOrdinal = true;
+            this.isDaily=false;
+            //this.isCustom=false;
         }
+        else if (this.frequencyValue === 'Daily') {
+            this.isWeekely = false;
+            this.isMonthly=false;
+            this.value=[];
+            this.monthlyPriority = '';
+            this.monthlyDay='';
+            this.isDay = false;
+            this.isOrdinal = false;
+            this.isDaily = true;
+            //this.isCustom = false;
+        }
+        // else if (this.frequencyValue === 'Custom'){
+        //     this.isWeekely = false;
+        //     this.isMonthly=false;
+        //     this.value=[];
+        //     this.monthlyPriority = ' ';
+        //     this.monthlyDay=' ';
+        //     this.isDay = false;
+        //     this.isOrdinal = false;
+        //     this.isDaily = false;
+        //     this.isCustom = true;
+        // }
     }
     onStartDateChange(e) {
         this.startDate = e.currentTarget.value;
@@ -136,6 +207,8 @@ export default class ConfigurationPage extends LightningElement {
         this.preferredTime = event.target.value;
     }
     onSaveClick() {
+        console.log('this.monthlyPriority==',this.monthlyPriority);
+        console.log('this.isCustom==',this.isCustom);
         if (this.jobName == '' || this.jobName == null || this.jobName == undefined) {
             this.requireJobName = true;
         }
@@ -148,19 +221,19 @@ export default class ConfigurationPage extends LightningElement {
         else {
             this.requireToSelectFrequency = false;
         }
-        if (this.isWeekely && (this.value.length == 0 || this.value == undefined || this.value == null)) {
+        if ((this.isWeekely || this.isCustom) && (this.value.length == 0 || this.value == undefined || this.value == null)) {
             this.requireToSelectWeekDays = true;
         }
         else {
             this.requireToSelectWeekDays = false;
         }
-        if (this.startDate == undefined || this.startDate == null || this.startDate == '') {
+        if (this.isCustom == true && (this.startDate == undefined || this.startDate == null || this.startDate == '')) {
             this.requireStartDate = true;
         }
         else {
             this.requireStartDate = false;
         }
-        if (this.endDate == undefined || this.endDate == null || this.endDate == '') {
+        if (this.isCustom == true && (this.endDate == undefined || this.endDate == null || this.endDate == '')) {
             this.requireEndDate = true;
         }
         else {
@@ -172,7 +245,7 @@ export default class ConfigurationPage extends LightningElement {
         else {
             this.requirePreferredTime = false;
         }
-        if (this.isWeekely == false && this.monthlyPriority == '') {
+        if (this.isMonthly==true && this.monthlyPriority=='') {
             this.requireMonthlyPriority = true;
         }
         else {
@@ -181,7 +254,7 @@ export default class ConfigurationPage extends LightningElement {
 
         console.log('requireToSelectWeekDays===', this.requireToSelectWeekDays);
         if (this.requireJobName == false && this.requireToSelectFrequency == false && this.requireMonthlyPriority == false && this.requireStartDate == false && this.requireEndDate == false && this.requireToSelectWeekDays == false && this.requirePreferredTime == false) {
-            getObject({ jobName: this.jobName, weekday: this.value, startDate: this.startDate, endDate: this.endDate, preferredTime: this.preferredTime,monthlyPriority:this.monthlyPriority,monthlyDay:this.monthlyDay,monthlyOrdinal:this.monthlyOrdinal,monthlyWeek:this.monthlyWeek})
+            getObject({ jobName: this.jobName, freqName:this.frequencyValue, weekday: this.value, startDate: this.startDate, endDate: this.endDate, preferredTime: this.preferredTime,monthlyPriority:this.monthlyPriority,monthlyDay:this.monthlyDay,monthlyOrdinal:this.monthlyOrdinal,monthlyWeek:this.monthlyWeek})
                 .then(() => {
                     console.log('Val');
                 })

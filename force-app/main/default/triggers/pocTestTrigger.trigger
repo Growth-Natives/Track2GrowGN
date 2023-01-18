@@ -1,7 +1,6 @@
 trigger pocTestTrigger on Case (after insert, after update) {
     
     List<testPOC__c> testPocInsertRecs = new List<testPOC__c>();
-    //List<sObject> recData = new List<sObject>();
     List<String> allObjFields = new List<String>();
     List<String> updatedFields = new List<String>();
     List<Attachment> insertJson = new List<Attachment>(); 

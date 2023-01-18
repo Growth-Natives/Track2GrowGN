@@ -35,5 +35,4 @@ global class AverageTimeBatchClassSchedule implements Schedulable {
             Database.executebatch(batch, 200);
         }
     }
-   
 }

@@ -6,6 +6,7 @@ import getSearchFilterDetail from '@salesforce/apex/FilterDetailController.getSe
 import getFilterDetailFromName from '@salesforce/apex/FilterDetailController.getFilterDetailFromName';
 import deleteFilter from '@salesforce/apex/FilterDetailController.deleteFilter';
 import getDetail from '@salesforce/apex/FilterDetailController.getDetail';
+import getApexSchedule from '@salesforce/apex/FilterDetailController.getApexSchedule';
 import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.getLeadByStatus';
 import w3webResource from '@salesforce/resourceUrl/Giffile';
 import { refreshApex } from '@salesforce/apex';
@@ -24,6 +25,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
     @track isSearch = false;
     @track noDataFound = false;
     @track clickedButtonLabelCheck = false;
+    @track isApex = true;
 
     @track dummyDatas;
     @track saveFilterId;
@@ -136,6 +138,10 @@ export default class Track2Grow_Dashboard extends LightningElement {
             }
         }
     }
+
+connectedCallback() {
+   
+}
 
     getfDetail() {
         if (this.datas.length >= 1) {
@@ -610,13 +616,50 @@ closeConfig(){
         this.isConfigClick=false;
 }
     onConfigClick(){
-        this.isCreateFilterClick = false;
-        this.isConfigClick = true;
-        this.isChartShow = false;
-        this.isSelect = false;
-        this.isLoad = false;
-        this.isDataFilter = false;
-        this.isLoadMessage = false;
+    getApexSchedule()
+    .then(data=>{
+        console.log('connected data ',data);
+        if(data==true){
+            this.isApex = true;
+             console.log('ERROR!! Apex class is ALready scheduled');
+             const event = new ShowToastEvent({
+                    title: 'ERROR',
+                    message: 'Apex class is ALready scheduled',
+                    variant: 'ERROR ',
+                    mode: 'dismissable'
+                });
+                    this.dispatchEvent(event);
+        }
+        else{
+            this.isApex = false;
+            this.isCreateFilterClick = false;
+            this.isConfigClick = true;
+            this.isChartShow = false;
+            this.isSelect = false;
+            this.isLoad = false;
+            this.isDataFilter = false;
+            this.isLoadMessage = false;
+        }
+    })
+        // if(this.isApex==false){
+        //     this.isCreateFilterClick = false;
+        //     this.isConfigClick = true;
+        //     this.isChartShow = false;
+        //     this.isSelect = false;
+        //     this.isLoad = false;
+        //     this.isDataFilter = false;
+        //     this.isLoadMessage = false;
+        // }
+        // else{
+        //         console.log('ERROR!! Apex class is ALready scheduled');
+        //      const event = new ShowToastEvent({
+        //             title: 'ERROR',
+        //             message: 'Apex class is ALready scheduled',
+        //             variant: 'ERROR ',
+        //             mode: 'dismissable'
+        //         });
+        //             this.dispatchEvent(event);
+        // }
                 // scheduleClass()
         // .then(()=>{
         //     const event = new ShowToastEvent({
@@ -627,11 +670,5 @@ closeConfig(){
         //             });
         //             this.dispatchEvent(event);
         // })
-    }
-    //////////event
-    hanldeProgressValueChange(event){
-    
-     //this.isSelect=event.detail;
-      console.log('value of><><<M',this.isSelect);
     }
 }
