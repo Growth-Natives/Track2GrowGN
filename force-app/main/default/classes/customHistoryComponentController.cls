@@ -88,8 +88,12 @@ public class customHistoryComponentController {
                 }
                 if(tempRecBefore.contains('User'))
                 {
-                    tempRecAfter = tempRecAfter.replace('}','');
+                     tempRecAfter = tempRecAfter.replace('}','');
                     wrp.user = tempRecAfter;
+                }
+                if(tempRecBefore.contains('CreatedById'))
+                {
+                    wrp.createdById = tempRecAfter;
                 }
             }
             hisdata.add(wrp);
@@ -153,6 +157,17 @@ public class customHistoryComponentController {
             {
                 System.debug('in user>>>');
                 temp= wrp.user;
+                System.debug('temp>>>'+temp);
+                if(temp.containsIgnoreCase(searchKey))
+                {
+                    System.debug('contains');
+                    finaldata.add(wrp);
+                }
+            }
+            else if(val.keySet().contains('createdById'))
+            {
+                System.debug('in createdById>>>');
+                temp= wrp.createdById;
                 System.debug('temp>>>'+temp);
                 if(temp.containsIgnoreCase(searchKey))
                 {
@@ -254,6 +269,8 @@ public class customHistoryComponentController {
     public String oldVal{get;set;}
     @AuraEnabled
     public String user{get;set;}
+    @AuraEnabled
+    public String createdById{get;set;}
     }
 
 }

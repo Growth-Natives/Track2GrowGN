@@ -293,7 +293,7 @@ public with sharing class averagetimechartcontroller
     @AuraEnabled(cacheable = true)
     public static List<DataSet> ownerbasedonaveragetime(String status,String objectVal, String Field, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh,String selectedName,string ownerpicklist)
     {
-          system.debug('value of ownerpicklistownerpicklist'+ownerpicklist);
+        system.debug('value of ownerpicklistownerpicklist'+ownerpicklist);
         map<String,String> usermap = new map<String,String>();
         List<DataSet> dataSet = new List<DataSet>();
         status = status.replace(' ', '');
@@ -365,14 +365,14 @@ public with sharing class averagetimechartcontroller
                 
                 if(listOfUser[0].id!=null && listOfUser[0].id==fg){
                     MapOfOwnerBasedOnAverageTime.put(str,MapOfKeyOwnerToStageToTime.get(fg));
-                   for(string statu:status_val)
-                   {
-                       if(str==statu)
-                       {
-                           dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
-                       }
-                   }
-                   // dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
+                    for(string statu:status_val)
+                    {
+                        if(str==statu)
+                        {
+                            dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
+                        }
+                    }
+                    // dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
                 }
             }	  
         } 
@@ -393,27 +393,27 @@ public with sharing class averagetimechartcontroller
         return userr;
     }
     
-       ////// average time case single record
+    ////// average time case single record
     @AuraEnabled
     public static map<string,decimal> avergetimesinglerecord(string casevalueid,string id){
         system.debug('id'+id);
         system.debug('casevalueid'+casevalueid);
         map<string,decimal> pickvalmap = new map<string,decimal>();
         map<string,decimal> pickvalmapglobal = new map<string,decimal>();
-         case  caserecord;
+        case  caserecord;
         
         //////////////////////////////////
-          try {
-             if(casevalueid!=null)
-        {
-            caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where CaseNumber=:casevalueid];
-        
-        }
-        else if(id!=null)
-        {
-            caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where id=:id];
-        }
- 
+        try {
+            if(casevalueid!=null)
+            {
+                caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where CaseNumber=:casevalueid];
+                
+            }
+            else if(id!=null)
+            {
+                caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where id=:id];
+            }
+            system.debug('value of caseee'+caserecord);          
             boolean firsttime = true;
             datetime recentRecTime;
             if(caserecord.Histories != null && !(caserecord.Histories).isEmpty()){
@@ -460,21 +460,29 @@ public with sharing class averagetimechartcontroller
                 }
             }
             system.debug('value off pickvalmap'+pickvalmap);
-        if(!pickvalmap.isEmpty()){
-            return pickvalmap;
-        }
-        else {
-            return null;
-        }
-          
+            if(!pickvalmap.isEmpty()){
+                return pickvalmap;
+            }
+            else {
+                return null;
+            }
+            
         } catch (Exception e) {
-
-            String errorMsg ='No case found';             //      e.getMessage();
+            
+            String errorMsg ='No case found';
             system.debug('value of messege'+errorMsg);
             throw new AuraHandledException(ErrorMsg);
         }
         ///////////////////////////////////
     }
+    
+    @AuraEnabled
+    public static list<case> casedata(string casenumber){
+        
+        list<case> caserecord=[select id,CaseNumber,createddate,Status,OwnerId,Priority,Type from Case where CaseNumber=:casenumber];
+        return caserecord;
+    }
+    
     //////
     
     public class DataSet

@@ -104,6 +104,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
                     getDetail({ name: this.selectedFilterName })
                         .then((data) => {
+                            this.singlecaseval = false;
                             this.filterDetailVal = data;
                         });
                     if (dataLength <= 3) {
@@ -140,9 +141,13 @@ export default class Track2Grow_Dashboard extends LightningElement {
     }
 
 connectedCallback() {
+     console.log('Connected callback in Track2Grow_Dashboard');
    
 }
-
+disconnectedCallback() {
+    console.log('disconnected callback in Track2Grow_Dashboard');
+   
+}
     getfDetail() {
         if (this.datas.length >= 1) {
             this.isDataFilter = true;
@@ -331,6 +336,7 @@ connectedCallback() {
         else {
             this.isManagePackage = false;
         }
+        this.singlecaseval = false;
         this.filterDetailVal = event.detail.filterValDetail;
         if (this.isManagePackage) {
             this.selectedFilterName = event.detail.filterValDetail[0].Track2Grow__Filter_Name__c;
@@ -393,6 +399,7 @@ connectedCallback() {
         refreshApex(this.dummyDatas);
         getDetail({ name: this.selectedFilterName })
             .then((data) => {
+                this.singlecaseval = false;
                 this.filterDetailVal = data;
             });
         this.ChartTrackingBasedOnAverageTime();
@@ -670,5 +677,15 @@ closeConfig(){
         //             });
         //             this.dispatchEvent(event);
         // })
+    }
+    /////////////////////////////////////////////////////// single case 
+    @track singlecaseval = false;
+    @track singlecasedetailval = [];
+    hanldeProgressValueChange(event)
+    {
+        //this.filterDetailVal='';
+        this.singlecaseval=true;
+      console.log('value of child to parent',event.detail);
+      this.singlecasedetailval=event.detail;
     }
 }

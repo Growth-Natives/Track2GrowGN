@@ -221,7 +221,7 @@ export default class ConfigurationPage extends LightningElement {
         else {
             this.requireToSelectFrequency = false;
         }
-        if ((this.isWeekely || this.isCustom) && (this.value.length == 0 || this.value == undefined || this.value == null)) {
+        if (this.isWeekely  && (this.value.length == 0 || this.value == undefined || this.value == null)) {
             this.requireToSelectWeekDays = true;
         }
         else {
@@ -251,10 +251,9 @@ export default class ConfigurationPage extends LightningElement {
         else {
             this.requireMonthlyPriority = false;
         }
-
-        console.log('requireToSelectWeekDays===', this.requireToSelectWeekDays);
         if (this.requireJobName == false && this.requireToSelectFrequency == false && this.requireMonthlyPriority == false && this.requireStartDate == false && this.requireEndDate == false && this.requireToSelectWeekDays == false && this.requirePreferredTime == false) {
-            getObject({ jobName: this.jobName, freqName:this.frequencyValue, weekday: this.value, startDate: this.startDate, endDate: this.endDate, preferredTime: this.preferredTime,monthlyPriority:this.monthlyPriority,monthlyDay:this.monthlyDay,monthlyOrdinal:this.monthlyOrdinal,monthlyWeek:this.monthlyWeek})
+            console.log('Call inside method');
+            getObject({ jobName: this.jobName, freqName:this.frequencyValue, isCustom:this.isCustom, weekday: this.value, startDate: this.startDate, endDate: this.endDate, preferredTime: this.preferredTime,monthlyPriority:this.monthlyPriority,monthlyDay:this.monthlyDay,monthlyOrdinal:this.monthlyOrdinal,monthlyWeek:this.monthlyWeek})
                 .then(() => {
                     console.log('Val');
                 })

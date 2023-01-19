@@ -58,10 +58,11 @@
         </table>
     <div>
         <lightning-datatable
-                key-field="id"
+                key-field="createdById"
                 data={result}
                 columns={columns}
-                hide-checkbox-column="true">
+                hide-checkbox-column="true"
+                onrowaction={navigateToRecordViewPage}>
         </lightning-datatable>
     </div>
 

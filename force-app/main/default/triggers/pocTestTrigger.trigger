@@ -40,6 +40,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
                dataIdMap.put('Field', 'Created');
                dataIdMap.put('Date/Time', rec.get('LastModifiedDate'));    
                dataIdMap.put('User', rec.getsObject('CreatedBy').get('Name'));
+               dataIdMap.put('CreatedById', rec.getsObject('CreatedBy').get('Id'));
                dataIdMap.put('OldValue', null);
                dataIdMap.put('NewValue', null);
                
@@ -130,6 +131,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
                dataIdMap.put('Field', updField);            
                dataIdMap.put('Date/Time', rec.get('LastModifiedDate'));    
                dataIdMap.put('User', rec.getsObject('CreatedBy').get('Name'));
+               dataIdMap.put('CreatedById', rec.getsObject('CreatedBy').get('Id')); 
                dataIdMap.put('OldValue', oldRec.get(updField));
                dataIdMap.put('NewValue', rec.get(updField));
                system.debug('dataIdMap..'+dataIdMap);
@@ -138,8 +140,8 @@ trigger pocTestTrigger on Case (after insert, after update) {
                    allUpdatedJson = dataIdMap.toString();
                }
                 else
-               {   
-                   allUpdatedJson = allUpdatedJson + ',' + dataIdMap.toString();
+               {  
+                   allUpdatedJson = dataIdMap.toString() + ',' + allUpdatedJson ;
                }
                newJson.put(rec.Id, allUpdatedJson);
             }
@@ -204,7 +206,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
                    system.debug('oldJson..'+oldJson);
                    system.debug('oldJson.. value'+oldJson.get(rec.recID__c));
                    system.debug('newJson.. value'+newJson.get(rec.recID__c));
-                   combinedJson = oldJson.get(rec.recID__c).toString() +','+ newJson.get(rec.recID__c).toString();
+                   combinedJson =  newJson.get(rec.recID__c).toString() +','+ oldJson.get(rec.recID__c).toString();
                    system.debug('combinedJson...'+combinedJson);
                    newJson.put(rec.recID__c, combinedJson);
                }

@@ -3,6 +3,7 @@ import pickListValueDynamically from '@salesforce/apex/averagetimechartcontrolle
 import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.ownerbasedonaveragetime';
 import getUserList from '@salesforce/apex/averagetimechartcontroller.getUserList';
 import avergetimesinglerecord from '@salesforce/apex/averagetimechartcontroller.avergetimesinglerecord';
+import casedata from '@salesforce/apex/averagetimechartcontroller.casedata';
 import ChartJS from '@salesforce/resourceUrl/ChartJs';
 import { loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -77,7 +78,22 @@ export default class OwnerBasedAverageChart extends LightningElement {
                         });
                         this.dispatchEvent(evt);
         }
-       
+           this.singlecasedata();
+    }
+
+    singlecasedata()
+    {
+              casedata({casenumber:this.casevalue})
+              .then(data => {
+                    if (data) {
+                        console.log('value of singlecasedata', data);
+                         const selectedEvent = new CustomEvent("progressvaluechange", {detail: data});
+                         this.dispatchEvent(selectedEvent);
+                    }
+                    else if (data.error) {
+                        return data.error;
+                    }
+                })
     }
 
     ////////////////
@@ -96,24 +112,13 @@ export default class OwnerBasedAverageChart extends LightningElement {
     @api isCreateFilter;
     @track dataSetSingleRec;
 
+disconnectedCallback() {
+    console.log('disconnected callback in OwnerBasedAverageChart');
+}
+
     mychart;
-    // picklistValRight = 'Max 50';
-
-
-    // openModal() {
-    //     this.isModalOpen = true;
-    //     this.getcallby();
-    // }
-    // closeModal() {
-    //     this.isModalOpen = false;
-    //     this.getcallby();
-    // }
-    // submitDetails() {
-    //     this.isModalOpen = false;
-    // }
-
     connectedCallback() {
-        console.log('Connected callback');
+        console.log('Connected callback in OwnerBasedAverageChart');
         this.dynmic();
         var fieldType;
         var fieldValue;

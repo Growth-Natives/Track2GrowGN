@@ -4,10 +4,9 @@ public String query;
 public String obj;
 public List<sObject> dataList = new List<sObject>();
     public customHistoryBatchClass(String obj){
-        this.query = 'Select id,(Select '+obj + 'Id,NewValue,OldValue,CreatedBy.name,createddate,field from Histories order by CreatedDate) From '+ obj+ ' LIMIT 10';
+        this.query = 'Select id,(Select '+obj + 'Id,NewValue,OldValue,CreatedBy.name,createddate,field from Histories order by CreatedDate) From '+ obj+ ' LIMIT 2';
         System.debug('query..'+this.query);
-
-        this.obj = obj;
+        this.obj = obj.capitalize();
     }
 
 
@@ -24,19 +23,52 @@ public List<sObject> dataList = new List<sObject>();
          List<Object> dataList = new List <Object>();
          List<testPOC__c> testPocInsertRecs = new List<testPOC__c>();
          List<Attachment> insertJson = new List<Attachment>();
+         Set<Id> recsPresent = new Set<Id>();
          String recid;
+         List<testPOC__c> allRecs = [Select Id,recID__c from testPOC__c];
+         
+         for(Object data :(list<Object>)records){
+             Map<String, Object> mapObj =(Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data));
+             for(testPOC__c rec : allRecs){
+                 if(mapObj.get('Id') == rec.recID__c)
+                 {
+                     recsPresent.add(rec.recID__c);
+                 }
+             }
+         }
+         System.debug('recsPresent>>'+recsPresent);
+
         for(Object data :(list<Object>)records){
             system.debug('data>>'+data);
             Map<String, Object> mapObj =(Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data));
             map<String,Object> recdata = (map<string,Object>)JSON.deserializeUntyped(JSON.serialize(mapObj.get('Histories')));
-            List<object> hisdata = (List<object>)JSON.deserializeUntyped(JSON.serialize(recdata.get('records')));
             dataList = new List <Object>();
+            if(recdata == null || recdata.isEmpty())
+            {
+                system.debug('no history found');
+            }
+            else
+            {system.debug('history found');
+                List<object> hisdata = (List<object>)JSON.deserializeUntyped(JSON.serialize(recdata.get('records')));
+            
                 for(Object his : hisdata)
-                {
+                {   
+                    String objId = this.obj + 'Id';
+                    map<string,object> hisObj =(map<string,object>)JSON.deserializeUntyped(JSON.serialize(his));
+                    // system.debug('objId>>'+objId);
+                    // system.debug('hisObj.(objId)>>'+hisObj.get(objId));
+                    String idRec = hisObj.get(objId).toString();
+                    // system.debug('idRec>>'+idRec);
+                    // system.debug('contains>>'+recsPresent.contains(idRec));
+                    if(!recsPresent.contains(idRec))
+                        {
                         dataList.add(his);
+                        }
                 }
+                System.debug('datalist>>'+dataList);
+                if(dataList != null && !dataList.isEmpty())
+                {
                 String allJson;
-                // newJson = new Map<String,Object>(); 
             for(Object his : dataList)
             {
                 map<string,object> hisObj =(map<string,object>)JSON.deserializeUntyped(JSON.serialize(his));
@@ -64,12 +96,19 @@ public List<sObject> dataList = new List<sObject>();
             insRec.Object_Name__c = this.obj;
             insRec.recID__c = recid;
             testPocInsertRecs.add(insRec);
+            }
         }
-
-        // Insert testPocInsertRecs;
+        }
+        system.debug('testPocInsertRecs>>>'+testPocInsertRecs);
+        if(testPocInsertRecs != null && !testPocInsertRecs.isEmpty())
+        {
+            System.debug('in insert if');
+            // system.debug('testPocInsertRecs>>>'+testPocInsertRecs);
+            Insert testPocInsertRecs;
 
         for(testPOC__c rec : testPocInsertRecs)
            {
+            //    system.debug('newJson.get(rec.recID__c)>>>'+newJson.get(rec.recID__c));
                Attachment jsonfile = new Attachment();
                 if (Schema.sObjectType.Attachment.fields.ParentId.isCreateable())
                 {
@@ -85,15 +124,17 @@ public List<sObject> dataList = new List<sObject>();
                 }
                 if (Schema.sObjectType.Attachment.fields.Body.isCreateable())
                 {
-                    jsonfile.Body = Blob.valueOf(JSON.serialize(newJson.get(rec.recID__c)));
+                    jsonfile.Body = Blob.valueOf('{"' + rec.recID__c + '" : ' + JSON.serialize(newJson.get(rec.recID__c))+ '}');
                 }
                 if(jsonfile!=null && Schema.sObjectType.Attachment.isAccessible()  && Schema.sObjectType.Attachment.isCreateable()){
                     insertJson.add(jsonfile);
                 }               
            }
         system.debug('insertJson...'+insertJson);
-        //insert insertJson;
-        }
+        Insert insertJson;
+  }
+}
+        
 
         public void finish(Database.BatchableContext bc){
             

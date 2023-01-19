@@ -2,6 +2,7 @@ import { LightningElement ,api, track} from 'lwc';
 import getHistoryData from '@salesforce/apex/customHistoryComponentController.getHistoryData';
 import getSearchHistoryData from '@salesforce/apex/customHistoryComponentController.getSearchHistoryData';
 import isHistoryOn from '@salesforce/apex/customHistoryComponentController.isHistoryOn';
+import { NavigationMixin } from 'lightning/navigation';
 export default class CustomHistoryComponent extends LightningElement {
 
 @api recordId;
@@ -58,7 +59,8 @@ isHistoryOn({
 columns = [
     { label: 'Date/Time', fieldName: 'timestamp' },
     { label: 'Field', fieldName: 'field' },
-    { label: 'User', fieldName: 'user' },
+    { label: 'User', fieldName: 'createdById', type: 'url', 
+       typeAttributes: {label: { fieldName: 'user'}, target: 'www.google.com'}},
     { label: 'Original Value', fieldName: 'oldVal' },
     { label: 'New Value', fieldName: 'newVal' },
 ];
