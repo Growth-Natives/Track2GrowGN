@@ -22,7 +22,7 @@ public class customHistoryComponentController {
     public static List<wrapper> getHistoryData(id recid)
     {
         System.debug('recid>>>'+recid);
-        List<testPOC__c> recData = [Select id, Name, Object_Name__c,recID__c From testPOC__c Where recID__c =: recid];
+        List<customHistory__c> recData = [Select id, Name, Object_Name__c,recID__c From customHistory__c Where recID__c =: recid];
         system.debug('recData..'+recData);
         Map<String,Object> hismap = new Map<String,Object>();
         List<Object> hislist = new List<Object>();
@@ -33,7 +33,7 @@ public class customHistoryComponentController {
         String tempRecAfter;
         String tempRecBefore;
         
-        for(testPOC__c rec : recData)
+        for(customHistory__c rec : recData)
         {
             for(Attachment a : [SELECT ParentId, Id, Body FROM Attachment where ParentId =: rec.Id])
             {

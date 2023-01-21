@@ -42,6 +42,11 @@ getHistoryData({
     this.totalRecountCount = result.length; console.log('count',this.totalRecountCount); 
     this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
     this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
+    if(this.result){
+                this.result.forEach(item => 
+                item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                
+            }
     this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
 })  
 
@@ -59,8 +64,8 @@ isHistoryOn({
 columns = [
     { label: 'Date/Time', fieldName: 'timestamp' },
     { label: 'Field', fieldName: 'field' },
-    { label: 'User', fieldName: 'createdById', type: 'url', 
-       typeAttributes: {label: { fieldName: 'user'}, target: 'www.google.com'}},
+    { label: 'User', fieldName: 'userURL', type: 'url', 
+       typeAttributes: {label: { fieldName: 'user'}}},
     { label: 'Original Value', fieldName: 'oldVal' },
     { label: 'New Value', fieldName: 'newVal' },
 ];
@@ -181,6 +186,11 @@ handleChange(event) {
                     if (data.length > 0) {
                         this.records = data; console.log('records..',this.records);
                         this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
+                        if(this.result){
+                                            this.result.forEach(item => 
+                                            item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                                            
+                                        }
                         this.totalRecountCount = data.length; console.log('count',this.totalRecountCount); 
                         this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
                         this.page = 1;
@@ -190,6 +200,11 @@ handleChange(event) {
                     }
                     else {
                         this.result = data;
+                        if(this.result){
+                                        this.result.forEach(item => 
+                                        item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                                        
+                                    }
                         this.message = "No data found with searchkey " + this.searchVal +' for '+ this.field+ ' field.';
                         //alert(this.message);
                         //this.noDataFound = true;
@@ -204,6 +219,11 @@ handleChange(event) {
                     .then(result => {
                     this.records = result; console.log('records..',this.records);
                     this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
+                    if(this.result){
+                                    this.result.forEach(item => 
+                                    item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                                    
+                                }
                     this.totalRecountCount = result.length; console.log('count',this.totalRecountCount); 
                     this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
                     this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
@@ -231,6 +251,11 @@ displayRecords(pageSize){
 
         this.result = this.records.slice(this.startingRecord, this.endingRecord);
         console.log('new records',this.result);
+        if(this.result){
+                this.result.forEach(item => 
+                item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                
+            }
         this.startingRecord = this.startingRecord + 1;
 }  
 
@@ -244,6 +269,11 @@ displayRecordPerPage(page){
 
         this.result = this.records.slice(this.startingRecord, this.endingRecord);
         console.log('new records',this.result);
+        if(this.result){
+                this.result.forEach(item => 
+                item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                
+            }
         this.startingRecord = this.startingRecord + 1;
 }
 

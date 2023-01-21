@@ -9,7 +9,7 @@ public class SAPOrdersSchedule {
         system.debug('preferredTime=='+preferredTime);
         date start; 
         date endD;
-        AverageTimeBatchClassSchedule p = new AverageTimeBatchClassSchedule();
+       AverageTimeBatchClassSchedule p = new AverageTimeBatchClassSchedule();
         if(startDate!=''&&endDate!=''){
             start = Date.valueOf(startDate);
             endD = Date.valueOf(endDate);

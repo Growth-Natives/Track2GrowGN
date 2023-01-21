@@ -35,6 +35,7 @@ export default class OwnerBasedAverageChart extends LightningElement {
                     // this.selectTargetValues = data;
                     for (let key in result) {
                         this.options = Object.keys(result).map(key => ({ label: result[key], value: result[key] }));
+                        console.log('ndnafjkdhj',this.options);
                     }
                 }
                 else if (result.error) {
@@ -49,7 +50,9 @@ export default class OwnerBasedAverageChart extends LightningElement {
         this.secondchart = true;
         this.textValue = '';
         this.getcallby();
-        this.showchart = true;
+        this.showchart = true;        
+       const selectedEvent = new CustomEvent("ownervaluechange", {detail: false});
+       this.dispatchEvent(selectedEvent);
      }
   handlePicklistcase() {
         //this.casevalue = event.target.label;
@@ -118,6 +121,7 @@ disconnectedCallback() {
 
     mychart;
     connectedCallback() {
+        this.textValue='';
         console.log('Connected callback in OwnerBasedAverageChart');
         this.dynmic();
         var fieldType;
@@ -146,7 +150,7 @@ disconnectedCallback() {
                 arr.push(this.SobjectFieldvalue.split(','));
                 this.picklistVal = arr[0][0];
                 this.dynamic();
-                this.getcallby();
+                //this.getcallby();
             }
             else {
                 // window.location.reload();

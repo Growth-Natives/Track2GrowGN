@@ -5,13 +5,16 @@ display: none;
     color:red;
 }
 .configBody{
-     flex-shrink: 0;
-    margin-bottom: 2%;
+    z-index: 1;
+    margin-top: 2%;  
+    margin-bottom: 1%;
     padding-top:1%;
-    /* width: %; */
-    max-width: 100%;
-    /* height:380px; */
-    max-height:300px !important;
+    max-width: 75%;
+    margin-left:2%;
+    /* background-color: red; */
+    min-height: 320px !important;
+    height:340px;
+    max-height:360px !important;
     overflow-y: auto;
     scroll-behavior: smooth;
     -ms-overflow-style: none; 
@@ -20,3 +23,17 @@ display: none;
     .configBody::-webkit-scrollbar {
         display: none; 
    }
+   span .slds-radio {
+     display: flex;
+     margin-top:10px;
+     margin-bottom: 10px;
+   }
+  lightning-input > .slds-datepicker{
+    min-width: 10px !important;
+    min-height: 10px !important;
+    max-height: 10000px !important;
+    padding: .25rem;
+    text-align: center;
+    font-size: .75rem;
+    background-color: red !important;
+  }

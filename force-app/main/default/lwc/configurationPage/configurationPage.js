@@ -1,6 +1,6 @@
 import { LightningElement } from 'lwc';
 import getObject from '@salesforce/apex/SAPOrdersSchedule.scheduleClass';
-
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class ConfigurationPage extends LightningElement {
     jobName = '';
     frequencyValue = '';
@@ -183,17 +183,7 @@ export default class ConfigurationPage extends LightningElement {
             this.isDaily = true;
             //this.isCustom = false;
         }
-        // else if (this.frequencyValue === 'Custom'){
-        //     this.isWeekely = false;
-        //     this.isMonthly=false;
-        //     this.value=[];
-        //     this.monthlyPriority = ' ';
-        //     this.monthlyDay=' ';
-        //     this.isDay = false;
-        //     this.isOrdinal = false;
-        //     this.isDaily = false;
-        //     this.isCustom = true;
-        // }
+    
     }
     onStartDateChange(e) {
         this.startDate = e.currentTarget.value;
@@ -256,6 +246,24 @@ export default class ConfigurationPage extends LightningElement {
             getObject({ jobName: this.jobName, freqName:this.frequencyValue, isCustom:this.isCustom, weekday: this.value, startDate: this.startDate, endDate: this.endDate, preferredTime: this.preferredTime,monthlyPriority:this.monthlyPriority,monthlyDay:this.monthlyDay,monthlyOrdinal:this.monthlyOrdinal,monthlyWeek:this.monthlyWeek})
                 .then(() => {
                     console.log('Val');
+                    console.log('!!SUCCESS Schedule Sccessfully');
+                    const event = new ShowToastEvent({
+                        title: 'SUCCESS',
+                        message: 'Apex class is scheduled Successfully',
+                        variant: 'SUCCESS ',
+                        mode: 'dismissable'
+                    });
+                    this.dispatchEvent(event);
+                    window.location.reload();
+                })
+                .catch((error)=>{
+                    const event = new ShowToastEvent({
+                        title: 'ERROR',
+                        message: error.message,
+                        variant: 'ERROR ',
+                        mode: 'dismissable'
+                    });
+                    this.dispatchEvent(event);
                 })
         }
     }

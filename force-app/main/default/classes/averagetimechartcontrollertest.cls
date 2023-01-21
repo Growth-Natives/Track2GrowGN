@@ -473,7 +473,7 @@ public class averagetimechartcontrollertest
             insert cs;
             
            averagetimechartcontroller.avergetimesinglerecord(null,cs.Id);
-            
+            averagetimechartcontroller.casedata(cs.casenumber);
             System.assert(1==1,'List should not be empty');
             
             test.stopTest();

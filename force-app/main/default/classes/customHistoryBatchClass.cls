@@ -4,7 +4,7 @@ public String query;
 public String obj;
 public List<sObject> dataList = new List<sObject>();
     public customHistoryBatchClass(String obj){
-        this.query = 'Select id,(Select '+obj + 'Id,NewValue,OldValue,CreatedBy.name,createddate,field from Histories order by CreatedDate) From '+ obj+ ' LIMIT 2';
+        this.query = 'Select id,(Select '+obj + 'Id,NewValue,OldValue,CreatedBy.name,createddate,field, Datatype from Histories order by CreatedDate) From '+ obj+ ' LIMIT 2';
         System.debug('query..'+this.query);
         this.obj = obj.capitalize();
     }
@@ -21,15 +21,15 @@ public List<sObject> dataList = new List<sObject>();
          Map<string,Object> tempMap = new Map<string,Object>();
          Map<string,Map<String,Object>> finalJson = new Map<string,Map<String,Object>>();
          List<Object> dataList = new List <Object>();
-         List<testPOC__c> testPocInsertRecs = new List<testPOC__c>();
+         List<customHistory__c> testPocInsertRecs = new List<customHistory__c>();
          List<Attachment> insertJson = new List<Attachment>();
          Set<Id> recsPresent = new Set<Id>();
          String recid;
-         List<testPOC__c> allRecs = [Select Id,recID__c from testPOC__c];
+         List<customHistory__c> allRecs = [Select Id,recID__c from customHistory__c];
          
          for(Object data :(list<Object>)records){
              Map<String, Object> mapObj =(Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data));
-             for(testPOC__c rec : allRecs){
+             for(customHistory__c rec : allRecs){
                  if(mapObj.get('Id') == rec.recID__c)
                  {
                      recsPresent.add(rec.recID__c);
@@ -73,12 +73,22 @@ public List<sObject> dataList = new List<sObject>();
             {
                 map<string,object> hisObj =(map<string,object>)JSON.deserializeUntyped(JSON.serialize(his));
                 map<String,Object> username = (map<string,Object>)JSON.deserializeUntyped(JSON.serialize(hisObj.get('CreatedBy')));
+                // system.debug('hisObj...'+hisObj);
+                String datatype = hisObj.get('DataType').toString();
+                String field = hisObj.get('Field').toString();
+                system.debug('datatype...'+datatype);
+                system.debug('field...'+field);
+
+                if(datatype != 'EntityId')
+                {
+                    system.debug('not EntityId');
                 dataIdMap.put('Field', hisObj.get('Field'));            
                 dataIdMap.put('Date/Time', hisObj.get('CreatedDate'));    
                 dataIdMap.put('User', username.get('Name'));
+                dataIdMap.put('CreatedById', username.get('Id'));
                 dataIdMap.put('OldValue', hisObj.get('OldValue'));
                 dataIdMap.put('NewValue', hisObj.get('NewValue'));
-            
+                }
                if(allJson == null)
                {
                    allJson = dataIdMap.toString();
@@ -92,7 +102,7 @@ public List<sObject> dataList = new List<sObject>();
             }
             system.debug('newJson...'+newJson);
 
-            testPOC__c insRec = new testPOC__c();
+            customHistory__c insRec = new customHistory__c();
             insRec.Object_Name__c = this.obj;
             insRec.recID__c = recid;
             testPocInsertRecs.add(insRec);
@@ -106,7 +116,7 @@ public List<sObject> dataList = new List<sObject>();
             // system.debug('testPocInsertRecs>>>'+testPocInsertRecs);
             Insert testPocInsertRecs;
 
-        for(testPOC__c rec : testPocInsertRecs)
+        for(customHistory__c rec : testPocInsertRecs)
            {
             //    system.debug('newJson.get(rec.recID__c)>>>'+newJson.get(rec.recID__c));
                Attachment jsonfile = new Attachment();

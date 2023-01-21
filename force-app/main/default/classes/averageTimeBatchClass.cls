@@ -481,10 +481,12 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
             if(bi != null && !bi.isEmpty()){
                 if(bi[0].LastRefreshedDate__c != system.today()){  
                     averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,null,true);
+                    system.debug('atbc>>>'+atbc);
                     database.executeBatch(atbc);
                 }
             }
              BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
+               system.debug('bInfo>>>'+bInfo);
                database.update(bInfo);
             list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
             if (BatchInfo__c.sObjectType.getDescribe().isDeletable()){

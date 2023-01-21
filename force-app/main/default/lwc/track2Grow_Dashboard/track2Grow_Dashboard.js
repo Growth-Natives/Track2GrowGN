@@ -140,14 +140,14 @@ export default class Track2Grow_Dashboard extends LightningElement {
         }
     }
 
-connectedCallback() {
-     console.log('Connected callback in Track2Grow_Dashboard');
-   
-}
-disconnectedCallback() {
-    console.log('disconnected callback in Track2Grow_Dashboard');
-   
-}
+    connectedCallback() {
+        console.log('Connected callback in Track2Grow_Dashboard');
+
+    }
+    disconnectedCallback() {
+        console.log('disconnected callback in Track2Grow_Dashboard');
+
+    }
     getfDetail() {
         if (this.datas.length >= 1) {
             this.isDataFilter = true;
@@ -219,7 +219,7 @@ disconnectedCallback() {
                             //     obj.push({ ...conts[key], isFilterSelect: true });
                             // }
                             // else {
-                                obj.push({ ...conts[key], isFilterSelect: false });
+                            obj.push({ ...conts[key], isFilterSelect: false });
                             // }
                         }
                     }
@@ -229,13 +229,13 @@ disconnectedCallback() {
                             //     obj.push({ ...conts[key], isFilterSelect: true });
                             // }
                             // else if (key > 2) {
-                                if (this.filterViewTitle == 'View Less') {
-                                    obj.push({ ...conts[key], isFilterSelect: false });
-                                }
+                            if (this.filterViewTitle == 'View Less') {
+                                obj.push({ ...conts[key], isFilterSelect: false });
+                            }
                             // }
                             // else {
                             //     obj.push({ ...conts[key], isFilterSelect: false });
-                                this.isViewMore = false;
+                            this.isViewMore = false;
                             // }
                         }
                     }
@@ -259,7 +259,7 @@ disconnectedCallback() {
                             //     obj.push({ ...conts[key], isFilterSelect: true });
                             // }
                             // else {
-                                obj.push({ ...conts[key], isFilterSelect: false });
+                            obj.push({ ...conts[key], isFilterSelect: false });
                             // }
                         }
                     }
@@ -269,9 +269,9 @@ disconnectedCallback() {
                             //     obj.push({ ...conts[key], isFilterSelect: true });
                             // }
                             // else if (key > 2) {
-                                if (this.isViewMore == false) {
-                                    this.isViewMore = true;
-                                }
+                            if (this.isViewMore == false) {
+                                this.isViewMore = true;
+                            }
 
                             // }
                             else {
@@ -299,8 +299,8 @@ disconnectedCallback() {
         this.isLoadMessage = true;
         this.isLoad = false;
         this.searchVal = '';
-        this.datas[0].isFilterSelect =  false;
-        console.log('Data after back ==',this.datas);
+        this.datas[0].isFilterSelect = false;
+        console.log('Data after back ==', this.datas);
     }
 
     onCreateFilterClick() {
@@ -373,6 +373,7 @@ disconnectedCallback() {
             this.clickedButtonLabelCheck = false;
         }
         this.selectedFilterName = event.currentTarget.dataset.id;
+        this.cardtitlesinglecase='Filter Details >>>' + this.selectedFilterName;
         this.cardTitle = "Filter Detail > " + event.currentTarget.dataset.id;
         this.isSelect = true;
         this.isLeftMenu = false;
@@ -506,8 +507,9 @@ disconnectedCallback() {
         this.isLoadMessage = true;
         this.clickedButtonLabelCheck = false;
         this.isCreateFilterClick = false;
-        this.datas[0].isFilterSelect =  false;
-        console.log('Data after back ==',this.datas);
+        this.datas[0].isFilterSelect = false;
+        console.log('Data after back ==', this.datas);
+        this.vars=false;
         refreshApex(this.dummyDatas);
     }
 
@@ -615,77 +617,83 @@ disconnectedCallback() {
         });
 
     }
-closeConfig(){
-    this.isCreateFilterClick = false;
+    closeConfig() {
+        this.isCreateFilterClick = false;
         this.isLoad = false;
         this.spin = false;
         this.isLoadMessage = true;
-        this.isConfigClick=false;
-}
-    onConfigClick(){
-    getApexSchedule()
-    .then(data=>{
-        console.log('connected data ',data);
-        if(data==true){
-            this.isApex = true;
-             console.log('ERROR!! Apex class is ALready scheduled');
-             const event = new ShowToastEvent({
-                    title: 'ERROR',
-                    message: 'Apex class is ALready scheduled',
-                    variant: 'ERROR ',
-                    mode: 'dismissable'
-                });
-                    this.dispatchEvent(event);
-        }
-        else{
-            this.isApex = false;
-            this.isCreateFilterClick = false;
-            this.isConfigClick = true;
-            this.isChartShow = false;
-            this.isSelect = false;
-            this.isLoad = false;
-            this.isDataFilter = false;
-            this.isLoadMessage = false;
-        }
-    })
-        // if(this.isApex==false){
-        //     this.isCreateFilterClick = false;
-        //     this.isConfigClick = true;
-        //     this.isChartShow = false;
-        //     this.isSelect = false;
-        //     this.isLoad = false;
-        //     this.isDataFilter = false;
-        //     this.isLoadMessage = false;
-        // }
-        // else{
-        //         console.log('ERROR!! Apex class is ALready scheduled');
-        //      const event = new ShowToastEvent({
-        //             title: 'ERROR',
-        //             message: 'Apex class is ALready scheduled',
-        //             variant: 'ERROR ',
-        //             mode: 'dismissable'
-        //         });
-        //             this.dispatchEvent(event);
-        // }
-                // scheduleClass()
-        // .then(()=>{
-        //     const event = new ShowToastEvent({
-        //                 title: 'SUCCESS',
-        //                 message: 'Configuration is done for 12 AM from MON-FRI',
-        //                 variant: 'SUCCESS ',
-        //                 mode: 'dismissable'
-        //             });
-        //             this.dispatchEvent(event);
-        // })
+        this.isConfigClick = false;
+    }
+    onConfigClick() {
+        this.isCreateFilterClick = false;
+        this.isConfigClick = true;
+        this.isChartShow = false;
+        this.isSelect = false;
+        this.isLoad = false;
+        this.isDataFilter = false;
+        this.isLoadMessage = false;
+        getApexSchedule()
+            .then(data => {
+                console.log('connected data ', data);
+                if (data == true) {
+                    this.isApex = true;
+                  
+                }
+                else {
+                    this.isApex = false;
+                }
+            })
+        
+    }
+     handleConfigTab(event) {
+        const tab = event.target.label;
+        console.log('Tab Config==',tab);
+        // this.tabContent = `Tab ${event.target.value} is now active`;
     }
     /////////////////////////////////////////////////////// single case 
     @track singlecaseval = false;
-    @track singlecasedetailval = [];
+     singlecasedetailval = [];
     hanldeProgressValueChange(event)
     {
-        //this.filterDetailVal='';
         this.singlecaseval=true;
-      console.log('value of child to parent',event.detail);
       this.singlecasedetailval=event.detail;
+      this.vars=true;
+      this.cardTitle='Case Detail';
+      this.cardtitlesinglecase='Case Detail';
+    }
+
+     vars='';
+     cardtitlesinglecase='';       
+      handleActive1(event)
+    {
+        if(event.target.label=='Average Time')
+        {
+             this.singlecaseval=false;
+             this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        }
+         if(event.target.label=='Owner Leader Board')
+        {
+              this.singlecaseval=false;
+              this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        }
+         if(event.target.label=='Owner Based On Average Time')
+        {
+              this.singlecaseval=this.vars;
+              this.cardTitle = this.cardtitlesinglecase;
+        }
+         if(event.target.label=='Case Comparison')
+        {
+             this.singlecaseval=false;
+             this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        }
+       
+    }
+
+    ownervaluechange(event)
+    {
+       this.singlecaseval=event.detail;
+       this.vars=false;
+       this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+       this.cardtitlesinglecase='Filter Details >>>' + this.selectedFilterName;
     }
 }

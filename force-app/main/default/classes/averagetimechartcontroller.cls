@@ -479,7 +479,7 @@ public with sharing class averagetimechartcontroller
     @AuraEnabled
     public static list<case> casedata(string casenumber){
         
-        list<case> caserecord=[select id,CaseNumber,createddate,Status,OwnerId,Priority,Type from Case where CaseNumber=:casenumber];
+        list<case> caserecord=[select id,CaseNumber,Status,OwnerId,Priority,Type,Subject,createdby.name from Case where CaseNumber=:casenumber];
         return caserecord;
     }
     
