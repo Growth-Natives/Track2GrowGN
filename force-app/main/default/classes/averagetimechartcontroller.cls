@@ -484,6 +484,65 @@ public with sharing class averagetimechartcontroller
     }
     
     //////
+   //////////////////////////record level last 6 month chart 
+     @AuraEnabled
+    public static  Map<String,Object> casedatalast6month(){
+        String dataRepresentation;
+        list<BatchInfo__c> bi=[SELECT Id,Businesshour__c, Dates__c, Filter_Name__c, SobjectFieldValue__c, EndDate__c, StartDate__c, SobjectFieldType__c, SobjectRecordType__c, SobjectType__c,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c where Dates__c ='Last 6 Months' AND SobjectFieldType__c ='Status' AND SobjectType__c ='case' and Filter_Name__c='last 6 mnoth by Track2Grow'  LIMIT 1];
+         if(bi != null && !bi.isEmpty())
+        {
+            dataRepresentation = bi[0].dataRepresentation__c;    
+        }
+        else
+        {
+            list<string> casestatusvalue= new list<string>();
+            Schema.DescribeFieldResult fieldResult = Schema.getGlobalDescribe().get('case').getDescribe().fields.getMap().get('status').getDescribe();
+            List<Schema.PicklistEntry> picklistEntries = fieldResult.getPicklistValues();
+            for(Schema.PicklistEntry picklistEntry : picklistEntries) {
+                casestatusvalue.add(picklistEntry.getValue());
+            }
+            System.debug('Picklist values for Account Type:'+casestatusvalue);
+           // averageTimeBatchClass atbc = new averageTimeBatchClass(casestatusvalue,'Status','case',null,'Last 6 Months',null,null,null,true,businessHour,'last 6 month by Track2Grow',false);
+            //batchJobId=database.executeBatch(atbc);  
+        }
+        map<String,double> valuestorepickliststage= new map<String,double>();
+       string inputdata = '['+dataRepresentation+']';
+        List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata); 
+        for(Object obj : result) 
+        { 
+            Map<String,Object> map1 = (Map<String,Object>)obj;
+            if(map1!=null)
+            {
+                for(String key : map1.keyset()) 
+                {
+                    valuestorepickliststage.put(key,(decimal)map1.get(key));
+                }
+            }
+        }
+        system.debug('value of this>'+valuestorepickliststage);
+        return valuestorepickliststage;
+    }
+    
+    @AuraEnabled
+    public static List<BusinessHours> getHourVal()
+    {
+        List<BusinessHours> businessStr =[SELECT name FROM BusinessHours];
+        return businessStr;
+    }
+    
+      @AuraEnabled
+    public static List<String> getRecordType()
+    {
+        List<String> strRecord = new list<String>();
+        List <Sobject> strRecord1 =[SELECT name FROM RecordType where SobjectType='case'];
+        if(!strRecord1.isEmpty()||strRecord1!=null){
+            for(Sobject r:strRecord1)
+            { 
+                strRecord.add(String.valueOf(r.get('Name')));
+            }
+        }
+        return strRecord;
+    }
     
     public class DataSet
     {

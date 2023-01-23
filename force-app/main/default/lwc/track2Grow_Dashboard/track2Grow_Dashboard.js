@@ -632,23 +632,8 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLoad = false;
         this.isDataFilter = false;
         this.isLoadMessage = false;
-        getApexSchedule()
-            .then(data => {
-                console.log('connected data ', data);
-                if (data == true) {
-                    this.isApex = true;
-                  
-                }
-                else {
-                    this.isApex = false;
-                }
-            })
+       
         
-    }
-     handleConfigTab(event) {
-        const tab = event.target.label;
-        console.log('Tab Config==',tab);
-        // this.tabContent = `Tab ${event.target.value} is now active`;
     }
     /////////////////////////////////////////////////////// single case 
     @track singlecaseval = false;

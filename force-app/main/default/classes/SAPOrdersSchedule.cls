@@ -24,7 +24,7 @@ public class SAPOrdersSchedule {
         }
         week = week.removeEnd(',');
         system.debug('Week = '+week);
-        String sch = '0 0 '+preferredTime+' ';
+        String sch = '0 30 17 ';
         if(isCustom){
             if(start.day()==endD.day() && start.month()!=endD.month()){
                 startOrEndDayMonth = start.day()+' '+start.month()+'-'+endD.month()+' ';

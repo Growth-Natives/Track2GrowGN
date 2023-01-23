@@ -1,142 +1,23 @@
 <template>
-		<div style="font-weight:bold;font-size:18px;margin:10px">
-			<h1>Schedule Batch Class</h1>
-		</div>
-		<div class="slds-box configBody" >
-			<div style="margin-top:15px" class="slds-grid slds-gutters">
-				<div class="slds-col slds-size_1-of-3">
-					<label>
-							<b>Job Name</b>
-							<abbr class="slds-required">*</abbr>
-						</label>
+	<div class="slds-grid">
+		<lightning-button label="Schedule" onclick={handleConfigTab} class="slds-m-left_large slds-m-top_small"></lightning-button>
+		<lightning-button label="Other Configuration"  onclick={handleConfigTab} class="slds-m-left_small slds-m-top_small"></lightning-button>
+	</div>
+			<template if:true={isOtherConfig}>
+				<div style="font-weight:bold;font-size:18px;margin:10px">
+					Here's the content for Item Two:
 				</div>
-				<div class="slds-col slds-size_2-of-3">
-					<lightning-input type="text" id="Object" value={jobName} onchange={onHandleJobNameChange} placeholder=""
-						role="text" style="height:33px;border-color:#C8C8C8;border-width:thin;margin-top:-17px">
-					</lightning-input>
-				</div>
-			</div>
-			<template if:true={requireJobName}>
-				<div class="slds-form-element__help errorMsg">Please enter Job Name</div>
 			</template>
-			<br/><br/>
-			<div style="margin-top:15px" class="slds-grid slds-gutters">
-				<div class="slds-col slds-size_1-of-3">
-					<label>
-							<b>Schedule Apex Execution</b>
-							<abbr class="slds-required">*</abbr>
-						</label>
-				</div>
-				<div class="slds-col slds-size_2-of-3">
-					<div class="slds-grid slds-gutters">
-						<div class="slds-col slds-size_1-of-4">
-							<lightning-radio-group name="radioGroup" label="Frequency" options={frqOption}
-								onchange={onHandleFrequencyChange} value='Weekly' type="radio" ></lightning-radio-group>
-							<br/><br/>
-
-							<!-- <lightning-checkbox-group name="Checkbox Group"
-									options={options}
-									value={value}
-									checked={isCheck}
-									onchange={handleChange}></lightning-checkbox-group> -->
-						</div><br/>
-						<template if:true={isWeekely}>
-							<div class="slds-col slds-size_3-of-4">
-								<lightning-checkbox-group name="Recurs every week on" label="Recurs every week on"
-									options={weekDay} value={value} onchange={handleWeekChange}>
-								</lightning-checkbox-group>
-								<br/>
-								<template if:true={requireToSelectWeekDays}>
-									<div class="slds-form-element__help errorMsg">Please Select atleast one day of week to
-										schedule.</div>
-								</template>
-							</div>
-						</template>
-						<template if:true={isMonthly}>
-							<div class="slds-col slds-size_3-of-4">
-								<input type="radio" name="Radiobutton" value="day" style="margin-right:5px;margin-top:2px "  onchange={onSelectMonthlyPriority}> On day
-								<select class="slds-select" disabled={isDay} style="width:120px;margin-right:5px;margin-left:5px;" onchange={onSelectDay}>
-											<template for:each={days} for:item="day">
-												<option key={day} value={day}>
-													{day}
-												</option>
-											</template>
-										</select> of every Month.<br/><br/>
-								<input type="radio" name="Radiobutton" value="ordinal" style="margin-right:5px;margin-top:2px " onchange={onSelectMonthlyPriority}> On
-								<select disabled={isOrdinal} class="slds-select" style="width:80px;margin-right:5px;margin-left:5px;" onchange={onSelectOrdinal}>
-											<template for:each={getOrdinalNumbers} for:item="ordinalNumber">
-												<option key={ordinalNumber} value={ordinalNumber.value}>
-													{ordinalNumber.label}
-												</option>
-											</template>
-										</select>
-								<select disabled={isOrdinal} class="slds-select" style="width:100px" onchange={onSelectWeek}>
-											<template for:each={weekDay} for:item="day">
-												<option key={day} value={day.value}>
-													{day.label}
-												</option>
-											</template>
-										</select> of every Month.
-								<br/>
-								<template if:true={requireMonthlyPriority}>
-									<div class="slds-form-element__help errorMsg">Select at least one option</div>
-								</template>
-							</div>
-						</template>
+			<template if:true={isSchedule}>
+				<template if:false={isApex}>
+					<div style="font-weight:bold;font-size:18px;margin:10px">
+						<h1>Schedule Batch</h1>
 					</div>
-					<template if:true={requireToSelectFrequency}>
-						<div class="slds-form-element__help errorMsg">Please Select any one frequency.</div>
-					</template><br/>
-					<lightning-input label="Custom" type="checkbox" checked={isCheck} onchange={handleChange}
-						value="Custom">
-					</lightning-input><br/>
-					<template if:true={isCustom}>
-						<div class="slds-grid slds-gutters">
-							<div class="slds-col slds-size_1-of-4" style="margin-top:20px;">Start</div>
-							<div class="slds-col slds-size_2-of-4">
-								<lightning-input type="date" onchange={onStartDateChange} name="input1" style="width:120px;"></lightning-input>
-							</div>
-							<div class="slds-col slds-size_1-of-4"></div>
-							<!-- <div class="slds-col slds-size_1-of-4" style="margin-top:20px">Start</div> -->
-						</div>
-						<template if:true={requireStartDate}>
-							<div class="slds-form-element__help errorMsg">Select Start Date.</div>
-						</template>
-						<div class="slds-grid slds-gutters">
-							<div class="slds-col slds-size_1-of-4" style="margin-top:20px;">End</div>
-							<div class="slds-col slds-size_2-of-4">
-								<lightning-input type="date" onchange={onEndDateChange} style="width:120px" name="input1"></lightning-input>
-							</div>
-							<div class="slds-col slds-size_1-of-4"></div>
-							<!-- <div class="slds-col slds-size_1-of-4" style="margin-top:20px">End</div> -->
-						</div>
-						<template if:true={requireEndDate}>
-							<div class="slds-form-element__help errorMsg">Select End Date.</div>
-						</template>
-					</template>
-					<div class="slds-grid slds-gutters">
-						<div class="slds-col slds-size_1-of-4" style="margin-top:20px;">Preferred Start Time
-						</div>
-						<div class="slds-col slds-size_2-of-4" style="margin-top:20px;">
-							<select class="slds-select" onchange={selectPreferredTime} style="width:120px;">
-								<option value="">None</option>
-								<template for:each={preferredStartTime} for:item="time">
-								<option  class="optionOnselect" key={time} value={time.value}>
-									{time.label}
-								</option>
-							</template>
-							</select>
-						</div><br/>
-						<div class="slds-col slds-size_1-of-4" style="margin-top: 20px;">
-							<lightning-button   class="slds-p-around_x-small" variant="brand" label="Schedule" title="Primary action"
-					onclick={onSaveClick}></lightning-button>
-						</div>
-					</div>
-					<template if:true={requirePreferredTime}>
-						<div class="slds-form-element__help errorMsg">Select Preferred time.</div>
-					</template>
-				</div>
-			</div><br/>
-			<br/>
-		</div>
+					<c-schedule-component></c-schedule-component>
+				</template>
+				<template if:true={isApex}>
+				<div class="slds-align_absolute-center">
+					<b style=" display: flex;font-size:25px">Apex class is already schedule.</b></div>
+				</template>
+			</template>
 </template>

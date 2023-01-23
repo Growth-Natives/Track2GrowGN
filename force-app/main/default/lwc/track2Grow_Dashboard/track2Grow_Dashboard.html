@@ -317,40 +317,13 @@
 								<div class="slds-backdrop slds-backdrop_open"></div>
 							</template>
 							<template if:true={isConfigClick}>
-								 <lightning-tabset>
-									<lightning-tab label="Item Two" value="2" onactive={handleConfigTab}>
-										Here's the content for Item Two: 
-									</lightning-tab>
-									<lightning-tab label="Schedule" value="1" onactive={handleConfigTab}>
-										<template if:false={isApex}>
-											<c-configuration-Page></c-configuration-Page>
-										</template>
-										<template if:true={isApex}>
-											<div class="slds-align_absolute-center"><b style=" display: flex;font-size:25px">Apex class is already schedule.</b></div>
-										</template>
-									</lightning-tab>
-								</lightning-tabset>
-								<!-- <lightning-tabset variant="scoped">
-									<lightning-tab label="Schedule">
-										<template if:true={isConfigClick}>
-											<c-configuration-Page></c-configuration-Page>
-										</template>
-									</lightning-tab>
-									<lightning-tab label="Owner Leader Board">
-										
-									</lightning-tab>
-								</lightning-tabset> -->
-								<!-- <div class="slds-p-around_x-small configBody">
-									<c-configuration-Page></c-configuration-Page>
-								</div> -->
-
+								<c-configuration-Page></c-configuration-Page>
 							</template>
 						</div>
 					</template>
 				</lightning-layout-item>
 			</template>
 		</template>
-
 		<template if:true={isSelect}>
 			<template if:false={isLeftMenu}>
 				<lightning-layout-item size="2" large-device-size="2" medium-device-size="2" small-device-size="2"

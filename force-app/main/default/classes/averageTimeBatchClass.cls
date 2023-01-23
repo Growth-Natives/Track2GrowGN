@@ -140,8 +140,10 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         }
     }
    public BatchInfo__c createBatchInfoRecord(map<string,decimal> pickValMap,Id recordId,map<string,decimal> ownerTimeMap,string dates,date startDate,date endDate,string field,String fieldValues,string recordTypes,string objectVal,boolean willRefresh,string businessHour,string filterName,string recordTypeids){
+        System.debug('pickValMap>>'+pickValMap);
         BatchInfo__c bInfo = new BatchInfo__c();
         if(recordId!=null){
+            system.debug('recId not null');
            BatchInfo__c getinfobatchrec=[SELECT Id, Name, LastReferencedDate, Businesshour__c, DataRepresentation__c, Dates__c, EndDate__c, Filter_Name__c, LastRefreshedDate__c, OwnerDataRepresentation__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, StartDate__c, WillRefresh__c FROM BatchInfo__c where id =:recordId];
            if (Schema.sObjectType.BatchInfo__c.fields.DataRepresentation__c.isUpdateable() && Schema.sObjectType.BatchInfo__c.fields.DataRepresentation__c.isCreateable() && Schema.sObjectType.BatchInfo__c.fields.DataRepresentation__c.isAccessible()) {
             getinfobatchrec.DataRepresentation__c = JSON.serialize(pickValMap);
@@ -181,10 +183,12 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         if (Schema.sObjectType.BatchInfo__c.fields.LastRefreshedDate__c.isUpdateable() && Schema.sObjectType.BatchInfo__c.fields.LastRefreshedDate__c.isCreateable() && Schema.sObjectType.BatchInfo__c.fields.LastRefreshedDate__c.isAccessible()){
             getinfobatchrec.LastRefreshedDate__c = system.today();
         }
+        system.debug('getinfobatchrec>>'+getinfobatchrec);
         return getinfobatchrec; 
         }
         else
         {
+            system.debug('recId null');
           if (Schema.sObjectType.BatchInfo__c.fields.DataRepresentation__c.isUpdateable() && Schema.sObjectType.BatchInfo__c.fields.DataRepresentation__c.isCreateable() && Schema.sObjectType.BatchInfo__c.fields.DataRepresentation__c.isAccessible()) {
             bInfo.DataRepresentation__c = JSON.serialize(pickValMap);
         }
@@ -223,6 +227,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         if (Schema.sObjectType.BatchInfo__c.fields.LastRefreshedDate__c.isUpdateable() && Schema.sObjectType.BatchInfo__c.fields.LastRefreshedDate__c.isCreateable() && Schema.sObjectType.BatchInfo__c.fields.LastRefreshedDate__c.isAccessible()){
             bInfo.LastRefreshedDate__c = system.today();
         }
+        system.debug('bInfo>>'+bInfo);
         return bInfo;   
         }
        }
@@ -408,6 +413,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                         }
                         firstTime = false;
                         ownerChangeMap.clear();
+                        system.debug('pickValMap>>'+pickValMap);
                     }
                     ownerfirstTime = false;
                     if(mapObj2.get('Field') == 'Created' ||mapObj2.get('Field') == field || (mapObj2.get('Field') == 'Owner' && mapObj2.get('DataType') == 'EntityId')){
@@ -428,15 +434,19 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
     }
     public void finish(Database.BatchableContext bc){  
         for(string s : pickValMap.keyset()){
+            System.debug('s>>'+s);
             Decimal avg;
             if(pickValMap.get(s) != null && pickValMap.get(s)!=0){
+                system.debug('hereee..');
                 avg = pickValMap.get(s)/recordsProcessed;
                 avg = avg.setScale(2);
             }
             if(avg==null || avg==0.00){
+                system.debug('avg null');
                 pickValMap.put(s,0.00);
             }
             else{
+                system.debug('avg not null');
                 pickValMap.put(s,avg);
             }
         }
@@ -477,16 +487,21 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
             }
         }
         else{
-            list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT DataRepresentation__c,  Dates__c, StartDate__c, EndDate__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, LastRefreshedDate__c,Businesshour__c FROM BatchInfo__c WHERE WillRefresh__c = TRUE ORDER BY LastRefreshedDate__c LIMIT 1]);
+            list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT DataRepresentation__c,  Dates__c, StartDate__c, EndDate__c,Filter_Name__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, LastRefreshedDate__c,Businesshour__c FROM BatchInfo__c WHERE WillRefresh__c = TRUE ORDER BY LastRefreshedDate__c DESC]);
             if(bi != null && !bi.isEmpty()){
                 if(bi[0].LastRefreshedDate__c != system.today()){  
-                    averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,null,true);
+                    averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,bi[0].Filter_Name__c,true);
+                    system.debug('bi[0].SobjectFieldValue__c...'+bi[0].SobjectFieldValue__c.Split(','));
+                    system.debug('bi[0].SobjectFieldType__c...'+bi[0].SobjectFieldType__c);
+                    system.debug('bi[0].SobjectRecordType__c...'+bi[0].SobjectRecordType__c.Split(','));
+                    system.debug('bi[0].SobjectType__c...'+bi[0].SobjectType__c);
+                    system.debug('bi[0].Filter_Name__c...'+bi[0].Filter_Name__c);
                     system.debug('atbc>>>'+atbc);
                     database.executeBatch(atbc);
                 }
             }
              BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
-               system.debug('bInfo>>>'+bInfo);
+               system.debug('bInfo>>>>>>>'+bInfo);
                database.update(bInfo);
             list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
             if (BatchInfo__c.sObjectType.getDescribe().isDeletable()){
