@@ -464,6 +464,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
             }
         }
         if(this.scheduled == false){
+            system.debug('Schedule false');
             if(this.recordId == null){
                 BatchInfo__c bInfo= createbatchinforecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
                 if(bInfo!=null && Schema.sObjectType.BatchInfo__c.isAccessible()  && Schema.sObjectType.BatchInfo__c.isCreateable()){
@@ -487,27 +488,22 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
             }
         }
         else{
+            system.debug('Schedule true');
             list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT DataRepresentation__c,  Dates__c, StartDate__c, EndDate__c,Filter_Name__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, LastRefreshedDate__c,Businesshour__c FROM BatchInfo__c WHERE WillRefresh__c = TRUE ORDER BY LastRefreshedDate__c DESC]);
             if(bi != null && !bi.isEmpty()){
                 if(bi[0].LastRefreshedDate__c != system.today()){  
+                    system.debug('bi[0].LastRefreshedDate__c != system.today');
                     averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,bi[0].Filter_Name__c,true);
-                    system.debug('bi[0].SobjectFieldValue__c...'+bi[0].SobjectFieldValue__c.Split(','));
-                    system.debug('bi[0].SobjectFieldType__c...'+bi[0].SobjectFieldType__c);
-                    system.debug('bi[0].SobjectRecordType__c...'+bi[0].SobjectRecordType__c.Split(','));
-                    system.debug('bi[0].SobjectType__c...'+bi[0].SobjectType__c);
-                    system.debug('bi[0].Filter_Name__c...'+bi[0].Filter_Name__c);
-                    system.debug('atbc>>>'+atbc);
                     database.executeBatch(atbc);
                 }
             }
              BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
-               system.debug('bInfo>>>>>>>'+bInfo);
-               database.update(bInfo);
             list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
             if (BatchInfo__c.sObjectType.getDescribe().isDeletable()){
                 delete doc;
             }
             attachmentJSONFile(bInfo,'ELSERECORD','text/plain',ownerTimeMap);      
+        
         }
     }
 }

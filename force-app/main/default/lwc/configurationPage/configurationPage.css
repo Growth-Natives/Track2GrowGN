@@ -4,6 +4,20 @@ display: none;
 .errorMsg{
     color:red;
 }
+.buttonBorder{
+  border-right:1px #000;
+  border-left:1px #000;
+  border-top:1px #000;
+  font-weight:bold;
+  font-size:18px;
+  margin:10px;
+}
+
+.iconStyle{
+    --lwc-colorTextIconDefault:#000;
+    margin-bottom: 4px;
+    margin-left: 3px;
+}
 .configBody{
     z-index: 1;
     margin-top: 2%;  

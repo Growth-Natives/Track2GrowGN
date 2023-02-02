@@ -6,6 +6,54 @@
                   <canvas  class="pie-chart" lwc:dom="manual"></canvas>
                  </div>
 					</div>
+                
+              <div class="slds-size_6-of-6">
+                <lightning-card>
+		<div style="display:flex">
+			<div style="padding:0.5rem;width: -webkit-fill-available;">
+				 <div class="slds-col slds-size_1-of-2">
+					<label>
+					<b>Business Hours</b>
+					<abbr class="slds-required">*</abbr>
+				</label>
+					<div class={className3}>
+						<select class="slds-select" onchange={selectHourValueChange} required=""
+						style="width:99%;height:33px;">
+						<option value="">None</option>
+						<template for:each={hourNameLabel} for:item="hourName">
+							<option key={hourName.id} value={hourName.Name}>
+								{hourName.Name}
+							</option>
+						</template>
+					</select>
+						<template if:true={requiredField4}>
+							<div class="slds-form-element__help errorMsg">Select Business Hours Type.</div>
+						</template>
+					</div>
+				</div>
+			</div>
+
+			<!-- <template if:true={onlycase}>
+				<div style="width:200px; padding:0.5rem;float:right">
+					<lightning-input type="text" field-level-help="" label="Enter Case Number" value={textValue}
+						onchange={handleInputChange}></lightning-input>
+				</div>
+				<div style="padding: 0.5rem;margin-top:1.3rem;float:right">
+					<lightning-button variant="brand" label="Search" title="Primary action" onclick={handlePicklistcase}
+						class="slds-m-left_x-small"></lightning-button>
+						 <lightning-button-icon icon-name="utility:zoomout"   alternative-text="Zoom out" class="fa-solid fa-magnifying-glass" title="Zoom out"></lightning-button-icon> 
+				</div>
+			</template> -->
+		</div>
+	</lightning-card>
+
+              </div>
+
+
+
+
+
+             
           <div class="slds-size_2-of-2">
              <div class='slds-box slds-theme_default'>
                  <lightning-card title={cardTitle1} icon-name="utility:chart">	</lightning-card>

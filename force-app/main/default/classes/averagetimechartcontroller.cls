@@ -401,6 +401,8 @@ public with sharing class averagetimechartcontroller
         map<string,decimal> pickvalmap = new map<string,decimal>();
         map<string,decimal> pickvalmapglobal = new map<string,decimal>();
         case  caserecord;
+        BusinessHours Bishou=[select id from BusinessHours where name='Default' limit 1 ];
+        system.debug('value of Bishou'+Bishou.id);
         
         //////////////////////////////////
         try {
@@ -420,7 +422,7 @@ public with sharing class averagetimechartcontroller
                 for(CaseHistory ch : caserecord.Histories){
                     if(ch.field == 'Status'){
                         if(firsttime){
-                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',caserecord.CreatedDate,ch.CreatedDate);
+                            decimal timee = BusinessHours.diff(Bishou.id,caserecord.CreatedDate,ch.CreatedDate);
                             timee = (timee/1000)/60;
                             timee = timee.setScale(2);
                             if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
@@ -439,7 +441,7 @@ public with sharing class averagetimechartcontroller
                         }
                         else{
                             
-                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',recentRecTime,ch.CreatedDate);
+                            decimal timee = BusinessHours.diff(Bishou.id,recentRecTime,ch.CreatedDate);
                             timee = (timee/1000)/60;
                             timee = timee.setScale(2);
                             if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
@@ -471,7 +473,7 @@ public with sharing class averagetimechartcontroller
             
             String errorMsg ='No case found';
             system.debug('value of messege'+errorMsg);
-            throw new AuraHandledException(ErrorMsg);
+            throw new AuraHandledException(errorMsg);
         }
         ///////////////////////////////////
     }

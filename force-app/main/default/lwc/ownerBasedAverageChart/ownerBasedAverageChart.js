@@ -74,6 +74,9 @@ export default class OwnerBasedAverageChart extends LightningElement {
          this.dynmic();
         }
         else{
+            this.filtervaluedisable=true;
+            const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
+            this.dispatchEvent(selectedEvent);
             const evt = new ShowToastEvent({
                             title: this._title,
                             message: "Please enter a case number",

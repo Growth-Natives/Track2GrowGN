@@ -1,8 +1,8 @@
 import { LightningElement ,api, track} from 'lwc';
 import getHistoryData from '@salesforce/apex/customHistoryComponentController.getHistoryData';
 import getSearchHistoryData from '@salesforce/apex/customHistoryComponentController.getSearchHistoryData';
-import isHistoryOn from '@salesforce/apex/customHistoryComponentController.isHistoryOn';
-import { NavigationMixin } from 'lightning/navigation';
+// import isHistoryOn from '@salesforce/apex/customHistoryComponentController.isHistoryOn';
+// import { NavigationMixin } from 'lightning/navigation';
 export default class CustomHistoryComponent extends LightningElement {
 
 @api recordId;
@@ -50,14 +50,14 @@ getHistoryData({
     this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
 })  
 
-isHistoryOn({
-    obj : this.objectApiName,
-    recId: this.recordId,
-})
-.then(val=> {
-    this.isHisOn = val;
-    console.log('isHisOn,,',this.isHisOn);
-})
+// isHistoryOn({
+//     obj : this.objectApiName,
+//     recId: this.recordId,
+// })
+// .then(val=> {
+//     this.isHisOn = val;
+//     console.log('isHisOn,,',this.isHisOn);
+// })
 }
 
 

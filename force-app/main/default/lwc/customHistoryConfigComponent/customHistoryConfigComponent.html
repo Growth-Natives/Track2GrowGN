@@ -1,0 +1,10 @@
+<template>
+    <div>
+     <lightning-checkbox-group name="Checkbox Group"
+                              label="Select Object"
+                              options={options}
+                              value={objValue}
+                              onchange={handleChange}></lightning-checkbox-group>
+    	<lightning-button variant="brand" label="Save & Select Fields" icon-position="right"  icon-name="utility:chevronright" class="slds-m-left_x-small" title="Primary action"	onclick={onObjeSave}></lightning-button>
+    </div>
+</template>

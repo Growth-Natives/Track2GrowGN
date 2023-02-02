@@ -1,18 +1,36 @@
 <template>
 	<div class="slds-grid">
-		<lightning-button label="Schedule" onclick={handleConfigTab} class="slds-m-left_large slds-m-top_small"></lightning-button>
-		<lightning-button label="Other Configuration"  onclick={handleConfigTab} class="slds-m-left_small slds-m-top_small"></lightning-button>
-	</div>
-			<template if:true={isOtherConfig}>
-				<div style="font-weight:bold;font-size:18px;margin:10px">
-					Here's the content for Item Two:
+			<!-- <template if:true={isSchedule}> -->
+				<div class="slds-grid buttonBorder" onclick={handleSchedule} label='Schedule Batch'>
+					<h1>Schedule Batch</h1>
+					<lightning-icon class="iconStyle slds-float_right slds-m-right_x-small slds-m-small" icon-name={arrowIcon} size="x-small"></lightning-icon>
 				</div>
+			<!-- </template> -->
+
+			<!-- <template if:true={isCustomHistoryConfig}> -->
+				<div class="slds-grid buttonBorder" onclick={handleCustomHistory} label='Schedule Batch'>
+					<h1>Custom History Configuration</h1>
+					<lightning-icon class="iconStyle slds-float_right slds-m-right_x-small slds-m-small" icon-name={arrowIcons} size="x-small"></lightning-icon>
+				</div>
+			<!-- </template> -->
+		<!-- <lightning-button label="Custom History Configuration"  onclick={handleConfigTab} class="slds-m-left_small slds-m-top_small"></lightning-button> -->
+	</div>
+			<template if:true={isCustomHistoryConfig}>
+				<div style="margin:10px">
+					<!-- Custom History Configuration Page-->
+						<!-- <c-schedule-component></c-schedule-component>  -->
+					<c-custom-history-config-component></c-custom-history-config-component>
+				</div>
+				
+				<!-- <div style="font-weight:bold;font-size:18px;margin:10px">
+					Custom History Configuration Page
+				</div> -->
 			</template>
 			<template if:true={isSchedule}>
 				<template if:false={isApex}>
-					<div style="font-weight:bold;font-size:18px;margin:10px">
+					<!-- <div style="font-weight:bold;font-size:18px;margin:10px">
 						<h1>Schedule Batch</h1>
-					</div>
+					</div> -->
 					<c-schedule-component></c-schedule-component>
 				</template>
 				<template if:true={isApex}>

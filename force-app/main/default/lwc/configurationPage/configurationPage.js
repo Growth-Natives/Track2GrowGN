@@ -5,19 +5,34 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class ConfigurationPage extends LightningElement {
     isApex;
     isSchedule=false;
-    isOtherConfig=false;
-      handleConfigTab(event) {
-        const tab = event.target.label;
-        console.log('Tab Config==',tab);
-        if(tab=='Schedule'){
-             this.isSchedule = true;
-               this.isOtherConfig = false;
+    isCustomHistoryConfig=false;
+    get arrowIcon(){
+        if(this.isSchedule==true){
+            return 'utility:chevrondown';
+        }
+        else{
+            return 'utility:chevronright';
+        }
+    }
+    get arrowIcons(){
+         if(this.isCustomHistoryConfig==true){
+            return 'utility:chevrondown';
+        }
+        else{
+            return 'utility:chevronright';
+        }
+    }
+   
+    handleSchedule(){
+        this.isSchedule = !this.isSchedule;
+        this.isCustomHistoryConfig = false;
+        if(this.isSchedule==true){
             this.apexSchedule();
         }
-        if(tab=='Other Configuration'){
-            this.isSchedule=false;
-            this.isOtherConfig = true;
-        }
+    }
+    handleCustomHistory(){
+        this.isSchedule=false;
+        this.isCustomHistoryConfig = !this.isCustomHistoryConfig;
     }
     apexSchedule(){
         getApexSchedule()

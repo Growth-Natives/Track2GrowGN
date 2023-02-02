@@ -15,7 +15,9 @@ global class AverageTimeBatchClassSchedule implements Schedulable {
     public string businessHour;
     public string filterName;
     global void execute(SchedulableContext sc){
+        System.debug('Schedule debug');
         List<BatchInfo__c> BIList = [select id,Businesshour__c, Dates__c, EndDate__c, Filter_Name__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, StartDate__c, DataRepresentation__c, WillRefresh__c from BatchInfo__c where WillRefresh__c = true];
+        System.debug('Schedule debug BIList = '+BIList);
         for(BatchInfo__c bi:BIList){
             List<String> lstString = bi.SobjectFieldValue__c.split(',');
             List<String> recordTyp = bi.SobjectRecordType__c.split(',');
@@ -31,7 +33,8 @@ global class AverageTimeBatchClassSchedule implements Schedulable {
             businessHour = bi.Businesshour__c;
             filterName = bi.Filter_Name__c;
             scheduled = true;
-            averageTimeBatchClass batch = new averageTimeBatchClass(fieldValue, field, objectVal, recordType, dates,startDate,endDate, recordId,willRefresh, businessHour, filterName, scheduled);
+            system.debug('Value from schedule class to batch class==\nFieldValue='+lstString+'\nfield='+field+'\nobject='+objectVal+'\nRecordType='+RecordType+'\ndates='+dates+'\nstartDate='+startDate+'\nend date='+endDate+'\nRecordId = '+recordId+'\nWillrefresh='+willRefresh+'\nbusinessHour ='+businessHour+'\nfilterName='+filterName+'\nScheduled = '+scheduled);
+            averageTimeBatchClass batch = new averageTimeBatchClass(fieldValue, field, objectVal, RecordType, dates,startDate,endDate, recordId,willRefresh, businessHour, filterName, scheduled);
             Database.executebatch(batch, 200);
         }
     }

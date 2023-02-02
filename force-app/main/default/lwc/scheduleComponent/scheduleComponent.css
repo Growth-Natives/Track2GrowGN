@@ -12,9 +12,9 @@ display: none;
     max-width: 75%;
     margin-left:2%;
     /* background-color: red; */
-    min-height: 320px !important;
-    height:340px;
-    max-height:360px !important;
+    min-height: 430px !important;
+    height:450px;
+    max-height:500px !important;
     overflow-y: auto;
     scroll-behavior: smooth;
     -ms-overflow-style: none; 

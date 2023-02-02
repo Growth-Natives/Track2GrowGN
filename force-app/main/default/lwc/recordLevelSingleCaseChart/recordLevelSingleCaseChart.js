@@ -1,6 +1,7 @@
 import { LightningElement,track,api } from 'lwc';
 import avergetimesinglerecord from '@salesforce/apex/averagetimechartcontroller.avergetimesinglerecord';
 import casedatalast6month from '@salesforce/apex/averagetimechartcontroller.casedatalast6month';
+import getHourVal from '@salesforce/apex/averagetimechartcontroller.getHourVal';
 import ChartJS from '@salesforce/resourceUrl/ChartJs';
 import { loadScript } from 'lightning/platformResourceLoader';
 export default class RecordLevelSingleCaseChart extends LightningElement {
@@ -9,6 +10,7 @@ export default class RecordLevelSingleCaseChart extends LightningElement {
 @track dataSetSingleRec; 
 @track dataSet;
 cardTitle1;
+hourNameLabel;
 
 mychart;
 casevalueid;
@@ -32,8 +34,12 @@ casevalueid;
     }
 
 connectedCallback() {
+          getHourVal()
+            .then((data) => {
+                this.hourNameLabel = data;
+            })
                 console.log('Value of id',this.recordId);
-                avergetimesinglerecord({ casevalueid: this.casevalueid,id:this.recordId  })
+                avergetimesinglerecord({ casevalueid: this.casevalueid,id:this.recordId})
                 .then((result) => {
                     this.dataSetSingleRec = result;
                     this.Initializechartjs();
