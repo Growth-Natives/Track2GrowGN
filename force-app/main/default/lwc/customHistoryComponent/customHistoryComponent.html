@@ -14,8 +14,32 @@
         </div>
         <table align="center">
             <tr >
-                <th class= "search"><lightning-input type="date" label="Date/Time" onchange={handleChange} value={searchVal1}></lightning-input></th>
-                <th class= "search"><lightning-input type="search" label="Field" onchange={handleChange} value={searchVal2}></lightning-input></th>
+                <th class= "search"><lightning-input type="search" label="Date/Time" onchange={handleChange} onclick={openModal} value={searchVal1}></lightning-input></th>
+                <th class= "search"><lightning-input type="search" label="Field" onchange={handleChange1} onkeyup={handleChange} value={searchVal2}></lightning-input>
+                <template if:true={havingValue}>
+							<div id="listbox-id-2-venu" data-key="dropdownresult"
+								class="slds-show slds-dropdown_length-with-icon-7" role="listbox"
+								style="z-index:100;position:absolute;background-color:white;width:20%;font-weight:normal">
+								<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+									<template for:each={showFields} for:item="record">
+										<li id={record.Id} key={record.Id} onclick={onselection}
+											role="presentation" class="slds-listbox__item">
+											<div data-key={record.Id} data-name={record}
+												class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+												role="option">
+												<span class="slds-media__body">
+											<span data-key={record.Id} data-name={record}
+												class="slds-listbox options-text slds-listbox__option-text_entity">{record}
+											</span>
+												</span>
+											</div>
+										</li>
+									</template>
+								</ul>
+							</div>
+
+						</template>
+                </th>
                 <th class= "search"><lightning-input type="search" label="User" onchange={handleChange} value={searchVal3}></lightning-input></th>
                 <th class= "search"><lightning-input type="search" label="Original Value" onchange={handleChange} value={searchVal4}></lightning-input></th>
                 <th class= "search"><lightning-input type="search" label="New Value" onchange={handleChange} value={searchVal5}></lightning-input></th>
@@ -64,6 +88,41 @@
                 hide-checkbox-column="true">
         </lightning-datatable>
     </div>
+
+
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container mod">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Start and End Date</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <table align="center">
+                <tr>
+                <th class= "search"><lightning-input type="date" label="Start Date" onchange={handleChange} value={searchVal6}></lightning-input></th>
+                <th class= "search"><lightning-input type="date" label="End Date" onchange={handleChange} value={searchVal7}></lightning-input></th>
+                </tr>
+                </table>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={closeModal} title="SAVE">SAVE</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+
 
         <div align="center" class="pages">
                     <lightning-button 

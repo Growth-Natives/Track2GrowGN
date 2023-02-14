@@ -411,9 +411,12 @@
 						</lightning-tab>
 						<lightning-tab label="Owner Based On Average Time" onactive={handleActive1}>
 							<template if:true={clickedButtonLabelCheck}>
-								<c-Owner-Based-Average-Chart is-manage-package={isManagePackage}
+								<!-- <c-Owner-Based-Average-Chart is-manage-package={isManagePackage}
 									selected-filter-name={selectedFilterName} save-filter-id={saveFilterId}
-									filter-detail-val={filterDetailVal} onprogressvaluechange={hanldeProgressValueChange} onownervaluechange={ownervaluechange}></c-Owner-Based-Average-Chart>
+									filter-detail-val={filterDetailVal} onprogressvaluechange={hanldeProgressValueChange} onownervaluechange={ownervaluechange}></c-Owner-Based-Average-Chart> -->
+									<c-Owner-Based-Average-Chart is-manage-package={isManagePackage}
+									selected-filter-name={selectedFilterName} save-filter-id={saveFilterId}
+									filter-detail-val={filterDetailVal}></c-Owner-Based-Average-Chart>
 							</template>
 						</lightning-tab>
 						<lightning-tab label="Case Comparison" onactive={handleActive1}>

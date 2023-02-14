@@ -75,6 +75,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
 
     @wire(getFilterDetail) filterList(result) {
         if (result) {
+            console.log('getFilter detail wire result call===',result);
             var dataLength = 0;
             this.dummyDatas = result;
             var conts;
@@ -104,7 +105,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
                     getDetail({ name: this.selectedFilterName })
                         .then((data) => {
-                            this.singlecaseval = false;
+                            //this.singlecaseval = false;
                             this.filterDetailVal = data;
                         });
                     if (dataLength <= 3) {
@@ -140,14 +141,6 @@ export default class Track2Grow_Dashboard extends LightningElement {
         }
     }
 
-    connectedCallback() {
-        console.log('Connected callback in Track2Grow_Dashboard');
-
-    }
-    disconnectedCallback() {
-        console.log('disconnected callback in Track2Grow_Dashboard');
-
-    }
     getfDetail() {
         if (this.datas.length >= 1) {
             this.isDataFilter = true;
@@ -315,6 +308,8 @@ export default class Track2Grow_Dashboard extends LightningElement {
     }
 
     onBatchCmp(event) {
+        console.log('this.dummyDatas before batch completed===>',this.dummyDatas);
+        this.selectedFilterName='';
         var dataId;
         this.isShowAllData = false;
         this.isChartShow = true;
@@ -323,8 +318,12 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLeftMenu = false;
         this.clickedButtonLabelCheck = true;
         var filtId;
+       
+        console.log('this.dummyDatas after batch completed===>',this.dummyDatas);
         var k = '';
         filtId = event.detail.recId;
+        console.log('event.detail.recId=====',event.detail.recId);
+        console.log(' this.selectedFilterName=====', this.selectedFilterName);
         const obj1 = event.detail.filterValDetail[0];
         for (var key in obj1) {
             k += key + ',';
@@ -336,24 +335,37 @@ export default class Track2Grow_Dashboard extends LightningElement {
         else {
             this.isManagePackage = false;
         }
-        this.singlecaseval = false;
+       // this.singlecaseval = false;
         this.filterDetailVal = event.detail.filterValDetail;
         if (this.isManagePackage) {
-            this.selectedFilterName = event.detail.filterValDetail[0].Track2Grow__Filter_Name__c;
+            if(event.detail.filterValDetail[0].Track2Grow__WillRefresh__c==true){
+                this.selectedFilterName = event.detail.filterValDetail[0].Track2Grow__Filter_Name__c;
+            }
+            else{
+                this.selectedFilterName='';
+            }
         }
         else {
-            this.selectedFilterName = event.detail.filterValDetail[0].Filter_Name__c;
+            if(event.detail.filterValDetail[0].WillRefresh__c==true){
+                this.selectedFilterName = event.detail.filterValDetail[0].Filter_Name__c;
+            }
+              else{
+                this.selectedFilterName='';
+            }
         }
         this.saveFilterId = filtId;
-        if (this.selectedFilterName != null || this.selectedFilterName != undefined) {
-            this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        if (this.selectedFilterName!=''||this.selectedFilterName != null || this.selectedFilterName != undefined) {
+            console.log('123');
+            this.cardTitle = 'Filter Details >>>' +  this.selectedFilterName;
         }
         else {
+            console.log('12345678');
             this.cardTitle = 'Filter Details >>>';
         }
     }
 
     onCloseCreateFilter(event) {
+        console.log('Test===');
         this.isCreateFilterClick = false;
         this.isLoad = true;
         this.spin = true;
@@ -400,7 +412,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
         refreshApex(this.dummyDatas);
         getDetail({ name: this.selectedFilterName })
             .then((data) => {
-                this.singlecaseval = false;
+                //this.singlecaseval = false;
                 this.filterDetailVal = data;
             });
         this.ChartTrackingBasedOnAverageTime();
@@ -535,6 +547,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     mode: 'dismissable'
                 });
                 this.dispatchEvent(event);
+                refreshApex(this.dummyDatas);
             })
             .catch(() => {
                 const event = new ShowToastEvent({
@@ -549,6 +562,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
     }
 
     renderedCallback() {
+        console.log('refresh render callback call');
         refreshApex(this.dummyDatas);
         if (this.chartjsInitialized) {
             return;
@@ -635,50 +649,50 @@ export default class Track2Grow_Dashboard extends LightningElement {
        
         
     }
-    /////////////////////////////////////////////////////// single case 
-    @track singlecaseval = false;
-     singlecasedetailval = [];
-    hanldeProgressValueChange(event)
-    {
-        this.singlecaseval=true;
-      this.singlecasedetailval=event.detail;
-      this.vars=true;
-      this.cardTitle='Case Detail';
-      this.cardtitlesinglecase='Case Detail';
-    }
+    // /////////////////////////////////////////////////////// single case 
+    // @track singlecaseval = false;
+    //  singlecasedetailval = [];
+    // hanldeProgressValueChange(event)
+    // {
+    //     this.singlecaseval=true;
+    //   this.singlecasedetailval=event.detail;
+    //   this.vars=true;
+    //   this.cardTitle='Case Detail';
+    //   this.cardtitlesinglecase='Case Detail';
+    // }
 
-     vars='';
-     cardtitlesinglecase='';       
+    //  vars='';
+    //  cardtitlesinglecase='';       
       handleActive1(event)
     {
-        if(event.target.label=='Average Time')
-        {
-             this.singlecaseval=false;
-             this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
-        }
-         if(event.target.label=='Owner Leader Board')
-        {
-              this.singlecaseval=false;
-              this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
-        }
-         if(event.target.label=='Owner Based On Average Time')
-        {
-              this.singlecaseval=this.vars;
-              this.cardTitle = this.cardtitlesinglecase;
-        }
-         if(event.target.label=='Case Comparison')
-        {
-             this.singlecaseval=false;
-             this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
-        }
+        // if(event.target.label=='Average Time')
+        // {
+        //      this.singlecaseval=false;
+        //      this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        // }
+        //  if(event.target.label=='Owner Leader Board')
+        // {
+        //       this.singlecaseval=false;
+        //       this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        // }
+        //  if(event.target.label=='Owner Based On Average Time')
+        // {
+        //       this.singlecaseval=this.vars;
+        //       this.cardTitle = this.cardtitlesinglecase;
+        // }
+        //  if(event.target.label=='Case Comparison')
+        // {
+        //      this.singlecaseval=false;
+        //      this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        // }
        
     }
 
-    ownervaluechange(event)
-    {
-       this.singlecaseval=event.detail;
-       this.vars=false;
-       this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
-       this.cardtitlesinglecase='Filter Details >>>' + this.selectedFilterName;
-    }
+    // ownervaluechange(event)
+    // {
+    //    this.singlecaseval=event.detail;
+    //    this.vars=false;
+    //    this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+    //    this.cardtitlesinglecase='Filter Details >>>' + this.selectedFilterName;
+    // }
 }

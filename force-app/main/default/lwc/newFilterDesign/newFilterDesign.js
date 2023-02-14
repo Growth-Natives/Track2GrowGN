@@ -479,10 +479,10 @@ export default class Filter_LWC extends LightningElement {
                     else if (this.isFilterSave == false) {
 
                         this.getAllcaserecords();
-                        const closeModal = new CustomEvent("saveclick", {
-                            detail: false,
-                        });
-                        this.dispatchEvent(closeModal);
+                        // const closeModal = new CustomEvent("saveclick", {
+                        //     detail: false,
+                        // });
+                        // this.dispatchEvent(closeModal);
                     }
                 }
             }
@@ -591,9 +591,10 @@ export default class Filter_LWC extends LightningElement {
         alert('batch is Failed');
     }
     checkCondition() {
+        console.log('checkCondition');
         if (this.isFilterSave == false || this.filterName == null || this.filterName == '' || this.filterName == undefined) {
             setTimeout((() => {
-                this.onSaveUncheck();
+             
                 const event = new ShowToastEvent({
                     title: 'Success Message',
                     message: 'batch is Completed',
@@ -602,10 +603,10 @@ export default class Filter_LWC extends LightningElement {
                 });
                 this.dispatchEvent(event);
             }).bind(this), 8000)
+               this.onSaveUncheck();
         }
         else {
             setTimeout((() => {
-                this.onSaveCheck();
                 const event = new ShowToastEvent({
                     title: 'Success Message',
                     message: 'batch is Completed',
@@ -614,7 +615,8 @@ export default class Filter_LWC extends LightningElement {
                 });
                 this.dispatchEvent(event);
                 alert('batch is Completed');
-            }).bind(this), 8000)
+            }).bind(this), 10000)
+              this.onSaveCheck();
         }
     }
     onSaveUncheck() {

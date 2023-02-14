@@ -14,11 +14,11 @@ export default class OwnerBasedAverageChart extends LightningElement {
     picklistVal;
     casevalue;
     showchart = false;
-    onlycase = false
+    //onlycase = false
     secondchart = true;
     textValue = '';
     id;
-    @api filtervaluedisable='false';
+    // @api filtervaluedisable='false';
 
     ///////////////list
     handleInputChange(event) {
@@ -51,56 +51,56 @@ export default class OwnerBasedAverageChart extends LightningElement {
         this.textValue = '';
         this.getcallby();
         this.showchart = true;        
-       const selectedEvent = new CustomEvent("ownervaluechange", {detail: false});
-       this.dispatchEvent(selectedEvent);
+    //    const selectedEvent = new CustomEvent("ownervaluechange", {detail: false});
+    //    this.dispatchEvent(selectedEvent);
      }
-  handlePicklistcase() {
-        //this.casevalue = event.target.label;
-        this.casevalue = this.textValue;
-        console.log('value hjghj', this.casevalue);
-        if(this.casevalue.length>0)
-        {
-            ////////// event for disable filter
-            //this.filtervaluedisable = event.target.value;
-            const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
-            this.dispatchEvent(selectedEvent);
-            /////////
-           this.showchart = true;
-          this.secondchart = false;
-         this.cardTitle = 'Average Time On Case Status(In Minutes) for Case number:'+ this.casevalue;
-         //this.getcallby();
-         this.singlecasenumber();
-        this.picklistVal = '';
-         this.dynmic();
-        }
-        else{
-            this.filtervaluedisable=true;
-            const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
-            this.dispatchEvent(selectedEvent);
-            const evt = new ShowToastEvent({
-                            title: this._title,
-                            message: "Please enter a case number",
-                            variant: this.variant,
-                        });
-                        this.dispatchEvent(evt);
-        }
-           this.singlecasedata();
-    }
+//   handlePicklistcase() {
+//         //this.casevalue = event.target.label;
+//         this.casevalue = this.textValue;
+//         console.log('value hjghj', this.casevalue);
+//         if(this.casevalue.length>0)
+//         {
+//             ////////// event for disable filter
+//             //this.filtervaluedisable = event.target.value;
+//             const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
+//             this.dispatchEvent(selectedEvent);
+//             /////////
+//            this.showchart = true;
+//           this.secondchart = false;
+//          this.cardTitle = 'Average Time On Case Status(In Minutes) for Case number:'+ this.casevalue;
+//          //this.getcallby();
+//          this.singlecasenumber();
+//         this.picklistVal = '';
+//          this.dynmic();
+//         }
+//         else{
+//             this.filtervaluedisable=true;
+//             const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
+//             this.dispatchEvent(selectedEvent);
+//             const evt = new ShowToastEvent({
+//                             title: this._title,
+//                             message: "Please enter a case number",
+//                             variant: this.variant,
+//                         });
+//                         this.dispatchEvent(evt);
+//         }
+//            this.singlecasedata();
+//     }
 
-    singlecasedata()
-    {
-              casedata({casenumber:this.casevalue})
-              .then(data => {
-                    if (data) {
-                        console.log('value of singlecasedata', data);
-                         const selectedEvent = new CustomEvent("progressvaluechange", {detail: data});
-                         this.dispatchEvent(selectedEvent);
-                    }
-                    else if (data.error) {
-                        return data.error;
-                    }
-                })
-    }
+    // singlecasedata()
+    // {
+    //           casedata({casenumber:this.casevalue})
+    //           .then(data => {
+    //                 if (data) {
+    //                     console.log('value of singlecasedata', data);
+    //                      const selectedEvent = new CustomEvent("progressvaluechange", {detail: data});
+    //                      this.dispatchEvent(selectedEvent);
+    //                 }
+    //                 else if (data.error) {
+    //                     return data.error;
+    //                 }
+    //             })
+    // }
 
     ////////////////
     //@track isModalOpen = false;
@@ -162,10 +162,10 @@ disconnectedCallback() {
         else {
             // window.location.reload();
         }
-        console.log('value of case object', this.SobjectType);
-         if (this.SobjectType == 'case') {
-            this.onlycase = true;
-        }
+        // console.log('value of case object', this.SobjectType);
+        //  if (this.SobjectType == 'case') {
+        //     this.onlycase = true;
+        // }
     }
 
     dynamic() {

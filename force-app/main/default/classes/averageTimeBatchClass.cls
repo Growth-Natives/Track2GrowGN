@@ -24,6 +24,18 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
     public string historyObject;
    
     public averageTimeBatchClass(list<String> fieldValues, String field, String objectVal, list<String> recordTypes, string dates, date startDate, date endDate, Id recordId, boolean willRefresh, string businessHour, String filterName, boolean scheduled) {
+        system.debug('valu of fieldValues '+fieldValues);
+        system.debug('valu of field '+field);
+        system.debug('valu of objectVal '+objectVal);
+        system.debug('valu of dates '+dates);
+        system.debug('valu of recordId '+recordId);
+        system.debug('valu of willRefresh '+willRefresh);
+        system.debug('valu of businessHour '+businessHour);
+        system.debug('valu of filterName '+filterName);
+        system.debug('valu of scheduled '+scheduled);
+        system.debug('valu of recordTypes '+recordTypes);
+        
+        
         String query;
         String gsRecordTypeID;
         this.field = field;
@@ -113,7 +125,7 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
                 endDateTime = endDateTime + 'T23:59:59Z';
                 q = q + ' CreatedDate <= ' + endDateTime + ' AND CreatedDate >= ' + startDateTime;
             }
-            q = q + ' LIMIT 1000';
+            //q = q + ' LIMIT 1000';
         }
         return q;
     }
@@ -489,15 +501,22 @@ public class AverageTimeBatchClass implements Database.Batchable<sObject>, Datab
         }
         else{
             system.debug('Schedule true');
-            list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT DataRepresentation__c,  Dates__c, StartDate__c, EndDate__c,Filter_Name__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, LastRefreshedDate__c,Businesshour__c FROM BatchInfo__c WHERE WillRefresh__c = TRUE ORDER BY LastRefreshedDate__c DESC]);
+          /* list<BatchInfo__c> bi = new list<BatchInfo__c>([SELECT DataRepresentation__c,  Dates__c, StartDate__c, EndDate__c,Filter_Name__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, LastRefreshedDate__c,Businesshour__c FROM BatchInfo__c WHERE WillRefresh__c = TRUE ORDER BY LastRefreshedDate__c DESC]);
             if(bi != null && !bi.isEmpty()){
                 if(bi[0].LastRefreshedDate__c != system.today()){  
                     system.debug('bi[0].LastRefreshedDate__c != system.today');
-                    averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,bi[0].Filter_Name__c,true);
+                    List<String> lstString = new list<string>();
+                    lstString.add(bi[0].SobjectFieldValue__c);
+                    List<String> recordTyp = new list<string>(); 
+                    recordTyp.add(bi[0].SobjectRecordType__c);
+                   averageTimeBatchClass atbc = new averageTimeBatchClass(bi[0].SobjectFieldValue__c.Split(','),bi[0].SobjectFieldType__c,bi[0].SobjectType__c,bi[0].SobjectRecordType__c.Split(','),bi[0].Dates__c,bi[0].StartDate__c,bi[0].EndDate__c,bi[0].Id,bi[0].WillRefresh__c,bi[0].Businesshour__c,null,true);
                     database.executeBatch(atbc);
                 }
-            }
-             BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
+            }  */
+            system.debug('value of pickValMap><><><><'+pickValMap);
+            BatchInfo__c bInfo= createBatchInfoRecord(pickValMap,this.recordId,ownerTimeMap,this.dates,this.startDate,this.endDate,this.field,this.fieldValues,this.recordTypes,this.objectVal,this.willRefresh,this.businessHour,this.filterName,this.recordTypeids);
+             system.debug('value of bInfo><><><><'+bInfo);
+            database.update(bInfo);
             list<Attachment> doc = [SELECT Id,body  FROM Attachment where ParentId=:this.recordId];
             if (BatchInfo__c.sObjectType.getDescribe().isDeletable()){
                 delete doc;

@@ -15,27 +15,28 @@ global class AverageTimeBatchClassSchedule implements Schedulable {
     public string businessHour;
     public string filterName;
     global void execute(SchedulableContext sc){
-        System.debug('Schedule debug');
         List<BatchInfo__c> BIList = [select id,Businesshour__c, Dates__c, EndDate__c, Filter_Name__c, SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, StartDate__c, DataRepresentation__c, WillRefresh__c from BatchInfo__c where WillRefresh__c = true];
-        System.debug('Schedule debug BIList = '+BIList);
         for(BatchInfo__c bi:BIList){
-            List<String> lstString = bi.SobjectFieldValue__c.split(',');
-            List<String> recordTyp = bi.SobjectRecordType__c.split(',');
-            fieldValue = lstString;
-            field = bi.SobjectFieldType__c;
-            objectVal = bi.SobjectType__c;
-            RecordType = recordTyp;
-            dates = bi.Dates__c;
-            startDate = bi.StartDate__c;
-            endDate = bi.EndDate__c;
-            recordId = bi.id;
-            willRefresh = bi.WillRefresh__c;
-            businessHour = bi.Businesshour__c;
-            filterName = bi.Filter_Name__c;
-            scheduled = true;
-            system.debug('Value from schedule class to batch class==\nFieldValue='+lstString+'\nfield='+field+'\nobject='+objectVal+'\nRecordType='+RecordType+'\ndates='+dates+'\nstartDate='+startDate+'\nend date='+endDate+'\nRecordId = '+recordId+'\nWillrefresh='+willRefresh+'\nbusinessHour ='+businessHour+'\nfilterName='+filterName+'\nScheduled = '+scheduled);
-            averageTimeBatchClass batch = new averageTimeBatchClass(fieldValue, field, objectVal, RecordType, dates,startDate,endDate, recordId,willRefresh, businessHour, filterName, scheduled);
-            Database.executebatch(batch, 200);
+            if(bi.LastRefreshedDate__c != system.today()){
+                string fieldvaluespa=bi.SobjectFieldValue__c.replace(' ', '');
+                string recordtypespa=bi.SobjectRecordType__c.replace(' ', '');
+                List<String> lstString = fieldvaluespa.split(',');
+                List<String> recordTyp = recordtypespa.split(',');
+                fieldValue = lstString;
+                field = bi.SobjectFieldType__c;
+                objectVal = bi.SobjectType__c;
+                RecordType = recordTyp;
+                dates = bi.Dates__c;
+                startDate = bi.StartDate__c;
+                endDate = bi.EndDate__c;
+                recordId = bi.id;
+                willRefresh = bi.WillRefresh__c;
+                businessHour = bi.Businesshour__c;
+                filterName = bi.Filter_Name__c;
+                scheduled = true;
+                averageTimeBatchClass batch = new averageTimeBatchClass(fieldValue, field, objectVal, RecordType, dates,startDate,endDate, recordId,willRefresh, businessHour, filterName, scheduled);
+                Database.executebatch(batch, 200);  
+            }
         }
     }
 }
