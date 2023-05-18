@@ -1,0 +1,59 @@
+<template>
+	<div class="slds-align_absolute-center">Case Comparisions</div>
+	<div class="slds-grid slds-gutters" style="margin: 10px;">
+		<div class="slds-col slds-size_1-of-2">
+			<select class="slds-select" onchange={selectObjectFieldChange}>
+                    <option value="">None</option>
+                    <template for:each={user1} for:item="user">
+                        <option  class="optionOnselect" key={user} data-id={user} value={user}>
+                            {user}
+                        </option>
+                    </template>
+                </select>
+		</div>
+		<div class="slds-col slds-size_1-of-2">
+			<select class="slds-select" onchange={selectObjectFieldChange1} disabled={isUser2} >
+                <option value="">None</option>
+                <template for:each={user2} for:item="user">
+                    <option  class="optionOnselect" key={user} data-id={user} value={user}>
+                        {user}
+                    </option>
+                </template>
+            </select>
+		</div>
+	</div>
+	<div class="slds-grid slds-gutters" style="margin: 10px; height:100px ">
+		<template if:true={is1stShow}>
+			<div class="slds-col slds-size_1-of-2">
+
+				<template for:each={selectedValues} for:item="selectedValue">
+					<div key={selectedValue}>
+						<b>CaseNumber : </b>{selectedValue.CaseNumber}<br />
+						<b>Origin : </b>{selectedValue.Origin}<br />
+						<b>Status : </b>{selectedValue.Status}<br />
+                        </div>
+				</template>
+			</div>
+		</template>
+		<template if:true={is2ndShow}>
+			<div class="slds-col slds-size_1-of-2">
+				<template for:each={selectedValues1} for:item="selectedValue1">
+					<div key={selectedValue1}>
+						<b>CaseNumber : </b>{selectedValue1.CaseNumber}<br />
+						<b>Origin : </b>{selectedValue1.Origin}<br />
+						<b>Status : </b>{selectedValue1.Status}<br />
+                        </div>
+				</template>
+			</div>
+		</template>
+	</div>
+	<template if:true={chartConfigurationChart}>
+		<div class="slds-p-around_small slds-grid slds-grid--vertical-align-center slds-grid--align-center">
+			<canvas class="barChart" lwc:dom="manual"></canvas>
+			<div if:false={isChartJsInitialized} class="slds-col--padded slds-size--1-of-1">
+				<lightning-spinner alternative-text="Loading" size="medium" variant="base"></lightning-spinner>
+			</div>
+		</div>
+		<!-- <c-gen_barchart chart-config={chartConfiguration}></c-gen_barchart> -->
+	</template>
+</template>

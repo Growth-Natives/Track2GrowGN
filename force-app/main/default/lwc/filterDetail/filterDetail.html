@@ -1,7 +1,7 @@
 <template>
-  <div class="slds-gutters">
+  <!--<div class="slds-gutters">
     <div class="slds-grid">
-      <div if:false={isCreateFilter} class="slds-col slds-size_1-of-3">
+      <div if:false={isCreateFilter} class="slds-col slds-size_1-of-3" style="z-index:100;">
         <template if:true={cardCheck}>
           <lightning-card if:false={isCreateFilter} title={cardTitle}>
             <template if:true={backHandle}>
@@ -10,7 +10,7 @@
             </template>
             <template if:true={filterListCheck}>
               <div class="slds-gutters slds-grid slds-container_center">
-                <!-- <div class="slds-col slds-size_1-of-3"></div> -->
+                 <div class="slds-col slds-size_1-of-3"></div> 
                 <div class="slds-m-horizontal_x-small slds-m-vertical_x-small" style="display: flex;">
                   <table class="filtertable">
                     <tr>
@@ -44,7 +44,7 @@
                   </table>
 
                 </div>
-                <!-- <div class="slds-col slds-size_1-of-3"></div> -->
+                <div class="slds-col slds-size_1-of-3"></div> 
               </div>
             </template>
 
@@ -101,5 +101,5 @@
         <c-filter-_-l-w-c onhandleback={handleBack}></c-filter-_-l-w-c>
       </div>
     </template>
-  </div>
+  </div>-->
 </template>

@@ -1,0 +1,94 @@
+<template>
+   <!-- <lightning-tabset>
+        <template for:each={metadataArray} for:item="tab">
+            <lightning-tab name={tab.Id} label={tab.MasterLabel} key={tab.Id} id={tab.Id} value={tab.MasterLabel} onactive={handleActive}></lightning-tab>
+        </template>
+    </lightning-tabset>
+    <template if:true={loader}>
+        <div class="demo-only demo-only" style="height:6rem;background-color:#16325c;position:relative">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inverse">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template if:true={showTable}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset">
+                   <th>
+                        S.No
+                   </th>
+                    <th>
+                        RecordTypeName
+                    </th>
+                    <th>
+                        Color
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={recordTypeValue} for:item="r">
+                    <tr key={r.key}>
+                        <td>
+                            <template if:true={r.boolean}>
+                                <lightning-icon icon-name="utility:chevrondown" size="x-small" onclick={iconValueClick} data-id={r.key}> 
+                                </lightning-icon>
+                            </template>
+                            <template if:false={r.boolean}>
+                                <lightning-icon icon-name="utility:chevronright" size="x-small" onclick={iconValueChangeClick} data-id={r.key}>
+                                </lightning-icon>
+                            </template>
+                        </td>
+                        <td>    
+                            {r.key}
+                        </td>
+                        <template if:true={color1Val}>
+                            <td style="background-color:red">
+                            </td>
+                        </template>
+                        <template if:true={color2Val}>
+                            <td style="background-color:green">
+                            </td>
+                        </template>
+                        <template if:true={color3Val}>
+                            <td style="background-color:yellow">
+                            </td>
+                        </template>
+                    </tr>
+                    <template if:true={r.boolean}>
+                        <tr key={r.key}>
+                            <td></td>
+                            <td>
+                            <template for:each={r.value} for:item="s">
+                                <tr key={s.Id}>
+                                    <td> 
+                                    </td>
+                                    <td>  
+                                        {s}
+                                    </td>
+                                        <template if:true={color1StatusVal}>
+                                            <td style="background-color:red;width:200px">
+                                            </td>
+                                        </template>
+                                        <template if:true={color2StatusVal}>
+                                            <td style="background-color:green;width:200px">
+                                            </td>
+                                        </template>
+                                        <template if:true={color3StatusVal}>
+                                            <td style="background-color:yellow;width:200px">
+                                            </td>
+                                        </template>
+                                </tr>
+                            </template>
+                            </td>
+                        </tr>
+                    </template>
+                </template>
+            </tbody>
+        </table>
+    </template>-->
+</template>

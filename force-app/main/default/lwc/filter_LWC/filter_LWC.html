@@ -1,5 +1,5 @@
 <template>
-  <div class="slds-grid">
+  <!--<div class="slds-grid">
     <div class="slds-col slds-size_1-of-3">
       <div>
         <div style="height: 100%;">
@@ -9,7 +9,7 @@
             <lightning-button label="Back" icon-name="utility:back" slot="actions" onclick={backClick}>
             </lightning-button>
             
-<!-- Select Object start -->
+Select Object start
             <div class="slds-p-horizontal--medium" data-id="divblock">
               <div class="slds-form-element__control">
                 <div class="slds-select_container dropdown">
@@ -25,7 +25,7 @@
                         placeholder="Search Object..">
                       </lightning-input>
                     </div>
-        <!-- Suggestion of object search start-->
+        Suggestion of object search start
                     <template if:true={havingValue}>
                       <div id="listbox-id-2-venu" data-key="dropdownresult"
                         class="slds-show slds-dropdown_length-with-icon-7 searchDrop" role="listbox">
@@ -50,8 +50,8 @@
                         </ul>
                       </div>
                     </template>
-        <!-- Suggestion of object search end-->
-        <!-- required Object error message -->
+        Suggestion of object search end
+        required Object error message
                     <template if:true={requiredField1}>
                       <div class="slds-form-element__help">Select Object</div>
                     </template>
@@ -59,8 +59,8 @@
                 </div>
               </div>
             </div>
-<!-- Select Object end -->
-<!-- Select Object Field start -->
+Select Object end
+Select Object Field start
             <div class="slds-p-horizontal--medium">
               <div class="slds-form-element__control">
                 <div class="slds-select_container dropdown">
@@ -81,7 +81,7 @@
                           </select>
                       </div>
                     </div>
-        <!-- Show message if object field value is empty or history of object field is off -->
+        Show message if object field value is empty or history of object field is off 
                     <template if:true={isObjFieldHistory}>
                       <div class="slds-m-horizontal_medium">{objectFieldValMessage}</div>
                     </template>
@@ -92,8 +92,8 @@
                 </div>
               </div>
             </div>
-<!-- Select Object Field end -->
-<!--  -->
+Select Object Field end
+
             <div class="slds-p-horizontal--medium slds-p-top_x-small">
               <div class="slds-form-element__control">
                 <div class="slds-select_container dropdown1">
@@ -233,13 +233,11 @@
                     <div class="slds-form-element__control">
                       <div class="slds-form-element__control">
                         <div class="slds-select_container dropdown1"></div>
-                        <template if:true={enableHandle}>
-                            
+                        <template if:true={enableHandle}>                                                   
                         <lightning-button variant="brand" label="Save" title="Primary action" onclick={handleClick}
                           class="slds-m-left_x-small" ></lightning-button>
                         </template> 
-                        <template if:false={enableHandle}> 
-                            
+                        <template if:true={disableHandle}>                                                     
                           <lightning-button variant="brand" label="Save" title="Primary action" onclick={handleClick}
                             class="slds-m-left_x-small" disabled></lightning-button>
                           </template>   
@@ -297,5 +295,5 @@
         <lightning-spinner class="spins" style="margin-left:33.33% ;" alternative-text="Loading"></lightning-spinner>
       </template>
     </div>
-  </div>
+  </div>-->
 </template>

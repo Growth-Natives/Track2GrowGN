@@ -1,17 +1,27 @@
 <template>
-    <lightning-card title="Case Comparsion Report">
+  <!--  <lightning-card title="Case Comparsion Report">
             <div class="slds-p-around_small slds-grid slds-grid--vertical-align-center slds-grid--align-center">
                 <canvas class="barChart" lwc:dom="manual"></canvas>
             </div>
             <div>
-                <p>This case is likly to be closed in  this {minutes} minutes.</p>
+                <template if:true={variable}>
+                    <p>Total time to close a case in {time_s} minutes.</p>
+                </template>
+                <template if:true={variable1}>
+                    <p>Life of case {time_s1} minutes.</p>
+                </template>
+                <template if:true={variable2}>
+                    <p>Total time to close a case in {rhours} hour(s) and {rminutes} minute(s).</p>
+                </template>
+                <template if:true={variable3}>
+                    <p>Life of case {rhours1} hour(s) and {rminutes1} minute(s).</p>
+                </template>
+                <template if:true={variable4}>
+                    <p>Total time to close a case in {dDisplay} {hDisplay} {mDisplay} {sDisplay}</p>
+                </template>
+                <template if:true={variable5}>
+                    <p>Life of case {dDisplay1} {hDisplay1} {mDisplay1} {sDisplay1}</p>
+                </template>
             </div>
-            <template if:true={chartConfiguration}>
-                <div class="slds-p-around_small slds-grid slds-grid--vertical-align-center slds-grid--align-center">
-                    <div if:false={isChartJsInitialized} class="slds-col--padded slds-size--1-of-1">
-                        <lightning-spinner alternative-text="Loading" size="medium" variant={loaderVariant}></lightning-spinner>
-                    </div>
-                </div>
-            </template>
-    </lightning-card>
+    </lightning-card>-->
 </template>

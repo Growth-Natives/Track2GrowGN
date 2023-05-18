@@ -628,13 +628,35 @@ onHandleObjectSearch(event){
           console.log('Object.values(this.dataSet)',Object.values(this.dataSet));
           var labell = [];
           var count = [];
-          for(let ownerLabel in Object.values(this.dataSet)){
+
+           for(let ownerLabel in Object.values(this.dataSet)){
               console.log('>>>>>>>>'+Object.values(this.dataSet)[ownerLabel]);
             labell.push(Object.values(this.dataSet)[ownerLabel].label);
             count.push(Object.values(this.dataSet)[ownerLabel].count);
           }
           console.log('labell',labell);
          console.log('count',count);
+          
+          arrayOfObj = labell.map(function(d, i) {
+          return {
+          label: d,
+          data: count[i] || 0
+          };
+          });
+          
+          sortedArrayOfObj = arrayOfObj.sort(function(a, b) {
+          return b.data>a.data;
+          });
+          
+          newArrayLabel = [];
+          newArrayData = [];
+          sortedArrayOfObj.forEach(function(d){
+          newArrayLabel.push(d.label);
+          newArrayData.push(d.data);
+          });
+          console.log('Ravi',newArrayLabel);
+          console.log('Pannu',newArrayData);
+
 
         var ctx = this.template.querySelector(".pie-chart").getContext('2d');
          window.bar = new Chart(ctx, {
