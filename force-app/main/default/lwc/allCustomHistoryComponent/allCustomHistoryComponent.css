@@ -1,0 +1,19 @@
+.search{
+	padding-left: 78%;
+	padding-right: 12%;
+}
+lightning-input{
+	border-radius: 20px;
+}
+
+.pages{
+	padding-top: 4%;
+}
+
+.main{
+	background-color: white;
+}
+
+.show{
+	padding-left: 60%;
+}

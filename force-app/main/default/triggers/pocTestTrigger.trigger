@@ -1,7 +1,6 @@
 trigger pocTestTrigger on Case (after insert, after update) {
     
-    List<testPOC__c> testPocInsertRecs = new List<testPOC__c>();
-    //List<sObject> recData = new List<sObject>();
+    List<customHistory__c> testPocInsertRecs = new List<customHistory__c>();
     List<String> allObjFields = new List<String>();
     List<String> updatedFields = new List<String>();
     List<Attachment> insertJson = new List<Attachment>(); 
@@ -33,7 +32,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
         
         for(sObject rec : objList)
         {      
-               testPOC__c insRec = new testPOC__c();
+               customHistory__c insRec = new customHistory__c();
                insRec.Object_Name__c = Obj;
                insRec.recID__c = rec.Id;
                testPocInsertRecs.add(insRec);
@@ -41,6 +40,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
                dataIdMap.put('Field', 'Created');
                dataIdMap.put('Date/Time', rec.get('LastModifiedDate'));    
                dataIdMap.put('User', rec.getsObject('CreatedBy').get('Name'));
+               dataIdMap.put('CreatedById', rec.getsObject('CreatedBy').get('Id'));
                dataIdMap.put('OldValue', null);
                dataIdMap.put('NewValue', null);
                
@@ -49,7 +49,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
          system.debug('finalJson..'+finalJson);
          insert testPocInsertRecs;
         
-         for(testPOC__c rec : testPocInsertRecs)
+         for(customHistory__c rec : testPocInsertRecs)
            {
                Attachment jsonfile = new Attachment();
                 if (Schema.sObjectType.Attachment.fields.ParentId.isCreateable())
@@ -131,6 +131,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
                dataIdMap.put('Field', updField);            
                dataIdMap.put('Date/Time', rec.get('LastModifiedDate'));    
                dataIdMap.put('User', rec.getsObject('CreatedBy').get('Name'));
+               dataIdMap.put('CreatedById', rec.getsObject('CreatedBy').get('Id')); 
                dataIdMap.put('OldValue', oldRec.get(updField));
                dataIdMap.put('NewValue', rec.get(updField));
                system.debug('dataIdMap..'+dataIdMap);
@@ -139,8 +140,8 @@ trigger pocTestTrigger on Case (after insert, after update) {
                    allUpdatedJson = dataIdMap.toString();
                }
                 else
-               {   
-                   allUpdatedJson = allUpdatedJson + ',' + dataIdMap.toString();
+               {  
+                   allUpdatedJson = dataIdMap.toString() + ',' + allUpdatedJson ;
                }
                newJson.put(rec.Id, allUpdatedJson);
             }
@@ -148,15 +149,15 @@ trigger pocTestTrigger on Case (after insert, after update) {
         system.debug('dataIdMap..'+dataIdMap);
         system.debug('newJson..'+newJson);
         
-        List<testPOC__c> testPocRecs = [Select id, Name, Object_Name__c,recID__c From testPOC__c Where recID__c in : recIds];
+        List<customHistory__c> testPocRecs = [Select id, Name, Object_Name__c,recID__c From customHistory__c Where recID__c in : recIds];
         system.debug('testPocRecs>>'+testPocRecs);
-        List<testPOC__c> InsRecsList = new List<testPOC__c>();
+        List<customHistory__c> InsRecsList = new List<customHistory__c>();
         if(testPocRecs == null || testPocRecs.isEmpty())
         {
             for(sObject rec : objList)
             {    
                 system.debug('rec not found');
-                testPOC__c insRec = new testPOC__c();
+                customHistory__c insRec = new customHistory__c();
                 insRec.Object_Name__c = Obj;
                 insRec.recID__c = rec.Id;
                 InsRecsList.add(insRec);
@@ -164,7 +165,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
             
             Insert InsRecsList;
             
-            for(testPOC__c rec : InsRecsList)
+            for(customHistory__c rec : InsRecsList)
            {
                 Attachment jsonfile = new Attachment();
                 if (Schema.sObjectType.Attachment.fields.ParentId.isCreateable())
@@ -193,7 +194,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
       
         else if(testPocRecs != null && !testPocRecs.isEmpty())
         {   
-        for(testPOC__c rec : testPocRecs)            
+        for(customHistory__c rec : testPocRecs)            
         {
             Attachment jsonfile = new Attachment();
             for(Attachment a : [SELECT Id,Body, Name FROM Attachment Where ParentId =: rec.Id])
@@ -205,7 +206,7 @@ trigger pocTestTrigger on Case (after insert, after update) {
                    system.debug('oldJson..'+oldJson);
                    system.debug('oldJson.. value'+oldJson.get(rec.recID__c));
                    system.debug('newJson.. value'+newJson.get(rec.recID__c));
-                   combinedJson = oldJson.get(rec.recID__c).toString() +','+ newJson.get(rec.recID__c).toString();
+                   combinedJson =  newJson.get(rec.recID__c).toString() +','+ oldJson.get(rec.recID__c).toString();
                    system.debug('combinedJson...'+combinedJson);
                    newJson.put(rec.recID__c, combinedJson);
                }

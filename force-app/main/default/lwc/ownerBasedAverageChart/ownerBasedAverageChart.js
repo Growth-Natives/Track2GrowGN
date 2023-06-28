@@ -3,6 +3,7 @@ import pickListValueDynamically from '@salesforce/apex/averagetimechartcontrolle
 import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.ownerbasedonaveragetime';
 import getUserList from '@salesforce/apex/averagetimechartcontroller.getUserList';
 import avergetimesinglerecord from '@salesforce/apex/averagetimechartcontroller.avergetimesinglerecord';
+import casedata from '@salesforce/apex/averagetimechartcontroller.casedata';
 import ChartJS from '@salesforce/resourceUrl/ChartJs';
 import { loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -13,10 +14,11 @@ export default class OwnerBasedAverageChart extends LightningElement {
     picklistVal;
     casevalue;
     showchart = false;
-    onlycase = false
+    //onlycase = false
     secondchart = true;
     textValue = '';
     id;
+    // @api filtervaluedisable='false';
 
     ///////////////list
     handleInputChange(event) {
@@ -33,6 +35,7 @@ export default class OwnerBasedAverageChart extends LightningElement {
                     // this.selectTargetValues = data;
                     for (let key in result) {
                         this.options = Object.keys(result).map(key => ({ label: result[key], value: result[key] }));
+                        console.log('ndnafjkdhj',this.options);
                     }
                 }
                 else if (result.error) {
@@ -47,32 +50,57 @@ export default class OwnerBasedAverageChart extends LightningElement {
         this.secondchart = true;
         this.textValue = '';
         this.getcallby();
-        this.showchart = true;
+        this.showchart = true;        
+    //    const selectedEvent = new CustomEvent("ownervaluechange", {detail: false});
+    //    this.dispatchEvent(selectedEvent);
      }
-  handlePicklistcase() {
-        //this.casevalue = event.target.label;
-        this.casevalue = this.textValue;
-        console.log('value hjghj', this.casevalue);
-        if(this.casevalue.length>0)
-        {
-           this.showchart = true;
-          this.secondchart = false;
-         this.cardTitle = 'Average Time On Case Status(In Minutes) for Case number:'+ this.casevalue;
-         //this.getcallby();
-         this.singlecasenumber();
-        this.picklistVal = '';
-         this.dynmic();
-        }
-        else{
-            const evt = new ShowToastEvent({
-                            title: this._title,
-                            message: "Please enter a case number",
-                            variant: this.variant,
-                        });
-                        this.dispatchEvent(evt);
-        }
-       
-    }
+//   handlePicklistcase() {
+//         //this.casevalue = event.target.label;
+//         this.casevalue = this.textValue;
+//         console.log('value hjghj', this.casevalue);
+//         if(this.casevalue.length>0)
+//         {
+//             ////////// event for disable filter
+//             //this.filtervaluedisable = event.target.value;
+//             const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
+//             this.dispatchEvent(selectedEvent);
+//             /////////
+//            this.showchart = true;
+//           this.secondchart = false;
+//          this.cardTitle = 'Average Time On Case Status(In Minutes) for Case number:'+ this.casevalue;
+//          //this.getcallby();
+//          this.singlecasenumber();
+//         this.picklistVal = '';
+//          this.dynmic();
+//         }
+//         else{
+//             this.filtervaluedisable=true;
+//             const selectedEvent = new CustomEvent("progressvaluechange", {detail: this.filtervaluedisable});
+//             this.dispatchEvent(selectedEvent);
+//             const evt = new ShowToastEvent({
+//                             title: this._title,
+//                             message: "Please enter a case number",
+//                             variant: this.variant,
+//                         });
+//                         this.dispatchEvent(evt);
+//         }
+//            this.singlecasedata();
+//     }
+
+    // singlecasedata()
+    // {
+    //           casedata({casenumber:this.casevalue})
+    //           .then(data => {
+    //                 if (data) {
+    //                     console.log('value of singlecasedata', data);
+    //                      const selectedEvent = new CustomEvent("progressvaluechange", {detail: data});
+    //                      this.dispatchEvent(selectedEvent);
+    //                 }
+    //                 else if (data.error) {
+    //                     return data.error;
+    //                 }
+    //             })
+    // }
 
     ////////////////
     //@track isModalOpen = false;
@@ -90,24 +118,14 @@ export default class OwnerBasedAverageChart extends LightningElement {
     @api isCreateFilter;
     @track dataSetSingleRec;
 
+disconnectedCallback() {
+    console.log('disconnected callback in OwnerBasedAverageChart');
+}
+
     mychart;
-    // picklistValRight = 'Max 50';
-
-
-    // openModal() {
-    //     this.isModalOpen = true;
-    //     this.getcallby();
-    // }
-    // closeModal() {
-    //     this.isModalOpen = false;
-    //     this.getcallby();
-    // }
-    // submitDetails() {
-    //     this.isModalOpen = false;
-    // }
-
     connectedCallback() {
-        console.log('Connected callback');
+        this.textValue='';
+        console.log('Connected callback in OwnerBasedAverageChart');
         this.dynmic();
         var fieldType;
         var fieldValue;
@@ -135,7 +153,7 @@ export default class OwnerBasedAverageChart extends LightningElement {
                 arr.push(this.SobjectFieldvalue.split(','));
                 this.picklistVal = arr[0][0];
                 this.dynamic();
-                this.getcallby();
+                //this.getcallby();
             }
             else {
                 // window.location.reload();
@@ -144,10 +162,10 @@ export default class OwnerBasedAverageChart extends LightningElement {
         else {
             // window.location.reload();
         }
-        console.log('value of case object', this.SobjectType);
-         if (this.SobjectType == 'case') {
-            this.onlycase = true;
-        }
+        // console.log('value of case object', this.SobjectType);
+        //  if (this.SobjectType == 'case') {
+        //     this.onlycase = true;
+        // }
     }
 
     dynamic() {
@@ -212,25 +230,34 @@ export default class OwnerBasedAverageChart extends LightningElement {
     {
         avergetimesinglerecord({ casevalueid: this.casevalue, id:this.id })
                 .then((result) => {
+                    console.log('value of case number in else', result);
                     this.dataSetSingleRec = result;
                     this.secondchart=false;
-                    //console.log('RESULT===?',result.size);
                     if (result!=null) {
-                        console.log('value of case number', result);
-                        this.Initializechartjs();
-                        console.log('value dataSetSingleRec', this.dataSetSingleRec);
+                      this.Initializechartjs();
                     }
                     else {
-                        console.log('value of case number in else', result);
+                        
                         const evt = new ShowToastEvent({
                             title: this._title,
-                            message: "Please enter a valid case number",
+                            message: "History Not Found For:-"+this.casevalue,
                             variant: this.variant,
                         });
                         this.dispatchEvent(evt);
                         this.Initializechartjs();
                     }
                 })
+                .catch((error) => {
+                    this.dataSetSingleRec='';
+                  console.log("some error in code:", error.body.message);
+                   const evt = new ShowToastEvent({
+                            title: this._title,
+                            message: error.body.message,
+                            variant:'error',
+                        });
+                        this.dispatchEvent(evt);
+                        this.Initializechartjs();
+                    });
     }
 
     Initializechartjs() {

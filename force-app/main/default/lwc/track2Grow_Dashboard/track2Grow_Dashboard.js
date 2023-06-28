@@ -6,6 +6,7 @@ import getSearchFilterDetail from '@salesforce/apex/FilterDetailController.getSe
 import getFilterDetailFromName from '@salesforce/apex/FilterDetailController.getFilterDetailFromName';
 import deleteFilter from '@salesforce/apex/FilterDetailController.deleteFilter';
 import getDetail from '@salesforce/apex/FilterDetailController.getDetail';
+import getApexSchedule from '@salesforce/apex/FilterDetailController.getApexSchedule';
 import getLeadByStatus from '@salesforce/apex/averagetimechartcontroller.getLeadByStatus';
 import w3webResource from '@salesforce/resourceUrl/Giffile';
 import { refreshApex } from '@salesforce/apex';
@@ -24,6 +25,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
     @track isSearch = false;
     @track noDataFound = false;
     @track clickedButtonLabelCheck = false;
+    @track isApex = true;
 
     @track dummyDatas;
     @track saveFilterId;
@@ -73,6 +75,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
 
     @wire(getFilterDetail) filterList(result) {
         if (result) {
+            console.log('getFilter detail wire result call===',result);
             var dataLength = 0;
             this.dummyDatas = result;
             var conts;
@@ -102,6 +105,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
                     getDetail({ name: this.selectedFilterName })
                         .then((data) => {
+                            //this.singlecaseval = false;
                             this.filterDetailVal = data;
                         });
                     if (dataLength <= 3) {
@@ -204,28 +208,28 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
                     if (dataLength <= 3) {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else {
-                                obj.push({ ...conts[key], isFilterSelect: false });
-                            }
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else {
+                            obj.push({ ...conts[key], isFilterSelect: false });
+                            // }
                         }
                     }
                     else {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else if (key > 2) {
-                                if (this.filterViewTitle == 'View Less') {
-                                    obj.push({ ...conts[key], isFilterSelect: false });
-                                }
-                            }
-                            else {
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else if (key > 2) {
+                            if (this.filterViewTitle == 'View Less') {
                                 obj.push({ ...conts[key], isFilterSelect: false });
-                                this.isViewMore = false;
                             }
+                            // }
+                            // else {
+                            //     obj.push({ ...conts[key], isFilterSelect: false });
+                            this.isViewMore = false;
+                            // }
                         }
                     }
                     this.datas = obj;
@@ -244,25 +248,25 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     conts = data;
                     if (dataLength <= 3) {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
-                            }
-                            else {
-                                obj.push({ ...conts[key], isFilterSelect: false });
-                            }
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else {
+                            obj.push({ ...conts[key], isFilterSelect: false });
+                            // }
                         }
                     }
                     else {
                         for (var key in conts) {
-                            if (key == 0) {
-                                obj.push({ ...conts[key], isFilterSelect: true });
+                            // if (key == 0) {
+                            //     obj.push({ ...conts[key], isFilterSelect: true });
+                            // }
+                            // else if (key > 2) {
+                            if (this.isViewMore == false) {
+                                this.isViewMore = true;
                             }
-                            else if (key > 2) {
-                                if (this.isViewMore == false) {
-                                    this.isViewMore = true;
-                                }
 
-                            }
+                            // }
                             else {
                                 obj.push({ ...conts[key], isFilterSelect: false });
                                 this.isViewMore = false;
@@ -288,6 +292,8 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLoadMessage = true;
         this.isLoad = false;
         this.searchVal = '';
+        this.datas[0].isFilterSelect = false;
+        console.log('Data after back ==', this.datas);
     }
 
     onCreateFilterClick() {
@@ -302,6 +308,8 @@ export default class Track2Grow_Dashboard extends LightningElement {
     }
 
     onBatchCmp(event) {
+        console.log('this.dummyDatas before batch completed===>',this.dummyDatas);
+        this.selectedFilterName='';
         var dataId;
         this.isShowAllData = false;
         this.isChartShow = true;
@@ -310,8 +318,12 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLeftMenu = false;
         this.clickedButtonLabelCheck = true;
         var filtId;
+       
+        console.log('this.dummyDatas after batch completed===>',this.dummyDatas);
         var k = '';
         filtId = event.detail.recId;
+        console.log('event.detail.recId=====',event.detail.recId);
+        console.log(' this.selectedFilterName=====', this.selectedFilterName);
         const obj1 = event.detail.filterValDetail[0];
         for (var key in obj1) {
             k += key + ',';
@@ -323,23 +335,37 @@ export default class Track2Grow_Dashboard extends LightningElement {
         else {
             this.isManagePackage = false;
         }
+       // this.singlecaseval = false;
         this.filterDetailVal = event.detail.filterValDetail;
         if (this.isManagePackage) {
-            this.selectedFilterName = event.detail.filterValDetail[0].Track2Grow__Filter_Name__c;
+            if(event.detail.filterValDetail[0].Track2Grow__WillRefresh__c==true){
+                this.selectedFilterName = event.detail.filterValDetail[0].Track2Grow__Filter_Name__c;
+            }
+            else{
+                this.selectedFilterName='';
+            }
         }
         else {
-            this.selectedFilterName = event.detail.filterValDetail[0].Filter_Name__c;
+            if(event.detail.filterValDetail[0].WillRefresh__c==true){
+                this.selectedFilterName = event.detail.filterValDetail[0].Filter_Name__c;
+            }
+              else{
+                this.selectedFilterName='';
+            }
         }
         this.saveFilterId = filtId;
-        if (this.selectedFilterName != null || this.selectedFilterName != undefined) {
-            this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        if (this.selectedFilterName!=''||this.selectedFilterName != null || this.selectedFilterName != undefined) {
+            console.log('123');
+            this.cardTitle = 'Filter Details >>>' +  this.selectedFilterName;
         }
         else {
+            console.log('12345678');
             this.cardTitle = 'Filter Details >>>';
         }
     }
 
     onCloseCreateFilter(event) {
+        console.log('Test===');
         this.isCreateFilterClick = false;
         this.isLoad = true;
         this.spin = true;
@@ -359,32 +385,34 @@ export default class Track2Grow_Dashboard extends LightningElement {
             this.clickedButtonLabelCheck = false;
         }
         this.selectedFilterName = event.currentTarget.dataset.id;
+        this.cardtitlesinglecase='Filter Details >>>' + this.selectedFilterName;
         this.cardTitle = "Filter Detail > " + event.currentTarget.dataset.id;
         this.isSelect = true;
         this.isLeftMenu = false;
         this.isChartShow = true;
         this.isLoad = false;
-        this.datas.map(val => {
-            if (this.isManagePackage) {
-                if (val.Track2Grow__Filter_Name__c == this.selectedFilterName) {
-                    val.isFilterSelect = true;
-                }
-                else {
-                    val.isFilterSelect = false;
-                }
-            }
-            else {
-                if (val.Filter_Name__c == this.selectedFilterName) {
-                    val.isFilterSelect = true;
-                }
-                else {
-                    val.isFilterSelect = false;
-                }
-            }
-        })
+        // this.datas.map(val => {
+        //     if (this.isManagePackage) {
+        //         if (val.Track2Grow__Filter_Name__c == this.selectedFilterName) {
+        //             val.isFilterSelect = true;
+        //         }
+        //         else {
+        //             val.isFilterSelect = false;
+        //         }
+        //     }
+        //     else {
+        //         if (val.Filter_Name__c == this.selectedFilterName) {
+        //             val.isFilterSelect = true;
+        //         }
+        //         else {
+        //             val.isFilterSelect = false;
+        //         }
+        //     }
+        // })
         refreshApex(this.dummyDatas);
         getDetail({ name: this.selectedFilterName })
             .then((data) => {
+                //this.singlecaseval = false;
                 this.filterDetailVal = data;
             });
         this.ChartTrackingBasedOnAverageTime();
@@ -491,6 +519,9 @@ export default class Track2Grow_Dashboard extends LightningElement {
         this.isLoadMessage = true;
         this.clickedButtonLabelCheck = false;
         this.isCreateFilterClick = false;
+        this.datas[0].isFilterSelect = false;
+        console.log('Data after back ==', this.datas);
+        this.vars=false;
         refreshApex(this.dummyDatas);
     }
 
@@ -516,6 +547,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
                     mode: 'dismissable'
                 });
                 this.dispatchEvent(event);
+                refreshApex(this.dummyDatas);
             })
             .catch(() => {
                 const event = new ShowToastEvent({
@@ -530,6 +562,7 @@ export default class Track2Grow_Dashboard extends LightningElement {
     }
 
     renderedCallback() {
+        console.log('refresh render callback call');
         refreshApex(this.dummyDatas);
         if (this.chartjsInitialized) {
             return;
@@ -598,14 +631,14 @@ export default class Track2Grow_Dashboard extends LightningElement {
         });
 
     }
-closeConfig(){
-    this.isCreateFilterClick = false;
+    closeConfig() {
+        this.isCreateFilterClick = false;
         this.isLoad = false;
         this.spin = false;
         this.isLoadMessage = true;
-        this.isConfigClick=false;
-}
-    onConfigClick(){
+        this.isConfigClick = false;
+    }
+    onConfigClick() {
         this.isCreateFilterClick = false;
         this.isConfigClick = true;
         this.isChartShow = false;
@@ -613,15 +646,53 @@ closeConfig(){
         this.isLoad = false;
         this.isDataFilter = false;
         this.isLoadMessage = false;
-                // scheduleClass()
-        // .then(()=>{
-        //     const event = new ShowToastEvent({
-        //                 title: 'SUCCESS',
-        //                 message: 'Configuration is done for 12 AM from MON-FRI',
-        //                 variant: 'SUCCESS ',
-        //                 mode: 'dismissable'
-        //             });
-        //             this.dispatchEvent(event);
-        // })
+       
+        
     }
+    // /////////////////////////////////////////////////////// single case 
+    // @track singlecaseval = false;
+    //  singlecasedetailval = [];
+    // hanldeProgressValueChange(event)
+    // {
+    //     this.singlecaseval=true;
+    //   this.singlecasedetailval=event.detail;
+    //   this.vars=true;
+    //   this.cardTitle='Case Detail';
+    //   this.cardtitlesinglecase='Case Detail';
+    // }
+
+    //  vars='';
+    //  cardtitlesinglecase='';       
+      handleActive1(event)
+    {
+        // if(event.target.label=='Average Time')
+        // {
+        //      this.singlecaseval=false;
+        //      this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        // }
+        //  if(event.target.label=='Owner Leader Board')
+        // {
+        //       this.singlecaseval=false;
+        //       this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        // }
+        //  if(event.target.label=='Owner Based On Average Time')
+        // {
+        //       this.singlecaseval=this.vars;
+        //       this.cardTitle = this.cardtitlesinglecase;
+        // }
+        //  if(event.target.label=='Case Comparison')
+        // {
+        //      this.singlecaseval=false;
+        //      this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+        // }
+       
+    }
+
+    // ownervaluechange(event)
+    // {
+    //    this.singlecaseval=event.detail;
+    //    this.vars=false;
+    //    this.cardTitle = 'Filter Details >>>' + this.selectedFilterName;
+    //    this.cardtitlesinglecase='Filter Details >>>' + this.selectedFilterName;
+    // }
 }

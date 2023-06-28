@@ -1,0 +1,80 @@
+<template>
+<template if:true={result}>
+    <div class="slds-box main">
+        <div class="header" style="display:flex">
+        <div class="heading">
+        <lightning-card title="View All History Data" icon-name="custom:custom18" ></lightning-card>
+        </div>
+        <div class="show"><b>Show Entries</b>
+        <select class="slds-select" name = "optionSelect" onchange={changeHandler} >
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        </select></div>
+        </div>
+        <table align="center">
+            <tr>
+                <th class= "search"><lightning-input type="date" label="Date/Time" onchange={handleChange} value={searchVal1}></lightning-input></th>
+                </tr>
+            <tr> </tr>
+            <!-- <tr>
+                <th>Date/Time</th>
+                <th>Field</th>
+                <th>User</th>
+                <th>Original Value</th>
+                <th>New Value</th>
+            </tr> -->
+<!--             
+                <template for:each ={result} for:item="rec" for:index="i">
+                <tr key = {rec.Id}>
+                <td>
+                <div  key = {rec.Id}>
+                   <option data-id={rec.Id} >{rec.timestamp}</option>
+                </div>
+                </td>
+                <td><div  key = {rec.Id}>
+                   <option data-id={rec.Id} >{rec.field}</option>
+                    </div>
+                    </td>
+                    <td ><div  key = {rec.Id}>
+                   <option data-id={rec.Id}>{rec.user}</option>
+                    </div>
+                    </td>
+                    <td><div  key = {rec.id}>
+                   <option data-id={rec.Id} >{rec.oldVal}</option>
+                    </div>
+                    </td>
+                    <td><div  key = {rec.id}>
+                   <option data-id={rec.Id} >{rec.newVal}</option>
+                    </div>
+                    </td>
+                    </tr>
+                </template>
+             -->
+        </table>
+    <div>
+        <lightning-datatable
+                key-field="createdById"
+                data={result}
+                columns={columns}
+                hide-checkbox-column="true">
+        </lightning-datatable>
+    </div>
+
+        <div align="center" class="pages">
+                    <lightning-button 
+                        icon-name="utility:chevronleft" 
+                        onclick={previousHandler}>
+                    </lightning-button>
+                &nbsp;&nbsp;&nbsp;
+                    Page {page} of {totalPage}
+                &nbsp;&nbsp;&nbsp;
+                    <lightning-button 
+                        icon-name="utility:chevronright" 
+                        icon-position="right"
+                        onclick={nextHandler}>
+                    </lightning-button>
+        </div>
+        </div>
+    </template>
+</template>

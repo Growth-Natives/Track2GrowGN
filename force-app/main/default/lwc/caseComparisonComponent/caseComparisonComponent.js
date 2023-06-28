@@ -123,6 +123,7 @@ export default class CaseComparisonComponent extends LightningElement {
             this.caseUser1 = [];
             getAllCasesForUser({ ownerName: this.objectField, selectedName: this.selectedFilterName,status:this.SobjectFieldvalue})
                 .then((data) => {
+                    console.log('User 1 data==>',data);
                     this.caseUser1 = data;
                 });
         }
@@ -139,6 +140,7 @@ export default class CaseComparisonComponent extends LightningElement {
             this.caseUser2 = [];
             getAllCasesForUser({ ownerName: this.objectField1, selectedName: this.selectedFilterName,status:this.SobjectFieldvalue })
                 .then((data) => {
+                    console.log('User 2 data==>',data);
                     this.caseUser2 = data;
                 });
         }

@@ -1,9 +1,13 @@
 import { LightningElement ,api, track} from 'lwc';
 import getHistoryData from '@salesforce/apex/customHistoryComponentController.getHistoryData';
 import getSearchHistoryData from '@salesforce/apex/customHistoryComponentController.getSearchHistoryData';
+import getFields from '@salesforce/apex/customHistoryComponentController.getFields';
+import fetchLookupData from '@salesforce/apex/customHistoryComponentController.fetchLookupData';
+// import { NavigationMixin } from 'lightning/navigation';
 export default class CustomHistoryComponent extends LightningElement {
 
 @api recordId;
+@api objectApiName;
 @track records;
 @track recHis;
 @track searchVal = [];
@@ -21,10 +25,20 @@ export default class CustomHistoryComponent extends LightningElement {
 @track pageSize = 2;
 @track searchValMap = [];
 @track allKeys = [];
+@track isHisOn;
+@track isModalOpen = false;
+@track searchVal1;
+@track allFields;
+@track havingValue = false;
+@track searchKey;
+@track showFields;
+columns;
 
+ 
 connectedCallback(){
     console.log('connectedCallback..');
     console.log('this.recordId>>',this.recordId);
+    console.log('this.objectApiName>>',this.objectApiName);
     
 getHistoryData({
                  recid: this.recordId,
@@ -36,28 +50,138 @@ getHistoryData({
     this.totalRecountCount = result.length; console.log('count',this.totalRecountCount); 
     this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
     this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
+    if(this.result){
+                this.result.forEach(item => 
+                item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                
+            }
     this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
 })  
+
+getFields({
+    Obj : this.objectApiName,
+})
+.then(result => {
+    this.allFields = result;
+    console.log('this.allFields>>',this.allFields);
+})
+// isHistoryOn({
+//     obj : this.objectApiName,
+//     recId: this.recordId,
+// })
+// .then(val=> {
+//     this.isHisOn = val;
+//     console.log('isHisOn,,',this.isHisOn);
+// })
 }
 
+
+ onselection(event) {
+        this.searchVal2 = event.target.dataset.name;
+        this.showFields = [];
+        this.havingValue=false;
+        this.field = 'field';
+        this.handleSearch();
+    }
+
+
+fieldLookup(){
+    console.log('in fieldLookup');
+    fetchLookupData({
+        searchKey : this.searchKey, allFields : this.allFields,
+    })
+    .then(result => {
+        this.showFields = result;  
+        // console.log('this.showFields>>',this.showFields); 
+        // console.log('this.showFields.length>>',this.showFields.length);
+    })
+    if(this.showFields.length>0)
+    {
+    this.havingValue=true;
+    }
+}
+
+
+columns = [
+    { label: 'Date/Time', fieldName: 'timestamp' },
+    { label: 'Field', fieldName: 'field' },
+    { label: 'User', fieldName: 'userURL', type: 'url', 
+       typeAttributes: {label: { fieldName: 'user'}}},
+    { label: 'Original Value', fieldName: 'oldVal' },
+    { label: 'New Value', fieldName: 'newVal' },
+];
+
+handleChange1(event){
+    console.log('in handleChange1');
+    this.field == 'field'
+    this.searchVal = event.target.value;
+    console.log('searchval>>',this.searchVal);
+    if(this.searchVal == '' || this.searchVal == null)
+    {
+        console.log('searchval null');
+     for (var key in this.searchValMap) 
+        {
+         for(var i in this.searchValMap[key])
+         {
+            console.log('i', i);console.log('this.searchValMap[key][i]', this.searchValMap[key][i]);
+           if(i == 'field')
+                   {
+                       console.log('inn');
+                       this.searchValMap[key][i] = ''; 
+                   }
+                   console.log('this.searchValMap>',this.searchValMap);
+            }
+         }
+         this.getSearchData();
+         }
+}
 handleChange(event) {
         this.searchVal = event.target.value;
         this.fieldLabel = event.target.label;
+        if(this.fieldLabel=='Date/Time')
+        {
+            this.searchVal1 = ''; 
+        }
+        if(this.fieldLabel=='Start Date'){
+            this.searchVal1 = this.searchVal; 
+        }
+        if(this.fieldLabel=='End Date'){
+            if(this.searchVal1 != undefined)
+            {
+            this.searchVal1 = this.searchVal1 +' - '+ this.searchVal; 
+            }
+            else{
+                this.searchVal1 = this.searchVal;
+            }
+        }
+        if(this.fieldLabel=='Field'){
+            this.searchKey = event.target.value;
+            this.fieldLookup();
+        }
         console.log('this.searchVal..'+this.searchVal);
         console.log('this.fieldLabel..'+this.fieldLabel);
-        console.log('this.searchValMap>>',this.searchValMap);
-        console.log('this.searchValMap.length>>',this.searchValMap.length);
+        console.log('this.searchVal1..'+this.searchVal1);
+        // console.log('this.searchValMap>>',this.searchValMap);
+        // console.log('this.searchValMap.length>>',this.searchValMap.length);
+        this.handleSearch();
+  
+    }
 
-  if(this.searchValMap.length == 0)
+    handleSearch(){
+        if(this.searchValMap.length == 0)
   {
-        if(this.fieldLabel=='Date/Time'){
-         console.log('this...'+this.fieldLabel); 
-         this.field = 'timestamp';
-         this.searchValMap.push({timestamp : this.searchVal});
-         }
+      console.log('this...'+this.fieldLabel);
+        if(this.fieldLabel=='Start Date'){ 
+         this.field = 'startdate';
+         this.searchValMap.push({startdate : this.searchVal});
+        }
+         else if(this.fieldLabel=='End Date'){
+         this.field = 'enddate';
+         this.searchValMap.push({enddate : this.searchVal});
+        }
         else if(this.fieldLabel=='Field'){
         this.field = 'field';
-        this.searchValMap.push({field : this.searchVal});
+        this.searchValMap.push({field : this.searchVal2});
         }
         else if(this.fieldLabel=='User'){
         this.field = 'user';
@@ -71,14 +195,18 @@ handleChange(event) {
         this.field = 'newVal';
         this.searchValMap.push({newVal : this.searchVal});
         }
+        
         console.log('this.searchValMap>>',this.searchValMap);
 }
 
  else
  {
      let allKeys = [];
-                if(this.fieldLabel=='Date/Time'){
-                this.field = 'timestamp';
+                if(this.fieldLabel=='Start Date'){ 
+                    this.field = 'startdate';
+                }
+                else if(this.fieldLabel=='End Date'){
+                    this.field = 'enddate';
                 }
                 else if(this.fieldLabel=='Field'){
                 this.field = 'field';
@@ -92,6 +220,7 @@ handleChange(event) {
                 else if(this.fieldLabel=='New Value'){
                 this.field = 'newVal';
                 }
+                
 
         for (var key in this.searchValMap) 
         {
@@ -103,7 +232,23 @@ handleChange(event) {
             if(this.field == i)
             {
                console.log('contains key...');
-               this.searchValMap[key][i] = this.searchVal;
+               if(this.field =='startdate' && (this.searchVal1 == undefined || this.searchVal1 == ''))
+                {
+                    console.log('in null...'); 
+                    this.searchValMap[key][i] = ''; 
+                }
+                else
+                {
+                   console.log('in else...'); 
+                   if(this.field == 'field')
+                   {
+                       this.searchValMap[key][i] = this.searchVal2; 
+                   }
+                   else
+                   {
+                   this.searchValMap[key][i] = this.searchVal; 
+                   }
+                }
             }
          }
         }
@@ -113,14 +258,17 @@ handleChange(event) {
 
             if(!allKeys.includes(this.field))
             {
-                if(this.fieldLabel=='Date/Time'){
-                console.log('this...'+this.fieldLabel); 
-                this.field = 'timestamp';
-                this.searchValMap.push({timestamp : this.searchVal});
+                if(this.fieldLabel=='Start Date'){ 
+                this.field = 'startdate';
+                this.searchValMap.push({startdate : this.searchVal});
+                }
+                else if(this.fieldLabel=='End Date'){
+                this.field = 'enddate';
+                this.searchValMap.push({enddate : this.searchVal});
                 }
                 else if(this.fieldLabel=='Field'){
                 this.field = 'field';
-                this.searchValMap.push({field : this.searchVal});
+                this.searchValMap.push({field : this.searchVal2});
                 }
                 else if(this.fieldLabel=='User'){
                 this.field = 'user';
@@ -137,8 +285,13 @@ handleChange(event) {
         }
     console.log('this.searchValMap>>',this.searchValMap);
  }
-        
-        if (this.searchValMap != []) {
+   this.getSearchData();
+}
+
+
+getSearchData(){
+    if (this.searchValMap != []) {
+        console.log('searchmap>>',this.searchValMap);
             console.log('JSON.stringify(this.searchValMap)>>',JSON.stringify(this.searchValMap));
             getSearchHistoryData({ recid: this.recordId , searchVal: JSON.stringify(this.searchValMap), data: this.recordsAll})
                 .then(data => {
@@ -146,6 +299,11 @@ handleChange(event) {
                     if (data.length > 0) {
                         this.records = data; console.log('records..',this.records);
                         this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
+                        if(this.result){
+                                            this.result.forEach(item => 
+                                            item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                                            
+                                        }
                         this.totalRecountCount = data.length; console.log('count',this.totalRecountCount); 
                         this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
                         this.page = 1;
@@ -155,6 +313,11 @@ handleChange(event) {
                     }
                     else {
                         this.result = data;
+                        if(this.result){
+                                        this.result.forEach(item => 
+                                        item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                                        
+                                    }
                         this.message = "No data found with searchkey " + this.searchVal +' for '+ this.field+ ' field.';
                         //alert(this.message);
                         //this.noDataFound = true;
@@ -163,19 +326,24 @@ handleChange(event) {
         }
         else if(this.searchVal == '' || this.searchVal == null)
         {
+            console.log('in null');
             getHistoryData({
                             recid: this.recordId
                             })
                     .then(result => {
                     this.records = result; console.log('records..',this.records);
                     this.result = this.records.slice(0,this.pageSize); console.log('res',this.result); 
+                    if(this.result){
+                                    this.result.forEach(item => 
+                                    item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                                    
+                                }
                     this.totalRecountCount = result.length; console.log('count',this.totalRecountCount); 
                     this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize); console.log('tot page',this.totalPage); 
                     this.endingRecord = this.pageSize;console.log('end',this.endingRecord); 
                 })
         }
-    }
-
+}
 
     changeHandler(event){
             console.log("HERE");
@@ -187,6 +355,14 @@ handleChange(event) {
             this.displayRecords(this.pageSize);
 }
 
+openModal(){
+    this.isModalOpen = true;
+}
+
+closeModal() {
+    this.isModalOpen = false;
+}
+
 displayRecords(pageSize){
         this.startingRecord = ((this.page -1) * pageSize) ;
         this.endingRecord = (pageSize * this.page);
@@ -196,6 +372,11 @@ displayRecords(pageSize){
 
         this.result = this.records.slice(this.startingRecord, this.endingRecord);
         console.log('new records',this.result);
+        if(this.result){
+                this.result.forEach(item => 
+                item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                
+            }
         this.startingRecord = this.startingRecord + 1;
 }  
 
@@ -209,6 +390,11 @@ displayRecordPerPage(page){
 
         this.result = this.records.slice(this.startingRecord, this.endingRecord);
         console.log('new records',this.result);
+        if(this.result){
+                this.result.forEach(item => 
+                item['userURL'] = '/lightning/r/User/' +item['createdById'] +'/view');
+                
+            }
         this.startingRecord = this.startingRecord + 1;
 }
 

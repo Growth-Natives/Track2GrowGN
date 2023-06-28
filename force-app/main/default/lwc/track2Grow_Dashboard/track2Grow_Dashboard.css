@@ -3,6 +3,7 @@
     --lwc-templateGutters:0.0rem;
     margin:0px;
 }
+
 .slds-modal__container {
     max-width: 95rem !important;
     width: 50% !important;

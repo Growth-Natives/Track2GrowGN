@@ -1,0 +1,46 @@
+<template>
+
+    <lightning-dual-listbox name="recordValue" label="Record Type" source-label="Available"
+				selected-label="Selected"
+				onchange={handleChange1} options={options1} value={defaultValues1} size=4
+				disable-reordering=true>
+			</lightning-dual-listbox><br><br>
+<div class="slds-grid slds-gutters">
+				<div class="slds-col slds-size_1-of-2">
+					<label>
+					<b>Business Hours</b>
+					<abbr class="slds-required">*</abbr>
+				</label>
+					<div class={className3}>
+						<select class="slds-select" onchange={selectHourValueChange} required=""
+						style="width:99%;height:33px;">
+						<option value="">None</option>
+						<template for:each={hourNameLabel} for:item="hourName">
+							<option key={hourName.id} value={hourName.Name}>
+								{hourName.Name}
+							</option>
+						</template>
+					</select>
+						<template if:true={requiredField4}>
+							<div class="slds-form-element__help errorMsg">Select Business Hours Type.</div>
+						</template>
+					</div>
+				</div>
+				<div class="slds-col slds-size_1-of-2">
+					<label>
+					<b>Time Period</b>
+					<abbr class="slds-required">*</abbr>
+				</label>
+					<div class={className2}>
+						<select class="slds-select" onchange={selectPicklistValueChange} style="width:99%;height:33px;margin-left:1%;">
+						<option value="">None</option>
+						<option value="Last 3 Months">Last 3 Months</option>
+						<option value="Last 6 Months">Last 6 Months</option>
+					</select>
+						<template if:true={requiredField3}>
+							<div class="slds-form-element__help errorMsg">Select Time Period.</div>
+						</template>
+					</div>
+				</div>
+			</div>
+</template>

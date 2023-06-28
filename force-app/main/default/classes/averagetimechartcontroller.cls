@@ -293,6 +293,7 @@ public with sharing class averagetimechartcontroller
     @AuraEnabled(cacheable = true)
     public static List<DataSet> ownerbasedonaveragetime(String status,String objectVal, String Field, List<String> recordTypes, String businessHour, String dates, date startDate, date endDate, boolean willRefresh,String selectedName,string ownerpicklist)
     {
+        system.debug('value of ownerpicklistownerpicklist'+ownerpicklist);
         map<String,String> usermap = new map<String,String>();
         List<DataSet> dataSet = new List<DataSet>();
         status = status.replace(' ', '');
@@ -325,7 +326,7 @@ public with sharing class averagetimechartcontroller
         
         if(dataRepresentation != null)
         {
-            inputdata = '['+dataRepresentation+']';
+            inputdata = '['+dataRepresentation+']';                                                                                          
         }
         system.debug('inputdata'+inputdata);
         List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata);
@@ -364,14 +365,14 @@ public with sharing class averagetimechartcontroller
                 
                 if(listOfUser[0].id!=null && listOfUser[0].id==fg){
                     MapOfOwnerBasedOnAverageTime.put(str,MapOfKeyOwnerToStageToTime.get(fg));
-                   for(string statu:status_val)
-                   {
-                       if(str==statu)
-                       {
-                           dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
-                       }
-                   }
-                   // dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
+                    for(string statu:status_val)
+                    {
+                        if(str==statu)
+                        {
+                            dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
+                        }
+                    }
+                    // dataSet.add(new DataSet(str,MapOfKeyOwnerToStageToTime.get(fg)));
                 }
             }	  
         } 
@@ -399,25 +400,29 @@ public with sharing class averagetimechartcontroller
         system.debug('casevalueid'+casevalueid);
         map<string,decimal> pickvalmap = new map<string,decimal>();
         map<string,decimal> pickvalmapglobal = new map<string,decimal>();
-         list<case> caserecord;
-        if(casevalueid!=null)
-        {
-            caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where CaseNumber=:casevalueid];
+        case  caserecord;
+        BusinessHours Bishou=[select id from BusinessHours where name='Default' limit 1 ];
+        system.debug('value of Bishou'+Bishou.id);
         
-        }
-        else if(id!=null)
-        {
-            caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where id=:id];
-        }
-         for(case c : caserecord){
-           system.debug('c'+c); 
+        //////////////////////////////////
+        try {
+            if(casevalueid!=null)
+            {
+                caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where CaseNumber=:casevalueid];
+                
+            }
+            else if(id!=null)
+            {
+                caserecord=[select id,CaseNumber,createddate,OwnerId,Status,(select Caseid,NewValue,OldValue,createddate,Field from Histories order by CreatedDate) from Case where id=:id];
+            }
+            system.debug('value of caseee'+caserecord);          
             boolean firsttime = true;
             datetime recentRecTime;
-            if(c.Histories != null && !(c.Histories).isEmpty()){
-                for(CaseHistory ch : c.Histories){
+            if(caserecord.Histories != null && !(caserecord.Histories).isEmpty()){
+                for(CaseHistory ch : caserecord.Histories){
                     if(ch.field == 'Status'){
                         if(firsttime){
-                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',c.CreatedDate,ch.CreatedDate);
+                            decimal timee = BusinessHours.diff(Bishou.id,caserecord.CreatedDate,ch.CreatedDate);
                             timee = (timee/1000)/60;
                             timee = timee.setScale(2);
                             if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
@@ -427,16 +432,16 @@ public with sharing class averagetimechartcontroller
                                 pickvalmap.put(string.valueof(ch.OldValue),pickvalmap.get(string.valueof(ch.OldValue))+timee);
                             }
                             if(!pickvalmapglobal.containskey(string.valueof(ch.OldValue))){
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,timee);
                             }
                             else{
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
                             }
                             firsttime = false;
                         }
                         else{
                             
-                            decimal timee = BusinessHours.diff('01m2w000000o9EfAAI',recentRecTime,ch.CreatedDate);
+                            decimal timee = BusinessHours.diff(Bishou.id,recentRecTime,ch.CreatedDate);
                             timee = (timee/1000)/60;
                             timee = timee.setScale(2);
                             if(!pickvalmap.containskey(string.valueof(ch.OldValue))){
@@ -446,10 +451,10 @@ public with sharing class averagetimechartcontroller
                                 pickvalmap.put(string.valueof(ch.OldValue),pickvalmap.get(string.valueof(ch.OldValue))+timee);
                             }
                             if(!pickvalmapglobal.containskey(string.valueof(ch.OldValue))){
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,timee);
                             }
                             else{
-                                pickvalmapglobal.put(c.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
+                                pickvalmapglobal.put(caserecord.id + ',' + ch.OldValue,pickvalmapglobal.get(string.valueof(ch.OldValue))+timee);
                             }
                         }
                         recentRecTime = ch.CreatedDate; 
@@ -457,15 +462,89 @@ public with sharing class averagetimechartcontroller
                 }
             }
             system.debug('value off pickvalmap'+pickvalmap);
-        } 
-        if(!pickvalmap.isEmpty()){
-            return pickvalmap;
+            if(!pickvalmap.isEmpty()){
+                return pickvalmap;
+            }
+            else {
+                return null;
+            }
+            
+        } catch (Exception e) {
+            
+            String errorMsg ='No case found';
+            system.debug('value of messege'+errorMsg);
+            throw new AuraHandledException(errorMsg);
         }
-        else {
-            return null;
-        }
+        ///////////////////////////////////
     }
+    
+    @AuraEnabled
+    public static list<case> casedata(string casenumber){
+        
+        list<case> caserecord=[select id,CaseNumber,Status,OwnerId,Priority,Type,Subject,createdby.name from Case where CaseNumber=:casenumber];
+        return caserecord;
+    }
+    
     //////
+   //////////////////////////record level last 6 month chart 
+     @AuraEnabled
+    public static  Map<String,Object> casedatalast6month(){
+        String dataRepresentation;
+        list<BatchInfo__c> bi=[SELECT Id,Businesshour__c, Dates__c, Filter_Name__c, SobjectFieldValue__c, EndDate__c, StartDate__c, SobjectFieldType__c, SobjectRecordType__c, SobjectType__c,dataRepresentation__c,LastRefreshedDate__c,willRefresh__c From BatchInfo__c where Dates__c ='Last 6 Months' AND SobjectFieldType__c ='Status' AND SobjectType__c ='case' and Filter_Name__c='last 6 mnoth by Track2Grow'  LIMIT 1];
+         if(bi != null && !bi.isEmpty())
+        {
+            dataRepresentation = bi[0].dataRepresentation__c;    
+        }
+        else
+        {
+            list<string> casestatusvalue= new list<string>();
+            Schema.DescribeFieldResult fieldResult = Schema.getGlobalDescribe().get('case').getDescribe().fields.getMap().get('status').getDescribe();
+            List<Schema.PicklistEntry> picklistEntries = fieldResult.getPicklistValues();
+            for(Schema.PicklistEntry picklistEntry : picklistEntries) {
+                casestatusvalue.add(picklistEntry.getValue());
+            }
+            System.debug('Picklist values for Account Type:'+casestatusvalue);
+           // averageTimeBatchClass atbc = new averageTimeBatchClass(casestatusvalue,'Status','case',null,'Last 6 Months',null,null,null,true,businessHour,'last 6 month by Track2Grow',false);
+            //batchJobId=database.executeBatch(atbc);  
+        }
+        map<String,double> valuestorepickliststage= new map<String,double>();
+       string inputdata = '['+dataRepresentation+']';
+        List<Object> result = (List<Object>)JSON.deserializeUntyped(inputdata); 
+        for(Object obj : result) 
+        { 
+            Map<String,Object> map1 = (Map<String,Object>)obj;
+            if(map1!=null)
+            {
+                for(String key : map1.keyset()) 
+                {
+                    valuestorepickliststage.put(key,(decimal)map1.get(key));
+                }
+            }
+        }
+        system.debug('value of this>'+valuestorepickliststage);
+        return valuestorepickliststage;
+    }
+    
+    @AuraEnabled
+    public static List<BusinessHours> getHourVal()
+    {
+        List<BusinessHours> businessStr =[SELECT name FROM BusinessHours];
+        return businessStr;
+    }
+    
+      @AuraEnabled
+    public static List<String> getRecordType()
+    {
+        List<String> strRecord = new list<String>();
+        List <Sobject> strRecord1 =[SELECT name FROM RecordType where SobjectType='case'];
+        if(!strRecord1.isEmpty()||strRecord1!=null){
+            for(Sobject r:strRecord1)
+            { 
+                strRecord.add(String.valueOf(r.get('Name')));
+            }
+        }
+        return strRecord;
+    }
     
     public class DataSet
     {

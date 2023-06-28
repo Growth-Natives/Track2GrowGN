@@ -11,7 +11,7 @@ public class FilterDetailController
     @AuraEnabled(cacheable=true)
     public static List<BatchInfo__c> getFilterDetail()
 	{
-        List<BatchInfo__c> BI = [SELECT Id,Filter_Name__c, CreatedDate,SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, Businesshour__c,Dates__c, EndDate__c,StartDate__c  From BatchInfo__c where Filter_Name__c!=null AND willRefresh__c = true order by CreatedDate desc];
+        List<BatchInfo__c> BI = [SELECT Id,Filter_Name__c, CreatedDate,SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, Businesshour__c,Dates__c, EndDate__c,StartDate__c  From BatchInfo__c where Filter_Name__c!=null AND willRefresh__c = true order by LastModifiedDate desc];
         System.debug('BI get Filter = '+BI);
         return BI;
     }
@@ -68,7 +68,7 @@ public class FilterDetailController
         string dataRepresentation; 
         string inputdata;
          map<string,double> valuestorepickliststage= new map<string,double>();
-        List<BatchInfo__c> bi = [SELECT Id,dataRepresentation__c,willRefresh__c From BatchInfo__c where Filter_Name__c =: filterName LIMIT 1];
+        List<BatchInfo__c> bi = [SELECT Id,dataRepresentation__c,willRefresh__c From BatchInfo__c where Filter_Name__c =: filterName and willRefresh__c=true  LIMIT 1];
         if(bi != null && !bi.isEmpty())
         {
             dataRepresentation = bi[0].dataRepresentation__c;    
@@ -110,7 +110,7 @@ public class FilterDetailController
     public static string deleteFilter(String filterName)
 	{
         String deleteMessage = 'Filter Deleted';
-        List<BatchInfo__c> bi = [SELECT Id,Filter_Name__c,willRefresh__c From BatchInfo__c where Filter_Name__c =: filterName LIMIT 1];
+        List<BatchInfo__c> bi = [SELECT Id,Filter_Name__c,willRefresh__c From BatchInfo__c where Filter_Name__c =: filterName and willRefresh__c=true LIMIT 1];
         if (Schema.sObjectType.BatchInfo__c.fields.willRefresh__c.isUpdateable() && Schema.sObjectType.BatchInfo__c.fields.willRefresh__c.isCreateable() && Schema.sObjectType.BatchInfo__c.fields.willRefresh__c.isAccessible()) 
         {
         bi[0].willRefresh__c = false;
@@ -124,7 +124,7 @@ public class FilterDetailController
     @AuraEnabled(cacheable=true)
     public static List<BatchInfo__c> getDetail(String name)
 	{
-        List<BatchInfo__c> BI = [SELECT Id,Filter_Name__c,SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, Businesshour__c,Dates__c, EndDate__c,StartDate__c  From BatchInfo__c where Filter_Name__c=:name];
+        List<BatchInfo__c> BI = [SELECT Id,Filter_Name__c,SobjectFieldType__c, SobjectFieldValue__c, SobjectRecordType__c, SobjectType__c, WillRefresh__c, Businesshour__c,Dates__c, EndDate__c,StartDate__c  From BatchInfo__c where Filter_Name__c=:name and willRefresh__c=true];
         return BI;
     }
      @AuraEnabled(cacheable=true)
@@ -140,5 +140,17 @@ public class FilterDetailController
         }
         System.debug('BI getFD ========'+BI);
         return BI;
+    }
+    @AuraEnabled(cacheable=true)
+    public static Boolean getApexSchedule(){
+        Boolean isApex;
+        List<AsyncApexJob> asyncJobList=[select ApexClass.Name, Id, JobItemsProcessed, JobType, Status, NumberOfErrors, CronTrigger.CronExpression,CronTrigger.startTime,CronTrigger.endTime from AsyncApexJob where JobType in ('ScheduledApex') and status!='Aborted' and ApexClass.Name='AverageTimeBatchClassSchedule' limit 1];
+        if(asyncJobList.size()>0){
+             isApex = true;
+        }
+        else{
+             isApex = false;
+        }
+        return isApex;
     }
 }

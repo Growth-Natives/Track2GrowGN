@@ -1,0 +1,36 @@
+<template>
+    <div>
+         <template if:true={isObject}>
+            <lightning-checkbox-group name="Checkbox Group"
+                                    label="Select Object"
+                                    options={options}
+                                    value={objValue}
+                                    onchange={handleChange}></lightning-checkbox-group>
+                                    <div class="slds-grid" style="margin-right:8px">
+                                    <template for:each={alphabutton} for:item="obj">
+                                     <div class="slds-grid" key={obj.key}>
+                                        <lightning-button variant="normal" label={obj} style="margin-top:8px;margin-bottom:8px" class="slds-col" title="Primary action"	onclick={onAlphaselect}></lightning-button>
+                                         </div>
+                                    </template>
+                                    </div>
+                <lightning-button variant="brand" label="Save & Select Fields" icon-position="right"  icon-name="utility:chevronright" class="slds-m-left_x-small" title="Primary action"	onclick={onObjeSave}></lightning-button>
+         </template>
+    </div>
+    <template if:true={isField}>
+        <div class="slds-grid fieldclass">
+        <template for:each={allFieldSelected} for:item="obj">
+            <h1 key={obj.Id} style="font-weight:bold; margin-left:10px;margin-top:3px">{obj.key}</h1>
+            <lightning-checkbox-group name="Checkbox Group"
+                                label="Field"
+                                key={obj.key}
+                                data-id={obj.key}
+                                class="slds-col fieldList"
+                                options={obj.val}
+                                value={obj.value}
+                                onchange={handlefieldChange}></lightning-checkbox-group>
+        </template>
+        
+    </div>
+     <lightning-button variant="brand" label="Save" icon-position="right"  icon-name="utility:chevronright" class="slds-m-small btnstyle" title="Primary action"	onclick={onObjeFieldSave}></lightning-button>
+    </template>
+</template>
